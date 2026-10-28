@@ -1,0 +1,49 @@
+{
+  "kind": "lumen.replay",
+  "version": 1,
+  "fixtureId": "zh-normal.slide.1",
+  "task": "slide",
+  "promptDigest": "blhvp92g7a",
+  "request": {
+    "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+    "user": "{\n  \"deckTitle\": \"三个月，初稿时间砍了一半\",\n  \"lang\": \"zh\",\n  \"index\": 0,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"slide\": {\n    \"recipe\": \"cover\",\n    \"headline\": \"三个月，我们把初稿时间砍了一半\",\n    \"lead\": \"AI 写作助手试点结论 · 面向管理层\",\n    \"points\": [],\n    \"visual\": {\n      \"kind\": \"three\",\n      \"preset\": \"particle-cloud\"\n    },\n    \"notes\": \"先给结论，再给证据。停留 40 秒。\"\n  }\n}",
+    "temperature": 0.7,
+    "format": "auto"
+  },
+  "chunks": [
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"{\\\"headline\\\":\\\"三\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"个月，我们把初稿时间砍了一半\\\",\\\"lea\"},\"finish_reason\":null}]}\n\n",
+    ": ping\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"d\\\":\\\"AI 写作助手试点结论\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\" · 面向管理层\\\",\\\"points\\\":[\"},\"finish_reason\":null}]}\n\n",
+    ": ping\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"],\\\"notes\\\":\\\"开口先给数字，再\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"解释口径。\\\"}\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\"}],\"model\":\"self@dsh-session\",\"usage\":{\"prompt\":374,\"completion\":190,\"total\":564}}\n\n",
+    "data: [DONE]\n\n"
+  ],
+  "delays": [
+    620,
+    23,
+    6,
+    21,
+    18,
+    6,
+    12,
+    26,
+    16,
+    4
+  ],
+  "text": "{\"headline\":\"三个月，我们把初稿时间砍了一半\",\"lead\":\"AI 写作助手试点结论 · 面向管理层\",\"points\":[],\"notes\":\"开口先给数字，再解释口径。\"}",
+  "usage": {
+    "prompt": 374,
+    "completion": 190,
+    "total": 564
+  },
+  "capturedAt": "2026-10-27T18:40:00.000Z",
+  "capturedFrom": {
+    "baseURL": "SELF_BASE_URL",
+    "model": "self@dsh-session",
+    "stream": true
+  }
+}

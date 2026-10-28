@@ -1,0 +1,186 @@
+{
+  "generatedAtNote": "本文件由一次性取证脚本产出，不属于仓库",
+  "model": "self@dsh-session (OpenAI-compatible gateway)",
+  "prompt": "给管理层讲：AI 写作助手试点三个月的结论，要不要继续投",
+  "lang": "zh",
+  "length": "normal",
+  "themeId": "noir",
+  "slides": 9,
+  "fallbackHits": 0,
+  "deckBlocks": 84,
+  "deckTextChars": 607,
+  "deckLint": {
+    "error": 0,
+    "warn": 0,
+    "info": 1
+  },
+  "deckLintCodes": [
+    "tooManyBlocks"
+  ],
+  "requests": 12,
+  "estimatedPromptTokens": 3071,
+  "estimatedCompletionTokens": 1125,
+  "estimatedTotalTokens": 4196,
+  "localPipelineMs": 5.18,
+  "layoutMs": {
+    "min": 0.31,
+    "max": 2.85,
+    "p50": 0.95
+  },
+  "perSlide": [
+    {
+      "index": 1,
+      "recipeRequested": "cover",
+      "recipeUsed": "cover",
+      "blocks": 6,
+      "textChars": 77,
+      "layoutMs": 2.82,
+      "enterBlocks": 0,
+      "lint": {
+        "error": 0,
+        "warn": 0,
+        "info": 1
+      },
+      "lintCodes": [
+        "info:slideCount"
+      ]
+    },
+    {
+      "index": 2,
+      "recipeRequested": "statement",
+      "recipeUsed": "statement",
+      "blocks": 3,
+      "textChars": 38,
+      "layoutMs": 0.53,
+      "enterBlocks": 0,
+      "lint": {
+        "error": 0,
+        "warn": 0,
+        "info": 1
+      },
+      "lintCodes": [
+        "info:slideCount"
+      ]
+    },
+    {
+      "index": 3,
+      "recipeRequested": "data",
+      "recipeUsed": "data",
+      "blocks": 21,
+      "textChars": 96,
+      "layoutMs": 1.94,
+      "enterBlocks": 8,
+      "lint": {
+        "error": 0,
+        "warn": 0,
+        "info": 2
+      },
+      "lintCodes": [
+        "info:slideCount",
+        "info:tooManyBlocks"
+      ]
+    },
+    {
+      "index": 4,
+      "recipeRequested": "timeline",
+      "recipeUsed": "timeline",
+      "blocks": 15,
+      "textChars": 75,
+      "layoutMs": 1.12,
+      "enterBlocks": 9,
+      "lint": {
+        "error": 0,
+        "warn": 0,
+        "info": 1
+      },
+      "lintCodes": [
+        "info:slideCount"
+      ]
+    },
+    {
+      "index": 5,
+      "recipeRequested": "split",
+      "recipeUsed": "split",
+      "blocks": 8,
+      "textChars": 88,
+      "layoutMs": 0.92,
+      "enterBlocks": 0,
+      "lint": {
+        "error": 0,
+        "warn": 0,
+        "info": 1
+      },
+      "lintCodes": [
+        "info:slideCount"
+      ]
+    },
+    {
+      "index": 6,
+      "recipeRequested": "grid3",
+      "recipeUsed": "grid3",
+      "blocks": 15,
+      "textChars": 80,
+      "layoutMs": 2.85,
+      "enterBlocks": 9,
+      "lint": {
+        "error": 0,
+        "warn": 0,
+        "info": 1
+      },
+      "lintCodes": [
+        "info:slideCount"
+      ]
+    },
+    {
+      "index": 7,
+      "recipeRequested": "compare",
+      "recipeUsed": "compare",
+      "blocks": 10,
+      "textChars": 78,
+      "layoutMs": 0.95,
+      "enterBlocks": 4,
+      "lint": {
+        "error": 0,
+        "warn": 0,
+        "info": 1
+      },
+      "lintCodes": [
+        "info:slideCount"
+      ]
+    },
+    {
+      "index": 8,
+      "recipeRequested": "quote",
+      "recipeUsed": "quote",
+      "blocks": 3,
+      "textChars": 28,
+      "layoutMs": 0.32,
+      "enterBlocks": 0,
+      "lint": {
+        "error": 0,
+        "warn": 0,
+        "info": 1
+      },
+      "lintCodes": [
+        "info:slideCount"
+      ]
+    },
+    {
+      "index": 9,
+      "recipeRequested": "closing",
+      "recipeUsed": "closing",
+      "blocks": 3,
+      "textChars": 47,
+      "layoutMs": 0.31,
+      "enterBlocks": 0,
+      "lint": {
+        "error": 0,
+        "warn": 0,
+        "info": 1
+      },
+      "lintCodes": [
+        "info:slideCount"
+      ]
+    }
+  ]
+}

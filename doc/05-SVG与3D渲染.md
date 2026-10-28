@@ -475,3 +475,23 @@ issues.map((issue) => ({
 > 排序建议：`error → warn → info`，同级别按幕序；`params` 里的值已经是四舍五入后的数字，不需要再格式化。
 
 > 注意：`t()` 的第二个参数用完 `params` 后，`issue.params` 里的键名必须与文案占位符完全一致（本表已对齐）。
+
+## 附录 B：v0.2.0 已实现 / 未实现（造幕台降级）
+
+已实现：
+
+| 项 | 落点 | 判据 |
+|---|---|---|
+| 档位判定（L0–L3） | `src/forge/fx/tier.ts` 的 `detectTier` 纯函数 | `?still=1` → L0；锁档优先；reduced-motion / 核数 ≤2 / `saveData` → L1；WebGL2 + ≥4 核 → L3；其余 L2 |
+| 只降不升 | `ForgeApp` 挂载时算一次并 `useState` 固定 | 运行中不重算，`[data-forge-tier]` 60s 内不翻转 |
+| L0 / L1 的 CSS 降级 | `src/forge/forge.css` 的 `[data-forge-tier='L0']` / `'L1'` 段 | L0 关过渡与动画；L1 去粒子/模糊 |
+| 装台台位钩子 | `src/forge/stage/Assemble.tsx` 的 `[data-forge-slot][data-slot-filled]` | 每幕一个台位，`data-slot-filled` 随落位翻转 |
+| L3 环境粒子 | `src/forge/fx/ambient.ts`（`startAmbient`，由 `Assemble` 在 `tier === 'L3'` 时挂载） | 只有 L3 才 `await import('three')`；DOM 里恰好 1 个 `canvas[data-forge-ambient="1"]`；`dispose()` 释放 rAF 订阅、geometry/material/renderer 并移除 canvas |
+| three 懒分块 | `render/three/runtime.ts` 动态 import（v0.1.0 起）+ `fx/ambient.ts` 的按档惰性 | 首屏不请求 `three`，L3 进装台才拉；L0/L1/L2 连探针 canvas 都不建 |
+
+未实现 / 待补：
+
+- **L2 的「首帧 > 32ms 自动降档」未做**：`detectTier` 的输入只有 WebGL2 / 核数 / 省电 / 减少动效，没有实测帧时长；要补需要先有一帧采样点（`forge/fx/raf.ts` 的 `sampleFrames` 已经能用）。
+- **落位时长 `--fx-t3` 的 220–420ms 没有读数断言**（F-11）；目前只在 CSS 变量层存在。
+- **`disposeAllThreeRuntimes()` 与帧间隔采样**（D-07 / D-10）仍缺 `perf-budget.spec.ts`；`getLiveThreeRuntimeCount()` 可读但没有 e2e 断言。
+- 装上 `?still=1` 只冻结档位（→L0，因而不会创建 ambient）与自动播放，**没有**主动调用 `raf.stop()`（计划里 D-04 要求 10s 内回调 0 次）；目前只有订阅方退订时才会停循环。

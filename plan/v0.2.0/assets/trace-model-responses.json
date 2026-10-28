@@ -1,0 +1,216 @@
+{
+  "outline": {
+    "title": "三个月，初稿时间砍了一半",
+    "subtitle": "AI 写作助手试点结论 · 面向管理层",
+    "lang": "zh",
+    "slides": [
+      {
+        "recipe": "cover",
+        "headline": "三个月，我们把初稿时间砍了一半",
+        "lead": "AI 写作助手试点结论 · 面向管理层",
+        "points": [],
+        "visual": {
+          "kind": "three",
+          "preset": "particle-cloud"
+        },
+        "notes": "先给结论，再给证据。停留 40 秒。"
+      },
+      {
+        "recipe": "statement",
+        "headline": "真正的收益不是写得更快，而是改得更少",
+        "lead": "初稿只是起点，返工才是成本。",
+        "points": [],
+        "visual": {
+          "kind": "none"
+        },
+        "notes": "这一页要慢，让这句话落地后再翻页。"
+      },
+      {
+        "recipe": "data",
+        "headline": "三个指标同时转好",
+        "points": [
+          "初稿耗时↓=52%",
+          "返工轮次↓=38%",
+          "满意度=8.7",
+          "周活留存=71%"
+        ],
+        "visual": {
+          "kind": "none"
+        },
+        "notes": "先指柱子再看环形，强调三个方向一致。"
+      },
+      {
+        "recipe": "timeline",
+        "headline": "三个月，三步走",
+        "points": [
+          "第 1 月｜小范围试用｜12 人，只用在周报",
+          "第 2 月｜扩到 6 个团队｜接入内部知识库",
+          "第 3 月｜停掉两处旧流程｜改为默认路径"
+        ],
+        "visual": {
+          "kind": "none"
+        },
+        "notes": "重点讲第 3 月的\"停旧流程\"，那才是真投入。"
+      },
+      {
+        "recipe": "split",
+        "headline": "谁受益最大",
+        "lead": "收益不均，但方向一致。",
+        "points": [
+          "**产品经理**：需求文档从 2 天到 4 小时",
+          "**销售**：标书初稿一周变两天",
+          "**设计**：方案说明不再靠口头"
+        ],
+        "visual": {
+          "kind": "svg",
+          "brief": "三根递增的柱子与一条穿过它们的折线"
+        },
+        "notes": "这里停一下，问有没有人想补一个角色。"
+      },
+      {
+        "recipe": "grid3",
+        "headline": "三条可复制的做法",
+        "points": [
+          "**先给模板**：好结构比好模型更省时间",
+          "**只做初稿**：不追求一次成稿，改一轮更便宜",
+          "**留一个人**：终稿必须有人署名"
+        ],
+        "visual": {
+          "kind": "none"
+        },
+        "notes": "这三条是这次试点唯一值得抄走的东西。"
+      },
+      {
+        "recipe": "compare",
+        "headline": "推，还是不推",
+        "points": [
+          "继续投｜留存 71%，周均省 6.2 小时",
+          "继续投｜培训成本已被复用摊薄",
+          "暂停｜法务对客户数据的口径未定",
+          "暂停｜两个团队仍靠人肉校对"
+        ],
+        "visual": {
+          "kind": "none"
+        },
+        "notes": "别急着给答案，先让两边都说完。"
+      },
+      {
+        "recipe": "quote",
+        "headline": "工具改的不是速度，是心理负担",
+        "lead": "—— 一位参与试点的产品经理",
+        "points": [],
+        "visual": {
+          "kind": "none"
+        },
+        "notes": "原话念完，停 3 秒。"
+      },
+      {
+        "recipe": "closing",
+        "headline": "下一步：把默认路径换掉",
+        "lead": "Q4 起，新项目默认用这套流程。",
+        "points": [],
+        "visual": {
+          "kind": "none"
+        },
+        "notes": "落一个决策，别落一个愿望。"
+      }
+    ]
+  },
+  "slides": {
+    "0": {
+      "headline": "三个月，我们把初稿时间砍了一半",
+      "lead": "AI 写作助手试点结论 · 面向管理层",
+      "points": [],
+      "notes": "开口先给数字，再解释口径。"
+    },
+    "1": {
+      "headline": "真正的收益不是写得更快，而是改得更少",
+      "lead": "初稿只占 20% 工时，返工占 60%。",
+      "points": [],
+      "notes": "念完这句停 3 秒，不要补解释。"
+    },
+    "2": {
+      "headline": "三个指标同时转好",
+      "lead": "口径：试点 6 个团队，12 周",
+      "points": [
+        "初稿耗时↓=52%",
+        "返工轮次↓=38%",
+        "满意度=8.7",
+        "周活留存=71%"
+      ],
+      "notes": "先指最右边的柱子，再说环形图。"
+    },
+    "3": {
+      "headline": "三个月，三步走",
+      "lead": "先小后大，最后动流程",
+      "points": [
+        "第 1 月｜小范围试用｜12 人，只用在周报",
+        "第 2 月｜扩到 6 个团队｜接入内部知识库",
+        "第 3 月｜停掉旧流程｜新项目默认走这条"
+      ],
+      "notes": "第 3 月是真正的转折点，多给 30 秒。"
+    },
+    "4": {
+      "headline": "谁受益最大",
+      "lead": "同一个人写，收益差 3 倍",
+      "points": [
+        "**产品经理**：需求文档 2 天 → 4 小时",
+        "**销售**：标书初稿 1 周 → 2 天",
+        "**设计**：方案说明不再靠口头"
+      ],
+      "notes": "举例要具体到某一份文档。"
+    },
+    "5": {
+      "headline": "三条可复制的做法",
+      "lead": "和模型无关，和流程有关",
+      "points": [
+        "**先给模板**：好结构比好模型省时间",
+        "**只做初稿**：改一轮比一次成稿便宜",
+        "**留一个人**：终稿必须有人署名"
+      ],
+      "notes": "这三条是唯一值得抄走的部分。"
+    },
+    "6": {
+      "headline": "推，还是不推",
+      "lead": "两边都成立，选择在取舍",
+      "points": [
+        "继续投｜留存 71%，周均省 6.2 小时",
+        "继续投｜培训成本已被复用摊薄",
+        "暂停｜法务口径未定",
+        "暂停｜两个团队仍靠人肉校对"
+      ],
+      "notes": "不要替听众下结论，把取舍摆出来。"
+    },
+    "7": {
+      "headline": "工具改的不是速度，是心理负担",
+      "lead": "—— 一位参与试点的产品经理",
+      "points": [],
+      "notes": "原话念完，环视一圈再翻页。"
+    },
+    "8": {
+      "headline": "下一步：把默认路径换掉",
+      "lead": "Q4 起，新项目默认用这套流程。",
+      "points": [],
+      "notes": "要一个决策，不要一个愿望。"
+    }
+  },
+  "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 820 560\" fill=\"none\">\n  <g opacity=\"0.45\">\n    <line x1=\"128\" y1=\"470\" x2=\"700\" y2=\"470\" stroke=\"var(--d-line)\" stroke-width=\"1.5\"/>\n    <line x1=\"128\" y1=\"120\" x2=\"128\" y2=\"470\" stroke=\"var(--d-line)\" stroke-width=\"1.5\"/>\n  </g>\n  <rect x=\"176\" y=\"330\" width=\"88\" height=\"140\" rx=\"8\" fill=\"var(--d-surface)\" stroke=\"var(--d-muted)\" stroke-width=\"1.6\"/>\n  <rect x=\"304\" y=\"250\" width=\"88\" height=\"220\" rx=\"8\" fill=\"var(--d-surface)\" stroke=\"var(--d-muted)\" stroke-width=\"1.6\"/>\n  <rect x=\"432\" y=\"178\" width=\"88\" height=\"292\" rx=\"8\" fill=\"var(--d-accent)\" opacity=\"0.16\" stroke=\"var(--d-accent)\" stroke-width=\"1.8\"/>\n  <path d=\"M176 300 L304 226 L432 156\" stroke=\"var(--d-accent)\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n  <circle cx=\"176\" cy=\"300\" r=\"5\" fill=\"var(--d-accent)\"/>\n  <circle cx=\"304\" cy=\"226\" r=\"5\" fill=\"var(--d-accent)\"/>\n  <circle cx=\"432\" cy=\"156\" r=\"6\" fill=\"var(--d-accent2)\"/>\n  <g opacity=\"0.5\">\n    <circle cx=\"600\" cy=\"200\" r=\"3\" fill=\"var(--d-accent2)\"/>\n    <circle cx=\"640\" cy=\"240\" r=\"2.5\" fill=\"var(--d-accent2)\"/>\n    <circle cx=\"672\" cy=\"196\" r=\"2\" fill=\"var(--d-accent2)\"/>\n    <circle cx=\"620\" cy=\"286\" r=\"2\" fill=\"var(--d-accent2)\"/>\n  </g>\n  <path d=\"M520 380 C 600 336, 660 356, 700 296\" stroke=\"var(--d-muted)\" stroke-width=\"1.4\" stroke-dasharray=\"6 8\" opacity=\"0.6\"/>\n</svg>",
+  "three": {
+    "preset": "particle-cloud",
+    "palette": "duotone",
+    "light": "neon",
+    "bg": "transparent",
+    "camera": {
+      "distance": 8.4,
+      "elevation": 0.24,
+      "fov": 42
+    },
+    "motion": {
+      "kind": "rotate",
+      "speed": 0.34
+    },
+    "objects": [],
+    "grain": 0.06,
+    "orbitControls": false
+  }
+}
