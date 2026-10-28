@@ -5,9 +5,20 @@
 
 ## [Unreleased]
 
+### Added
+
+- Vercel 部署：`vercel.json`（Vite 框架、`pnpm build` → `dist/`、`/portal` → `portal.html` 重写、`assets/*` 长缓存 + `player/*` 与两个 HTML 入口 must-revalidate、三个基础安全头）、`.vercelignore`、`package.json` 的 `engines.node: 22.x`。纯静态产物，部署侧零环境变量。
+- `pnpm run deploy:preview` / `pnpm run deploy:prod` 两个脚本（内部 `npx --yes vercel`，不要求全局安装）。
+- `.gitignore` 补 `.vercel/`（CLI 链接信息含 projectId / orgId）、`.env*`（保留 `.env.example`）、`public/player.bak/`。
+
+### Changed
+
+- 部署脚本由 `deploy` 改名 `deploy:preview`：`pnpm deploy` 会解析到 pnpm 内建的 workspace 部署命令并盖掉同名脚本。
+
 ### Docs
 
 - 新增英文版 README（`README.en.md`），与中文版逐节对齐（11 个二级标题、43 行表格、32 个相对链接一一对应）；两版顶部互加语言切换。
+- 新增 `doc/10-Vercel部署.md`：硬事实、Git 导入与 CLI 两条路径、缓存头、五个坑、上线验收清单；`doc/README.md` 索引与「十篇齐了」的表述同步为 00–10。
 
 ## [0.2.0] - 2026-10-28
 

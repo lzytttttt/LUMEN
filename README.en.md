@@ -184,6 +184,18 @@ plan/v0.2.0/                                      # this release's evidence and 
 | [09 Development and acceptance](doc/09-开发与验收.md) | Commands, test layers, DoD, FAQ |
 | [plan/v0.2.0](plan/v0.2.0/README.md) | The Forge's scope, interface, game layer, motion, LLM spec, and acceptance matrix (this release's evidence) |
 
+## Deploy
+
+It ships as static output: `pnpm build` → `dist/`, with no backend, no SSR, and no environment variables. The repo carries [vercel.json](vercel.json) and [.vercelignore](.vercelignore); importing the repository on Vercel is enough (framework detected as Vite, Node 22.x).
+
+```powershell
+pnpm run deploy:preview   # preview deploy → *.vercel.app
+pnpm run deploy:prod      # production deploy
+```
+
+> The `run` matters: `pnpm deploy` is pnpm's built-in workspace deploy command and shadows the same-named script.
+> Steps, cache headers, pitfalls, and the acceptance checklist live in [doc/10-Vercel部署.md](doc/10-Vercel部署.md).
+
 ## License
 
 This project is released under **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.

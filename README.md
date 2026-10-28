@@ -186,6 +186,18 @@ plan/v0.2.0/                                      # 本版的证据与约束（0
 | [09 开发与验收](doc/09-开发与验收.md) | 命令、测试分层、DoD、常见问题 |
 | [plan/v0.2.0](plan/v0.2.0/README.md) | 造幕台的范围、界面、游戏化、动效、LLM 规格与验收矩阵（本版证据） |
 
+## 部署 / Deploy
+
+纯静态产物：`pnpm build` → `dist/`，无后端、无 SSR、无环境变量。仓库随带 [vercel.json](vercel.json) 与 [.vercelignore](.vercelignore)，Vercel 导入仓库即可（Framework 认 Vite，Node 选 22.x）。
+
+```powershell
+pnpm run deploy:preview   # 预览部署 → *.vercel.app
+pnpm run deploy:prod      # 生产部署
+```
+
+> 必须走 `pnpm run`：`pnpm deploy` 是 pnpm 内建的 workspace 部署命令，会盖掉同名脚本。
+> 步骤、缓存头、坑与验收清单见 [doc/10-Vercel部署.md](doc/10-Vercel部署.md)。
+
 ## License
 
 本项目以 **Creative Commons Attribution-NonCommercial 4.0 International（CC BY-NC 4.0）** 协议发布。
