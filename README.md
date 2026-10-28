@@ -4,21 +4,24 @@
 
 **An AI-native deck workbench in the browser.** Prompt to an outline, fill slide by slide, fix it on a real canvas, present full-screen, and ship a single self-contained HTML file that plays on double-click.
 
+**版本 / Version: [v0.1.0](https://github.com/lzytttttt/LUMEN/releases/tag/v0.1.0)** — 首个可用版本。
+
 > 本仓库没有后端、没有遥测、没有外链字体：数据在 IndexedDB，模型端点由你自己填（含本地 Ollama），默认离线 Mock。
 
 ## 截图 / Screenshots
 
-> 图片是构建产物（`harness/out/` 不入库），先跑一次 `node scripts/snapshot.mjs http://127.0.0.1:5273`。
+> 截图取自 `node scripts/snapshot.mjs http://127.0.0.1:5273`（原始输出在 `harness/out/`，不入库），
+> 定型后拷贝到 `doc/screenshots/` 随仓库发布。
 
 | 编辑器 / Editor | 播放 / Play |
 |---|---|
-| ![editor](harness/out/ui-editor.png) | ![play](harness/out/ui-play.png) |
+| ![editor](doc/screenshots/ui-editor.png) | ![play](doc/screenshots/ui-play.png) |
 
 | AI 编排 / Composer | 工作室 / Studio |
 |---|---|
-| ![composer](harness/out/ui-composer.png) | ![studio](harness/out/studio-3d.png) |
+| ![composer](doc/screenshots/ui-composer.png) | ![studio](doc/screenshots/studio-3d.png) |
 
-逐幕截图：`harness/out/slides/slide-01.png` … `slide-09.png`（示例 9 幕）。
+逐幕截图 / Slides：[01](doc/screenshots/slides/slide-01.png) · [02](doc/screenshots/slides/slide-02.png) · [03](doc/screenshots/slides/slide-03.png) · [04](doc/screenshots/slides/slide-04.png) · [05](doc/screenshots/slides/slide-05.png) · [06](doc/screenshots/slides/slide-06.png) · [07](doc/screenshots/slides/slide-07.png) · [08](doc/screenshots/slides/slide-08.png) · [09](doc/screenshots/slides/slide-09.png)（示例 9 幕）
 
 ## 能力 / Capabilities
 
@@ -96,4 +99,4 @@ doc/                                              # 设计与契约文档（00�
 
 ## License
 
-待定（v0.1.0，私有仓库）。
+待定（v0.1.0 尚未选定开源许可，未授权前按「保留所有权利」理解）。
