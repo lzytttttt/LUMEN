@@ -1,0 +1,352 @@
+/* composer.css —— AI 编排面板样式（只用 tokens.css 里的 UI 令牌，不引入新颜色）。 */
+
+.ai-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 14px 28px;
+}
+
+.ai-panel__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ai-panel__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ai-panel__title {
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.ai-panel__subtitle {
+  font-size: 11px;
+  color: var(--ui-fg-mute);
+}
+
+/* -------------------------------- 通道徽标 -------------------------------- */
+
+.ai-channel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-panel-2);
+  font-size: 11.5px;
+  color: var(--ui-fg-dim);
+}
+
+.ai-channel__dot {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ui-warn);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-warn) 16%, transparent);
+}
+
+.ai-channel--live .ai-channel__dot {
+  background: var(--ui-ok);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-ok) 16%, transparent);
+}
+
+.ai-channel__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-channel__link {
+  flex: 0 0 auto;
+  padding: 0;
+  color: var(--ui-accent);
+  font-size: 11.5px;
+}
+
+.ai-channel__link:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------- 区块 --------------------------------- */
+
+.ai-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--ui-radius);
+  background: color-mix(in srgb, var(--ui-panel-2) 72%, transparent);
+}
+
+.ai-block__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ui-fg-dim);
+}
+
+.ai-block__hint {
+  font-size: 10.5px;
+  font-weight: 400;
+  color: var(--ui-fg-mute);
+}
+
+.ai-note {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--ui-fg-mute);
+}
+
+.ai-switches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.ai-switches label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--ui-fg-dim);
+  cursor: pointer;
+}
+
+/* --------------------------------- 错误 --------------------------------- */
+
+.ai-error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 9px 10px;
+  border-radius: var(--ui-radius-sm);
+  border: 1px solid color-mix(in srgb, var(--ui-danger) 42%, transparent);
+  background: var(--ui-danger-soft);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--ui-fg);
+}
+
+.ai-error strong {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ui-danger);
+}
+
+/* -------------------------------- 大纲编辑 -------------------------------- */
+
+.ai-outline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ai-outline__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 46vh;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+
+.ai-outline__row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-panel);
+}
+
+.ai-outline__row[data-drag='true'] {
+  border-color: var(--ui-accent-line);
+  box-shadow: var(--ui-shadow-sm);
+}
+
+.ai-outline__bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-outline__grip {
+  cursor: grab;
+  color: var(--ui-fg-mute);
+  font-size: 11px;
+  letter-spacing: -2px;
+  user-select: none;
+}
+
+.ai-outline__index {
+  font-size: 10.5px;
+  color: var(--ui-fg-mute);
+  white-space: nowrap;
+}
+
+.ai-outline__bar .lm-select {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 24px;
+  font-size: 11px;
+}
+
+.ai-outline__row .lm-textarea {
+  min-height: 54px;
+  font-size: 11.5px;
+}
+
+/* -------------------------------- 生成进度 -------------------------------- */
+
+.ai-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ai-progress__bar {
+  height: 4px;
+  border-radius: 99px;
+  background: var(--ui-line);
+  overflow: hidden;
+}
+
+.ai-progress__fill {
+  display: block;
+  height: 100%;
+  background: var(--ui-accent);
+  transition: width 160ms var(--ease);
+}
+
+.ai-progress__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--ui-fg-dim);
+}
+
+.ai-done {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11.5px;
+  color: var(--ui-ok);
+}
+
+.ai-done details {
+  color: var(--ui-fg-mute);
+}
+
+.ai-done summary {
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.ai-done ul {
+  margin: 4px 0 0;
+  padding-left: 16px;
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+.ai-done li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.ai-link {
+  flex: 0 0 auto;
+  padding: 0;
+  color: var(--ui-accent);
+  font-size: 10.5px;
+  text-decoration: underline;
+}
+
+.ai-link:disabled {
+  color: var(--ui-fg-mute);
+  text-decoration: none;
+}
+
+/* --------------------------------- 微调 --------------------------------- */
+
+.ai-refine__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-diff {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px dashed var(--ui-line-strong);
+  border-radius: var(--ui-radius-sm);
+}
+
+.ai-diff__line {
+  margin: 0;
+  font-size: 11px;
+  color: var(--ui-fg-dim);
+}
+
+.ai-diff__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ai-chip {
+  padding: 1px 6px;
+  border: 1px solid var(--ui-line);
+  border-radius: 99px;
+  background: var(--ui-panel-2);
+  color: var(--ui-fg-mute);
+  font-family: var(--ui-font-mono);
+  font-size: 10px;
+}
+
+.ai-chip--add {
+  color: var(--ui-ok);
+  border-color: color-mix(in srgb, var(--ui-ok) 42%, transparent);
+}
+
+.ai-chip--remove {
+  color: var(--ui-danger);
+  border-color: color-mix(in srgb, var(--ui-danger) 42%, transparent);
+}
+
+.ai-chip--change {
+  color: var(--ui-warn);
+  border-color: color-mix(in srgb, var(--ui-warn) 42%, transparent);
+}
+
+.ai-diff__actions {
+  display: flex;
+  gap: 8px;
+}

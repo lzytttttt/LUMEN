@@ -1,0 +1,17 @@
+# 统一换行：工作区与仓库内一律 LF，避免 Windows 下 CRLF 污染 diff。
+* text=auto eol=lf
+
+# 二进制资源不做文本转换。
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.zip binary
+
+# 锁文件在 diff 中折叠。
+pnpm-lock.yaml linguist-generated=true -diff

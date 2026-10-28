@@ -1,0 +1,96 @@
+/**
+ * tokens.css —— UI 铬色设计令牌（与 deck 主题解耦）。
+ * deck 主题变量 --d-* 由渲染层运行时注入，见 src/themes/index.ts。
+ */
+:root {
+  color-scheme: dark;
+
+  --ui-bg: #0a0b0e;
+  --ui-bg-2: #0e1014;
+  --ui-panel: #12141a;
+  --ui-panel-2: #171a21;
+  --ui-elev: #1c2029;
+  --ui-hover: #222732;
+  --ui-active: #2a3040;
+  --ui-line: #23262f;
+  --ui-line-strong: #343948;
+
+  --ui-fg: #e8eaef;
+  --ui-fg-dim: #a4aab8;
+  --ui-fg-mute: #737a8a;
+  --ui-fg-invert: #0b0c10;
+
+  --ui-accent: #c8a15a;
+  --ui-accent-2: #57e3c2;
+  --ui-accent-soft: rgba(200, 161, 90, 0.14);
+  --ui-accent-line: rgba(200, 161, 90, 0.34);
+  --ui-danger: #e4574f;
+  --ui-danger-soft: rgba(228, 87, 79, 0.14);
+  --ui-ok: #4ade80;
+  --ui-warn: #fbbf24;
+  --ui-info: #7ea0b8;
+
+  --ui-canvas: #07080b;
+  --ui-stage-shadow: 0 30px 90px rgba(0, 0, 0, 0.55), 0 2px 0 rgba(255, 255, 255, 0.04);
+
+  --ui-radius: 10px;
+  --ui-radius-sm: 7px;
+  --ui-radius-xs: 5px;
+  --ui-shadow: 0 20px 54px rgba(0, 0, 0, 0.52);
+  --ui-shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.34);
+
+  --ui-font: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC',
+    sans-serif;
+  --ui-font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, 'Courier New', monospace;
+
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-fast: 120ms;
+  --dur: 190ms;
+  --dur-slow: 320ms;
+
+  --rail-w: 216px;
+  --panel-w: 340px;
+  --topbar-h: 52px;
+  --sheet-w: 60px;
+
+  --z-stage: 1;
+  --z-guides: 20;
+  --z-overlay: 40;
+  --z-popover: 60;
+  --z-modal: 80;
+  --z-toast: 92;
+}
+
+[data-ui-theme='light'] {
+  color-scheme: light;
+
+  --ui-bg: #f3f1ec;
+  --ui-bg-2: #ece9e2;
+  --ui-panel: #faf8f4;
+  --ui-panel-2: #f0ede6;
+  --ui-elev: #ffffff;
+  --ui-hover: #e8e4db;
+  --ui-active: #ddd8cc;
+  --ui-line: #ded9cf;
+  --ui-line-strong: #c4beb1;
+
+  --ui-fg: #1c1a17;
+  --ui-fg-dim: #55504a;
+  --ui-fg-mute: #837c72;
+  --ui-fg-invert: #faf8f4;
+
+  --ui-accent: #8d5f24;
+  --ui-accent-2: #0f766e;
+  --ui-accent-soft: rgba(141, 95, 36, 0.12);
+  --ui-accent-line: rgba(141, 95, 36, 0.32);
+  --ui-danger: #b3261e;
+  --ui-danger-soft: rgba(179, 38, 30, 0.1);
+  --ui-ok: #15803d;
+  --ui-warn: #a16207;
+  --ui-info: #1d4ed8;
+
+  --ui-canvas: #e6e2d9;
+  --ui-stage-shadow: 0 24px 60px rgba(60, 50, 30, 0.18), 0 1px 0 rgba(255, 255, 255, 0.7);
+  --ui-shadow: 0 20px 54px rgba(60, 50, 30, 0.2);
+  --ui-shadow-sm: 0 6px 18px rgba(60, 50, 30, 0.14);
+}

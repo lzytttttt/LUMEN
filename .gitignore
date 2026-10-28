@@ -1,0 +1,10 @@
+node_modules/
+dist/
+public/player/
+harness/out/
+.tmp/
+test-results/
+playwright-report/
+*.log
+*.local
+.DS_Store

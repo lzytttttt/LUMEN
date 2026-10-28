@@ -1,0 +1,94 @@
+/* code.css —— CodeMirror 封装外观（与工作台面板同一套令牌）。 */
+.lcm {
+  position: relative;
+  display: flex;
+  min-height: 120px;
+  border: 1px solid var(--ui-line-strong);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-bg-2);
+  overflow: hidden;
+}
+
+.lcm__host {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.lcm__host[hidden] {
+  display: none;
+}
+
+.lcm .cm-editor {
+  height: 100%;
+  background: transparent;
+  color: var(--ui-fg);
+}
+
+.lcm .cm-editor .cm-line {
+  padding: 0 6px;
+}
+
+.lcm .cm-editor .cm-activeLine {
+  background: color-mix(in srgb, var(--ui-accent) 7%, transparent);
+}
+
+.lcm .cm-editor .cm-selectionBackground,
+.lcm .cm-editor.cm-focused .cm-selectionBackground {
+  background: color-mix(in srgb, var(--ui-accent) 26%, transparent) !important;
+}
+
+.lcm .cm-editor .cm-tooltip {
+  background: var(--ui-elev);
+  border: 1px solid var(--ui-line-strong);
+  color: var(--ui-fg);
+}
+
+.lcm__loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ui-fg-mute);
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.lcm__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ui-accent);
+  animation: lcm-pulse 900ms ease-in-out infinite;
+}
+
+@keyframes lcm-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.lcm__fallback {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 120px;
+  padding: 10px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--ui-fg);
+  font-family: var(--ui-font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+}

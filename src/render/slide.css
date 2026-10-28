@@ -1,0 +1,474 @@
+/* slide.css —— 舞台与内容块。所有尺寸均为"设计像素"，缩放由外层 transform 完成。 */
+.lumen-slide {
+  position: relative;
+  width: 1600px;
+  height: 900px;
+  overflow: hidden;
+  background: var(--d-bg);
+  color: var(--d-fg);
+  font-family: var(--d-font-body);
+  font-size: var(--d-fs-body);
+  line-height: var(--d-lh-body);
+  isolation: isolate;
+  contain: layout paint style;
+}
+
+.lumen-slide[data-bg='solid'] {
+  background: var(--slide-bg, var(--d-bg));
+}
+
+.lumen-block {
+  position: absolute;
+  box-sizing: border-box;
+}
+
+/*
+ * 编辑态命中的唯一真相在 Stage 的几何命中层：渲染内容本身不吃指针事件。
+ * 只有被标记为"正在编辑"的块（内联改字）与显式可交互的 3D/HTML 块例外。
+ */
+.lumen-slide[data-mode='stage'] .lumen-block {
+  pointer-events: none;
+}
+.lumen-slide[data-mode='stage'] .lumen-block[data-editing='true'],
+.lumen-slide[data-mode='stage'] .lumen-html iframe,
+.lumen-slide[data-mode='stage'] .lumen-three[data-interactive='true'] canvas {
+  pointer-events: auto;
+}
+
+/* --------------------------------- 文本 --------------------------------- */
+.lumen-text {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+  font-family: var(--d-font-body);
+  font-size: var(--d-fs-body);
+  font-weight: var(--d-fw-body);
+  line-height: var(--d-lh-body);
+  letter-spacing: var(--d-tk-body);
+}
+.lumen-text[data-variant='display'] {
+  font-family: var(--d-font-display);
+  font-size: var(--d-fs-display);
+  font-weight: var(--d-fw-display);
+  line-height: var(--d-lh-display);
+  letter-spacing: var(--d-tk-display);
+  text-wrap: balance;
+}
+.lumen-text[data-variant='h1'] {
+  font-family: var(--d-font-display);
+  font-size: var(--d-fs-h1);
+  font-weight: var(--d-fw-h1);
+  line-height: var(--d-lh-h1);
+  letter-spacing: var(--d-tk-h1);
+  text-wrap: balance;
+}
+.lumen-text[data-variant='h2'] {
+  font-family: var(--d-font-display);
+  font-size: var(--d-fs-h2);
+  font-weight: var(--d-fw-h2);
+  line-height: var(--d-lh-h2);
+  letter-spacing: var(--d-tk-h2);
+}
+.lumen-text[data-variant='lead'] {
+  font-size: var(--d-fs-lead);
+  font-weight: var(--d-fw-lead);
+  line-height: var(--d-lh-lead);
+  letter-spacing: var(--d-tk-lead);
+}
+.lumen-text[data-variant='caption'] {
+  font-family: var(--d-font-body);
+  font-size: var(--d-fs-caption);
+  font-weight: var(--d-fw-caption);
+  line-height: var(--d-lh-caption);
+  letter-spacing: var(--d-tk-caption);
+  text-transform: none;
+}
+.lumen-text[data-variant='mono'] {
+  font-family: var(--d-font-mono);
+  font-size: var(--d-fs-mono);
+  font-weight: var(--d-fw-mono);
+  line-height: var(--d-lh-mono);
+  letter-spacing: var(--d-tk-mono);
+}
+
+.lumen-para {
+  margin: 0;
+}
+.lumen-para + .lumen-para {
+  margin-top: 0.55em;
+}
+.lumen-text strong {
+  font-weight: 700;
+  color: var(--d-fg);
+}
+.lumen-text em {
+  font-style: italic;
+}
+.lumen-code {
+  font-family: var(--d-font-mono);
+  font-size: 0.86em;
+  padding: 0.1em 0.34em;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--d-fg) 10%, transparent);
+  color: var(--d-accent);
+}
+
+/* --------------------------------- 形状 --------------------------------- */
+.lumen-shape {
+  width: 100%;
+  height: 100%;
+}
+.lumen-shape__triangle {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* --------------------------------- 图片 --------------------------------- */
+.lumen-image {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--d-surface) 62%, transparent);
+}
+.lumen-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  opacity: 1;
+  transition: opacity 220ms var(--d-ease);
+}
+.lumen-image[data-image-state='false'] img {
+  opacity: 0;
+}
+/* 取图期间的骨架：只在编辑态跑一次轻微的呼吸，播放/缩略图不动 */
+.lumen-image[data-image-state='false']::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--d-surface) 70%, transparent) 0%,
+    color-mix(in srgb, var(--d-line) 55%, transparent) 50%,
+    color-mix(in srgb, var(--d-surface) 70%, transparent) 100%
+  );
+  opacity: 0.55;
+}
+.lumen-slide[data-mode='stage'] .lumen-image[data-image-state='false']::before {
+  animation: lumen-skeleton 1.6s ease-in-out infinite;
+}
+@keyframes lumen-skeleton {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+.lumen-image__dim {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  pointer-events: none;
+}
+.lumen-image__caption {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 10px;
+  font-size: 15px;
+  line-height: 1.35;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+.lumen-image__caption::before {
+  content: '';
+  position: absolute;
+  left: -14px;
+  right: -14px;
+  bottom: -10px;
+  height: 220%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+  z-index: -1;
+  pointer-events: none;
+}
+.lumen-image__empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--d-line);
+  color: var(--d-muted);
+  font-size: 16px;
+}
+.lumen-image__empty-label {
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
+/* ---------------------------------- SVG --------------------------------- */
+.lumen-svg-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.lumen-svg {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lumen-svg > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* 净化被清理的条目数量：编辑态可见，克制到不影响画面 */
+.lumen-svg__badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--d-surface) 76%, transparent);
+  color: var(--d-muted);
+  font-family: var(--d-font-mono);
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0;
+  pointer-events: none;
+  opacity: 0.78;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--d-line) 70%, transparent);
+}
+.lumen-svg[data-animate='float'] > svg {
+  animation: lumen-float 7s ease-in-out infinite;
+}
+.lumen-svg[data-animate='pulse'] > svg {
+  animation: lumen-pulse 5.6s ease-in-out infinite;
+}
+.lumen-svg[data-animate='spinSlow'] > svg {
+  animation: lumen-spin 26s linear infinite;
+  transform-origin: 50% 50%;
+}
+@keyframes lumen-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+@keyframes lumen-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.025);
+    opacity: 0.92;
+  }
+}
+@keyframes lumen-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --------------------------------- three -------------------------------- */
+.lumen-three {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--d-radius);
+  --three-grain: 0.06;
+}
+.lumen-three__canvas-host {
+  position: absolute;
+  inset: 0;
+}
+.lumen-three canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0;
+  transition: opacity 180ms var(--d-ease);
+}
+.lumen-three[data-three-state='live'] canvas {
+  opacity: 1;
+}
+.lumen-three__fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: var(--d-muted);
+  background: radial-gradient(120% 100% at 30% 20%, color-mix(in srgb, var(--d-accent) 22%, transparent), transparent 62%),
+    radial-gradient(90% 90% at 80% 90%, color-mix(in srgb, var(--d-accent2) 16%, transparent), transparent 60%),
+    var(--d-surface);
+}
+.lumen-three__preset {
+  font-family: var(--d-font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--d-fg) 74%, transparent);
+}
+.lumen-three__meta {
+  font-family: var(--d-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--d-muted) 82%, transparent);
+}
+.lumen-three__poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* grain：纯 CSS 噪点（不引入后处理通道）；用径向遮罩淡出四边，避免出现硬边矩形 */
+.lumen-three__grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  background-repeat: repeat;
+  background-size: 140px 140px;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.86' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.28'/%3E%3C/svg%3E");
+  -webkit-mask-image: radial-gradient(130% 130% at 50% 50%, #000 32%, transparent 92%);
+  mask-image: radial-gradient(130% 130% at 50% 50%, #000 32%, transparent 92%);
+}
+
+/* --------------------------------- html --------------------------------- */
+.lumen-html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--d-radius);
+  background: transparent;
+}
+.lumen-html iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: transparent;
+}
+/* 高度随内容：iframe 按 postMessage 测到的高度铺开（内联 height 覆盖 100%），容器不再裁切 */
+.lumen-html[data-height-mode='content'] {
+  overflow: visible;
+}
+
+/* ------------------------------- 空状态/占位 ------------------------------ */
+.lumen-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px dashed color-mix(in srgb, var(--d-fg) 22%, transparent);
+  border-radius: var(--d-radius);
+  color: var(--d-muted);
+  font-family: var(--d-font-body);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+}
+.lumen-placeholder strong {
+  color: var(--d-fg);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+/* ------------------------------- 入场动效 ------------------------------- */
+.lumen-slide[data-mode='play'] .lumen-block[data-enter='fade'] {
+  animation: lumen-enter-fade 520ms var(--d-ease) both;
+}
+.lumen-slide[data-mode='play'] .lumen-block[data-enter='rise'] {
+  animation: lumen-enter-rise 560ms var(--d-ease) both;
+}
+.lumen-slide[data-mode='play'] .lumen-block[data-enter='scale'] {
+  animation: lumen-enter-scale 560ms var(--d-ease) both;
+}
+@keyframes lumen-enter-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes lumen-enter-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+@keyframes lumen-enter-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+/* ----------------------------- 缩略图性能 ------------------------------ */
+/*
+ * mode='thumb'：9 幕缩略图要一起滚动，所以彻底关掉动效与过渡；
+ * 3D 在缩略图里绝不创建 WebGL（ThreeView 只渲染静态降级视图）。
+ */
+.lumen-slide[data-mode='thumb'] *,
+.lumen-slide[data-mode='thumb'] *::before,
+.lumen-slide[data-mode='thumb'] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+.lumen-slide[data-mode='thumb'] .lumen-three__canvas {
+  display: none !important;
+}
+.lumen-slide[data-mode='thumb'] .lumen-svg__badge {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lumen-svg[data-animate] > svg {
+    animation: none !important;
+  }
+  .lumen-slide .lumen-block[data-enter] {
+    animation: none !important;
+  }
+  .lumen-three canvas,
+  .lumen-image img {
+    transition: none !important;
+  }
+  .lumen-slide[data-mode='stage'] .lumen-image[data-image-state='false']::before {
+    animation: none !important;
+  }
+}

@@ -1,0 +1,244 @@
+/*
+ * transitions.css —— 播放转场（fade / push / wipe / flip3d / none）× 前进/后退。
+ *
+ * 约定：
+ * - 只动 transform / opacity（wipe 用 clip-path 在合成层内裁切），不触发 layout；
+ * - 时长由 `--play-ms` 注入，PlaySurface 侧已归一化到 200–800ms；
+ * - `data-phase='in'` 是当前幕，`data-phase='out'` 是正在离场的上一幕；
+ * - `data-dir` 让 push / wipe / flip3d 有前后之分（后退时画面反向推入）；
+ * - `data-transition='none'` 不带任何动画（PlaySurface 也不会挂离场层）。
+ */
+
+.play-surface {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #000;
+  --play-ease: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.play-surface__stage {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  /* 让子层可以用 100% 参照，同时裁剪掉推入时的越界部分 */
+  contain: layout paint;
+}
+
+/* flip3d 需要透视：越近的透视让翻转更"当面"，但太近会穿帮。 */
+.play-surface__stage[data-transition='flip3d'] {
+  perspective: 2400px;
+  perspective-origin: 50% 50%;
+}
+
+.play-surface__empty {
+  position: absolute;
+  inset: 0;
+  background: #000;
+}
+
+.play-layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  transform-style: preserve-3d;
+}
+
+.play-layer[data-phase='in'] {
+  z-index: 2;
+}
+
+.play-layer[data-phase='out'] {
+  z-index: 1;
+}
+
+.play-layer__fit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+}
+
+/* ------------------------------- fade ------------------------------- */
+.play-layer[data-phase='in'][data-transition='fade'] {
+  animation: play-fade-in var(--play-ms, 420ms) var(--play-ease) both;
+}
+.play-layer[data-phase='out'][data-transition='fade'] {
+  animation: play-fade-out var(--play-ms, 420ms) var(--play-ease) both;
+}
+
+@keyframes play-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes play-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* ------------------------------- push ------------------------------- */
+.play-layer[data-phase='in'][data-transition='push'][data-dir='fwd'] {
+  animation: play-push-in-fwd var(--play-ms, 420ms) var(--play-ease) both;
+}
+.play-layer[data-phase='out'][data-transition='push'][data-dir='fwd'] {
+  animation: play-push-out-fwd var(--play-ms, 420ms) var(--play-ease) both;
+}
+.play-layer[data-phase='in'][data-transition='push'][data-dir='back'] {
+  animation: play-push-in-back var(--play-ms, 420ms) var(--play-ease) both;
+}
+.play-layer[data-phase='out'][data-transition='push'][data-dir='back'] {
+  animation: play-push-out-back var(--play-ms, 420ms) var(--play-ease) both;
+}
+
+@keyframes play-push-in-fwd {
+  from {
+    transform: translate3d(100%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes play-push-out-fwd {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+@keyframes play-push-in-back {
+  from {
+    transform: translate3d(-100%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes play-push-out-back {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+/* ------------------------------- wipe ------------------------------- */
+/* 新幕以"擦除"方式揭开，旧幕静止垫底；方向决定从左擦还是从右擦。 */
+.play-layer[data-phase='in'][data-transition='wipe'][data-dir='fwd'] {
+  animation: play-wipe-in-fwd var(--play-ms, 420ms) var(--play-ease) both;
+}
+.play-layer[data-phase='in'][data-transition='wipe'][data-dir='back'] {
+  animation: play-wipe-in-back var(--play-ms, 420ms) var(--play-ease) both;
+}
+.play-layer[data-phase='out'][data-transition='wipe'] {
+  animation: play-fade-out var(--play-ms, 420ms) linear both;
+}
+
+@keyframes play-wipe-in-fwd {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes play-wipe-in-back {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* ------------------------------ flip3d ------------------------------ */
+.play-layer[data-phase='in'][data-transition='flip3d'][data-dir='fwd'] {
+  animation: play-flip-in-fwd var(--play-ms, 420ms) var(--play-ease) both;
+}
+.play-layer[data-phase='out'][data-transition='flip3d'][data-dir='fwd'] {
+  animation: play-flip-out-fwd var(--play-ms, 420ms) var(--play-ease) both;
+}
+.play-layer[data-phase='in'][data-transition='flip3d'][data-dir='back'] {
+  animation: play-flip-in-back var(--play-ms, 420ms) var(--play-ease) both;
+}
+.play-layer[data-phase='out'][data-transition='flip3d'][data-dir='back'] {
+  animation: play-flip-out-back var(--play-ms, 420ms) var(--play-ease) both;
+}
+
+@keyframes play-flip-in-fwd {
+  from {
+    transform: rotateY(90deg);
+    opacity: 0.2;
+  }
+  to {
+    transform: rotateY(0deg);
+    opacity: 1;
+  }
+}
+@keyframes play-flip-out-fwd {
+  from {
+    transform: rotateY(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: rotateY(-90deg);
+    opacity: 0.2;
+  }
+}
+@keyframes play-flip-in-back {
+  from {
+    transform: rotateY(-90deg);
+    opacity: 0.2;
+  }
+  to {
+    transform: rotateY(0deg);
+    opacity: 1;
+  }
+}
+@keyframes play-flip-out-back {
+  from {
+    transform: rotateY(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: rotateY(90deg);
+    opacity: 0.2;
+  }
+}
+
+/* ------------------------------- none ------------------------------- */
+.play-layer[data-transition='none'] {
+  animation: none;
+}
+
+/* 非播放态（导出预览、暂停）不重放入场动效。 */
+.play-layer[data-playing='false'] .lumen-block[data-enter] {
+  animation: none !important;
+}
+
+/* 减少动效：一律 120ms 淡入，推/擦/翻全部退化成淡入淡出。 */
+@media (prefers-reduced-motion: reduce) {
+  .play-layer {
+    animation: none !important;
+  }
+  .play-layer[data-phase='in'] {
+    animation: play-fade-in 120ms linear both !important;
+  }
+  .play-layer[data-phase='out'] {
+    animation: play-fade-out 120ms linear both !important;
+  }
+}

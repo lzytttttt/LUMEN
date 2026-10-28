@@ -1,0 +1,137 @@
+/**
+ * base.css —— 全局重置与工作台骨架。
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--ui-bg);
+  color: var(--ui-fg);
+  font-family: var(--ui-font);
+  font-size: 13px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+a {
+  color: var(--ui-accent);
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 1px;
+}
+
+::selection {
+  background: var(--ui-accent-soft);
+}
+
+.lumen-scroll {
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ui-line-strong) transparent;
+}
+
+.lumen-scroll::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+.lumen-scroll::-webkit-scrollbar-thumb {
+  background: var(--ui-line-strong);
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.lumen-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--ui-fg-mute);
+  background-clip: content-box;
+}
+
+.lumen-divider {
+  height: 1px;
+  background: var(--ui-line);
+  border: 0;
+  margin: 0;
+}
+
+.lumen-kbd {
+  display: inline-flex;
+  min-width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border-radius: var(--ui-radius-xs);
+  border: 1px solid var(--ui-line-strong);
+  background: var(--ui-panel-2);
+  color: var(--ui-fg-dim);
+  font-family: var(--ui-font-mono);
+  font-size: 10.5px;
+  line-height: 1;
+}
+
+.lumen-muted {
+  color: var(--ui-fg-mute);
+}
+
+.lumen-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lumen-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+    --dur-slow: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

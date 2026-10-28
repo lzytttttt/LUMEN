@@ -1,0 +1,407 @@
+/* stage.css —— 画布外壳与交互层。
+ *
+ * 只在这里做「屏幕像素 ↔ 设计像素」的补偿：交互层里都用 `--px`（= 1/scale）乘出来，
+ * 保证 100% 与 30% 缩放下手柄、参考线、角标的视觉粗细一致。
+ */
+.app-stage {
+  --stage-magenta: #ff2d95;
+}
+
+.stage-viewport {
+  touch-action: none;
+}
+
+.stage-plane {
+  position: relative;
+  flex: 0 0 auto;
+  will-change: transform;
+}
+
+.app-stage .stage-frame {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+}
+
+/* 命中层：所有指针交互都从这里开始；内容本身不吃事件。 */
+.stage-surface {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 交互覆盖层：除手柄外不吃指针事件。 */
+.stage-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* -------------------------------- 空幕提示 -------------------------------- */
+.stage-empty {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 160px;
+  text-align: center;
+  color: var(--d-muted, var(--ui-fg-mute));
+  pointer-events: none;
+}
+.stage-empty strong {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--d-fg, var(--ui-fg-dim));
+  opacity: 0.62;
+}
+.stage-empty span {
+  font-size: 15px;
+  line-height: 1.6;
+  opacity: 0.72;
+}
+
+/* --------------------------------- 网格 --------------------------------- */
+.stage-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--ui-fg) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--ui-fg) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(to right, color-mix(in srgb, var(--ui-fg) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--ui-fg) 10%, transparent) 1px, transparent 1px);
+  background-size: 40px 40px, 40px 40px, 160px 160px, 160px 160px;
+  opacity: 0.55;
+}
+.stage-safe {
+  position: absolute;
+  left: 120px;
+  right: 120px;
+  top: 96px;
+  bottom: 96px;
+  border: calc(1 * var(--px)) dashed color-mix(in srgb, var(--ui-accent) 26%, transparent);
+}
+
+/* ------------------------------- 选择与手柄 ------------------------------- */
+.stage-box {
+  position: absolute;
+  box-sizing: border-box;
+  outline: calc(1.5 * var(--px)) solid var(--ui-accent);
+  outline-offset: 0;
+}
+.stage-box--group {
+  outline-style: dashed;
+}
+/* 内联改字时由编辑器自己画描边，选择框让位 */
+.stage-box--editing {
+  outline: none;
+}
+
+.stage-sel {
+  position: absolute;
+  box-sizing: border-box;
+  outline: calc(1 * var(--px)) solid color-mix(in srgb, var(--ui-accent) 55%, transparent);
+}
+
+.stage-hover {
+  position: absolute;
+  box-sizing: border-box;
+  outline: calc(1 * var(--px)) solid var(--ui-accent-line);
+}
+
+.stage-handle {
+  position: absolute;
+  width: calc(8.5 * var(--px));
+  height: calc(8.5 * var(--px));
+  background: var(--ui-bg-2);
+  border: calc(1.5 * var(--px)) solid var(--ui-accent);
+  border-radius: calc(1.5 * var(--px));
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  box-shadow: 0 0 0 calc(1 * var(--px)) color-mix(in srgb, #000 32%, transparent);
+}
+.stage-handle:hover {
+  background: var(--ui-accent);
+}
+.stage-handle--nw { left: 0; top: 0; }
+.stage-handle--n { left: 50%; top: 0; }
+.stage-handle--ne { left: 100%; top: 0; }
+.stage-handle--e { left: 100%; top: 50%; }
+.stage-handle--se { left: 100%; top: 100%; }
+.stage-handle--s { left: 50%; top: 100%; }
+.stage-handle--sw { left: 0; top: 100%; }
+.stage-handle--w { left: 0; top: 50%; }
+
+.stage-rotate {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: calc(11 * var(--px));
+  height: calc(11 * var(--px));
+  transform: translate(-50%, calc(-100% - 20 * var(--px)));
+  border-radius: 50%;
+  border: calc(1.5 * var(--px)) solid var(--ui-accent);
+  background: var(--ui-bg-2);
+  pointer-events: auto;
+  cursor: grab;
+}
+.stage-rotate:hover {
+  background: var(--ui-accent);
+}
+.stage-rotate::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: calc(1 * var(--px));
+  height: calc(20 * var(--px));
+  transform: translateX(-50%);
+  background: var(--ui-accent);
+  opacity: 0.7;
+}
+.stage-rotate__dot {
+  position: absolute;
+  inset: calc(3 * var(--px));
+  border-radius: 50%;
+  background: var(--ui-accent);
+}
+.stage-rotate:hover .stage-rotate__dot {
+  background: var(--ui-bg-2);
+}
+
+/* ------------------------------- 参考线/框选 ------------------------------ */
+.stage-guide {
+  position: absolute;
+  background: var(--stage-magenta);
+  box-shadow: 0 0 calc(3 * var(--px)) color-mix(in srgb, var(--stage-magenta) 60%, transparent);
+}
+.stage-guide--x {
+  top: 0;
+  bottom: 0;
+  width: calc(1 * var(--px));
+}
+.stage-guide--y {
+  left: 0;
+  right: 0;
+  height: calc(1 * var(--px));
+}
+
+.stage-marquee {
+  position: absolute;
+  box-sizing: border-box;
+  border: calc(1 * var(--px)) dashed var(--ui-accent-2);
+  background: color-mix(in srgb, var(--ui-accent-2) 12%, transparent);
+}
+
+.stage-badge {
+  position: absolute;
+  transform: translate(-50%, calc(10 * var(--px)));
+  padding: calc(2 * var(--px)) calc(6 * var(--px));
+  border-radius: calc(3 * var(--px));
+  background: var(--ui-accent);
+  color: var(--ui-fg-invert);
+  font-family: var(--ui-font-mono);
+  font-size: calc(10.5 * var(--px));
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: nowrap;
+  box-shadow: 0 calc(1 * var(--px)) calc(4 * var(--px)) color-mix(in srgb, #000 30%, transparent);
+}
+
+/* ------------------------------- 舞台装饰 ------------------------------- */
+.stage-bounds {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 0 calc(1 * var(--px)) color-mix(in srgb, var(--ui-fg) 9%, transparent);
+  pointer-events: none;
+}
+.stage-size {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6 * var(--px));
+  font-family: var(--ui-font-mono);
+  font-size: calc(9.5 * var(--px));
+  letter-spacing: 0.04em;
+  color: var(--ui-fg-mute);
+  opacity: 0.7;
+}
+
+/* -------------------------------- 拖放提示 ------------------------------- */
+.stage-drop {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: calc(2 * var(--px)) dashed var(--ui-accent);
+  background: color-mix(in srgb, var(--ui-accent) 10%, transparent);
+  color: var(--ui-fg);
+  font-size: calc(16 * var(--px));
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+/* -------------------------------- 内联改字 ------------------------------- */
+.stage-frame .stage-inline-edit {
+  position: absolute;
+  z-index: 20;
+  display: block;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  outline: calc(1.5 * var(--px)) solid var(--ui-accent);
+  outline-offset: calc(2 * var(--px));
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  caret-color: var(--ui-accent);
+  cursor: text;
+  background: transparent;
+}
+.stage-inline-edit:empty::before {
+  content: attr(data-placeholder);
+  color: color-mix(in srgb, var(--d-fg, var(--ui-fg)) 34%, transparent);
+}
+/* 编辑时把渲染层的同一份文本藏掉，避免双重描边 */
+.lumen-slide[data-mode='stage'] .lumen-block[data-editing='true'] .lumen-text {
+  visibility: hidden;
+}
+
+/* -------------------------------- 对齐浮条 ------------------------------- */
+.stage-alignbar {
+  position: absolute;
+  left: 50%;
+  bottom: 58px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 4px 6px;
+  border-radius: 99px;
+  border: 1px solid var(--ui-line-strong);
+  background: color-mix(in srgb, var(--ui-elev) 90%, transparent);
+  box-shadow: var(--ui-shadow-sm);
+  backdrop-filter: blur(6px);
+  z-index: 30;
+}
+.stage-alignbar__count {
+  padding: 0 8px 0 4px;
+  font-size: 11px;
+  color: var(--ui-fg-dim);
+  white-space: nowrap;
+}
+.stage-alignbar__sep {
+  width: 1px;
+  height: 14px;
+  margin: 0 4px;
+  background: var(--ui-line-strong);
+}
+
+/* -------------------------------- 右键菜单 ------------------------------- */
+.stage-menu {
+  position: fixed;
+  z-index: 60;
+  min-width: 192px;
+  padding: 6px;
+  border-radius: var(--ui-radius);
+  border: 1px solid var(--ui-line-strong);
+  background: var(--ui-elev);
+  box-shadow: var(--ui-shadow);
+}
+.stage-menu__head {
+  padding: 3px 8px 7px;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ui-fg-mute);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stage-menu__row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: var(--ui-radius-xs);
+  font-size: 12.5px;
+  color: var(--ui-fg);
+  text-align: left;
+}
+.stage-menu__row:hover {
+  background: var(--ui-hover);
+}
+.stage-menu__row--danger {
+  color: var(--ui-danger);
+}
+.stage-menu__row--danger:hover {
+  background: var(--ui-danger-soft);
+}
+.stage-menu__sep {
+  height: 1px;
+  margin: 5px 4px;
+  background: var(--ui-line);
+}
+.stage-menu__label {
+  padding: 4px 8px 2px;
+  font-size: 10.5px;
+  color: var(--ui-fg-mute);
+}
+.stage-menu__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2px;
+  padding: 0 2px 3px;
+}
+.stage-menu__chip {
+  height: 24px;
+  border-radius: var(--ui-radius-xs);
+  background: var(--ui-panel-2);
+  color: var(--ui-fg-dim);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stage-menu__chip:hover {
+  background: var(--ui-hover);
+  color: var(--ui-fg);
+}
+
+/* --------------------------------- HUD 开关 -------------------------------- */
+.stage-hud__toggle {
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 99px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ui-fg-mute);
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.stage-hud__toggle:hover {
+  background: var(--ui-hover);
+  color: var(--ui-fg);
+}
+.stage-hud__toggle[data-on='true'] {
+  border-color: var(--ui-accent-line);
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-plane {
+    will-change: auto;
+  }
+}
