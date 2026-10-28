@@ -3,3 +3,6 @@ onlyBuiltDependencies:
 
 minimumReleaseAgeExclude:
   - lucide-react@1.62.0
+
+allowBuilds:
+  esbuild: true
