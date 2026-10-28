@@ -27,6 +27,7 @@ import { THEMES } from '@/themes'
 import type { Lang } from '@/i18n'
 import { useT } from '@/i18n'
 import { IconButton, Popover, PopoverLabel, PopoverRow, PopoverSeparator } from '@/ui/primitives'
+import { openForge } from '@/forge/ForgeHost'
 import { InsertMenu } from './InsertMenu'
 import './toolbar.css'
 
@@ -75,12 +76,12 @@ export function TopBar() {
 
   return (
     <header className="topbar">
-      <div className="topbar__brand">
+      <a className="topbar__brand" href="./portal.html" title={t('portal.brandZh')} style={{ color: 'inherit', textDecoration: 'none' }}>
         <span className="topbar__logo">
           LUMEN<span>.</span>
         </span>
         <span className="topbar__sub">{t('common.app.subtitle')}</span>
-      </div>
+      </a>
 
       <div className="topbar__divider" />
 
@@ -198,13 +199,10 @@ export function TopBar() {
         <button
           type="button"
           className="lm-btn lm-btn--ghost"
-          aria-pressed={rightMode === 'composer'}
-          onClick={() => {
-            setRightMode(rightMode === 'composer' ? 'inspector' : 'composer')
-            setInspectorTab('props')
-          }}
+          title={t('forge.entry')}
+          onClick={() => openForge('topbar')}
         >
-          ✦ {t('ai.panel.title')}
+          ✦ {t('forge.entry')}
         </button>
         <button type="button" className="lm-btn lm-btn--ghost" onClick={() => openDialog('export')}>
           <Download size={14} />

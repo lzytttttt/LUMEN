@@ -1,0 +1,21 @@
+/** portal 命名空间 · 中文（门户页，09 §2.9 的预留表转正）。 */
+export const portalZh = {
+  brand: 'LUMEN',
+  brandZh: '幕光',
+  claim1: '把一句话，',
+  claim2: '变成一套能演的演示',
+  sub: '生成、排版、检查、播放，在同一张台面',
+  enter: '进入工作台',
+  settings: '设置',
+  channel: '生成通道',
+  offline: '离线模式',
+  custom: '自定义接口',
+  replay: '离线回放',
+  model: '接口预设',
+  tier: '画面档位',
+  audio: '声音',
+  reduce: '减少动效',
+  language: '界面语言',
+  close: '关闭',
+  note: '无后端 · 无遥测 · 本地存储',
+}

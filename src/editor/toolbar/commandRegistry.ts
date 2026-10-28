@@ -9,6 +9,7 @@
 import type { Deck, Slide } from '@/schema/deck'
 import type { MessageKey, Lang } from '@/i18n'
 import type { DialogId, InspectorTab, RightPanelMode, WorkbenchMode } from '@/state/uiStore'
+import type { ForgeSource } from '@/forge/ForgeHost'
 
 export type CommandCategory = 'deck' | 'slide' | 'block' | 'view' | 'ai' | 'export'
 
@@ -41,6 +42,7 @@ export interface CommandContext {
   setMode: (mode: WorkbenchMode) => void
   setRightMode: (mode: RightPanelMode) => void
   setInspectorTab: (tab: InspectorTab) => void
+  openForge?: (source?: ForgeSource) => void
   toggleGrid: () => void
   setLang: (lang: Lang) => void
   cycleTheme: () => void
@@ -159,6 +161,20 @@ export function buildCommands(ctx: CommandContext): Command[] {
       category: 'view',
       shortcut: 'G',
       run: () => ctx.toggleGrid(),
+    },
+    {
+      id: 'forge.open',
+      titleKey: 'forge.entry',
+      category: 'ai',
+      run: () => ctx.openForge?.('palette'),
+    },
+    {
+      id: 'portal.open',
+      titleKey: 'portal.brandZh',
+      category: 'deck',
+      run: () => {
+        window.location.href = './portal.html'
+      },
     },
     {
       id: 'view.composer',

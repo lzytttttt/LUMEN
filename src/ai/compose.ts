@@ -20,7 +20,15 @@ import { readViewBox } from '@/render/svg/sanitize'
 import { useDeckStore } from '@/state/deckStore'
 import { deckOps, historyOps, slideOps } from '@/state/ops'
 import { useSettingsStore } from '@/state/settingsStore'
-import type { BuildDeckOptions, BuildDeckResult, ComposeInput, RecipeContent, RecipeVisual } from './types'
+import type {
+  BuildDeckOptions,
+  BuildDeckResult,
+  ComposeInput,
+  ForgeStage,
+  ForgeStageEvent,
+  RecipeContent,
+  RecipeVisual,
+} from './types'
 import { AiError, currentProvider, isAborted, type AiProvider } from './provider'
 import { outlineRequest, slideRequest } from './prompts'
 import { parseWithRepair, repairPrompt } from './validate'
@@ -30,7 +38,7 @@ import { generateSvgArt, generateThreeScene } from './generate'
 
 /* --------------------------------- 大纲 --------------------------------- */
 
-const slideContentSchema = z.object({
+export const slideContentSchema = z.object({
   headline: z.string().min(1).max(160),
   lead: z.string().max(240).optional(),
   points: z.array(z.string().max(200)).max(8).default([]),
@@ -68,6 +76,14 @@ export function normalizeOutline(outline: Outline, input: ComposeInput): Outline
     if (threeCount > 2) slide.visual = { kind: 'none' }
   }
 
+  // SVG 预算：整套最多 1 幕（05 §7.1 的规范化；多出的静默降为 none）。
+  let svgCount = 0
+  for (const slide of slides) {
+    if (slide.visual.kind !== 'svg') continue
+    svgCount += 1
+    if (svgCount > 1) slide.visual = { kind: 'none' }
+  }
+
   while (slides.length < 3) {
     slides.push({
       recipe: slides.length === 0 ? 'cover' : 'closing',
@@ -85,13 +101,33 @@ export function normalizeOutline(outline: Outline, input: ComposeInput): Outline
   })
 }
 
+/** 系统裁剪的 3D 幕序号（用户关开关或超出「整套 ≤2 幕」预算），供造幕台角标使用。 */
+export function cropped3dIndices(outline: Outline, input: ComposeInput): number[] {
+  const indices: number[] = []
+  let threeCount = 0
+  outline.slides.slice(0, 20).forEach((slide, index) => {
+    if (slide.visual.kind !== 'three') return
+    if (input.include3d === false) {
+      indices.push(index)
+      return
+    }
+    threeCount += 1
+    if (threeCount > 2) indices.push(index)
+  })
+  return indices
+}
+
 /** 一句话 → 可编辑大纲。 */
 export async function composeOutline(
   input: ComposeInput,
-  opts: { signal?: AbortSignal } = {},
-): Promise<{ outline: Outline; provider: string; model?: string }> {
+  opts: { signal?: AbortSignal; onStage?: (event: ForgeStageEvent) => void } = {},
+): Promise<{ outline: Outline; provider: string; model?: string; cropped3d: number[] }> {
   const provider = currentProvider()
+  const stage = (name: ForgeStage, extra: Partial<Extract<ForgeStageEvent, { type: 'stage' }>> = {}) =>
+    opts.onStage?.({ type: 'stage', stage: name, at: Date.now(), ...extra })
+  stage('think')
   const { system, user } = outlineRequest(input)
+  stage('plan')
   const res = await provider.complete({
     system,
     user,
@@ -114,7 +150,9 @@ export async function composeOutline(
           }
         : undefined,
   })
-  return { outline: normalizeOutline(outline, input), provider: provider.id, model: modelOf(provider) }
+  const cropped3d = cropped3dIndices(outline, input)
+  stage('seal')
+  return { outline: normalizeOutline(outline, input), provider: provider.id, model: modelOf(provider), cropped3d }
 }
 
 /* ------------------------------- 逐幕成稿 ------------------------------- */
@@ -223,6 +261,11 @@ interface SlideBuildContext {
   outline: Outline
   total: number
   signal?: AbortSignal
+  onStage?: (event: ForgeStageEvent) => void
+}
+
+function estimateTokens(text: string): number {
+  return Math.max(1, Math.ceil(text.length / 2))
 }
 
 /** 单幕构建：文案 → 视觉 → 配方排版 → 单幕 lint（失败只降级这一幕，不抛给调用方）。 */
@@ -233,8 +276,14 @@ async function buildOneSlide(
 ): Promise<{ slide: Slide; warnings: string[] }> {
   const warnings: string[] = []
   const { provider, model, theme, outline, signal } = ctx
+  const emit = (event: ForgeStageEvent) => ctx.onStage?.(event)
+  const stage = (name: ForgeStage, extra: Partial<Extract<ForgeStageEvent, { type: 'stage' }>> = {}) =>
+    emit({ type: 'stage', stage: name, index, at: Date.now(), ...extra })
   const req = slideRequest({ outline, slide: seed, index, lang: outline.lang })
   let content = contentOf(seed, outline.lang, index, ctx.total)
+
+  emit({ type: 'slide:start', index })
+  stage('write')
 
   // 1) 文案（失败只记录，用大纲原文兜底）。
   try {
@@ -267,12 +316,15 @@ async function buildOneSlide(
       points: parsed.points.length > 0 ? parsed.points : content.points,
       notes: parsed.notes ?? content.notes,
     }
+    emit({ type: 'slide:content', index, tokens: estimateTokens(res.text), text: parsed.headline })
   } catch (error) {
     if (isAborted(error) || signal?.aborted) throw error
     warnings.push(`#${index + 1} content: ${error instanceof Error ? error.message : String(error)}`)
+    emit({ type: 'slide:content', index, tokens: 0, text: content.headline })
   }
 
   // 2) 视觉：svg / three 走单点生成（真端点失败自动回退本地素材）。
+  stage('draw')
   try {
     if (seed.visual.kind === 'svg') {
       const art = await generateSvgArt(seed.visual.brief, { signal })
@@ -291,8 +343,10 @@ async function buildOneSlide(
     content.visual = { kind: 'none' }
     warnings.push(`#${index + 1} visual: ${error instanceof Error ? error.message : String(error)}`)
   }
+  emit({ type: 'slide:visual', index, kind: seed.visual.kind })
 
   // 3) 排版 + 溯源。
+  stage('set')
   let recipeId = seed.recipe
   let blocks = stampBlocks(buildRecipe(recipeId, content, theme), {
     provider: provider.id,
@@ -301,8 +355,10 @@ async function buildOneSlide(
     promptDigest: ctx.digest,
   })
   let slide = makeSlideFor(seed, content, blocks, recipeId)
+  emit({ type: 'slide:layout', index, blocks: blocks.length })
 
   // 4) lint：error 才重排，warn 只记录。
+  stage('check')
   let check = slideIssues(slide, outline, theme.id)
   if (check.errors.length > 0) {
     recipeId = fallbackRecipeFor(content)
@@ -317,8 +373,10 @@ async function buildOneSlide(
     const recheck = slideIssues(slide, outline, theme.id)
     if (recheck.errors.length > 0) warnings.push(`#${index + 1} lint still ${recheck.errors.join('+')}`)
     check = recheck
+    emit({ type: 'slide:layout', index, blocks: blocks.length })
   }
   for (const code of check.warns) warnings.push(`#${index + 1} warn ${code}`)
+  emit({ type: 'slide:gate', index, errors: check.errors, warns: check.warns })
 
   return { slide, warnings }
 }
@@ -327,14 +385,14 @@ async function buildOneSlide(
 export async function rebuildOutlineSlide(
   outline: Outline,
   index: number,
-  opts: { themeId?: string; prompt?: string; signal?: AbortSignal } = {},
+  opts: { themeId?: string; prompt?: string; signal?: AbortSignal; onStage?: (event: ForgeStageEvent) => void } = {},
 ): Promise<{ slide: Slide; warnings: string[] }> {
   const seed = outline.slides[index]
   if (!seed) throw new Error(`slide index out of range: ${index}`)
   const provider = currentProvider()
   const base = useDeckStore.getState().deck
   const theme = getTheme(opts.themeId ?? base?.themeId)
-  return buildOneSlide(seed, index, {
+  const built = await buildOneSlide(seed, index, {
     provider,
     model: modelOf(provider),
     theme,
@@ -342,7 +400,10 @@ export async function rebuildOutlineSlide(
     outline,
     total: outline.slides.length,
     signal: opts.signal,
+    onStage: opts.onStage,
   })
+  opts.onStage?.({ type: 'slide:recast', index, slide: built.slide, warnings: built.warnings })
+  return built
 }
 
 /** 把单幕重试的结果写回当前 deck（单步撤销）。 */
@@ -390,16 +451,24 @@ export async function buildDeckFromOutline(
         outline,
         total,
         signal: opts.signal,
+        onStage: opts.onStage,
       })
       warnings.push(...built.warnings)
       slides[index] = built.slide
       done += 1
+      opts.onStage?.({ type: 'slide:landed', index, slide: built.slide })
       opts.onProgress?.(done, total)
     },
     opts.signal,
-  )
+  ).catch((error) => {
+    if (opts.onStage && isAborted(error)) opts.onStage({ type: 'deck:aborted' })
+    throw error
+  })
 
-  if (opts.signal?.aborted) throw new AiError('timeout', 'aborted', true)
+  if (opts.signal?.aborted) {
+    opts.onStage?.({ type: 'deck:aborted' })
+    throw new AiError('timeout', 'aborted', true)
+  }
 
   // 5) 组装 + 一次性落库（单步撤销）。
   const now = Date.now()
@@ -420,12 +489,15 @@ export async function buildDeckFromOutline(
     },
   })
 
-  if (base) {
+  if (base && opts.persist !== false) {
     historyOps.transaction('ai-build-deck', () => {
       if (base.themeId !== theme.id) deckOps.setTheme(theme.id)
       deckOps.applyOutline(outline.title, slides, { replace: true, prompt: opts.prompt })
     })
   }
+
+  opts.onStage?.({ type: 'deck:done', deck: nextDeck, warnings })
+  opts.onStage?.({ type: 'stage', stage: 'seal', at: Date.now() })
 
   return { deck: nextDeck, warnings }
 }

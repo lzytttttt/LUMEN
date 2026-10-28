@@ -464,6 +464,8 @@ export const editorZh = {
     aboutStack: '技术栈',
     aboutPrivacy: '所有数据都留在本机浏览器：IndexedDB 保存工程，无遥测、无后端。',
     aboutVersion: '版本 {version}',
+    aboutAuthor: '作者 无极Ayaya',
+    aboutLicense: '许可 CC BY-NC 4.0',
     exportMissing: '导出内核尚未就绪',
     exportMissingHint: '导出模块由 exporter 提供；模块未落地时会保持这条提示，不会崩溃。',
     shortcutsSubtitle: '常用操作一览',

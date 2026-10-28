@@ -1,0 +1,21 @@
+/** portal namespace · English (portal landing page). */
+export const portalEn = {
+  brand: 'LUMEN',
+  brandZh: 'Lumen',
+  claim1: 'One line in,',
+  claim2: 'a deck that performs',
+  sub: 'Generate, typeset, check, play — on one stage',
+  enter: 'Open forge',
+  settings: 'Settings',
+  channel: 'Channel',
+  offline: 'Offline',
+  custom: 'Endpoint',
+  replay: 'Replay',
+  model: 'Presets',
+  tier: 'Render tier',
+  audio: 'Sound',
+  reduce: 'Reduce motion',
+  language: 'Language',
+  close: 'Close',
+  note: 'No backend · no telemetry · local storage',
+}

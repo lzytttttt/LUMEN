@@ -245,6 +245,8 @@ export function installShortcuts(): () => void {
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.defaultPrevented || event.isComposing) return
     if (isTypingTarget(event.target)) return
+    // 造幕台自己拥有一套键盘（02 §9.1），编辑器快捷键整体让位。
+    if (useUiStore.getState().mode === 'forge') return
     // 播放/预览态：编辑类快捷键让位给播放器（方向键翻页），只保留退出与播放开关。
     const editingMode = useUiStore.getState().mode === 'edit'
     for (const shortcut of SHORTCUTS) {
@@ -260,6 +262,7 @@ export function installShortcuts(): () => void {
 
   const onPaste = (event: ClipboardEvent) => {
     if (isTypingTarget(event.target)) return
+    if (useUiStore.getState().mode === 'forge') return
     const data = event.clipboardData
     if (!data || !isPasteableBlock(data)) return
     // 必须同步 preventDefault，异步解码图片时浏览器已经不会再插入文本

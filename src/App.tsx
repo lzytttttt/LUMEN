@@ -6,6 +6,8 @@ import { Stage } from '@/editor/stage/Stage'
 import { Player } from '@/play/Player'
 import { Dialogs } from '@/ui/dialogs/Dialogs'
 import { StudioHost } from '@/studio/StudioHost'
+import { ForgeHost } from '@/forge/ForgeHost'
+import { Onboarding } from '@/onboarding/Onboarding'
 import { PrintHost } from '@/export/PrintHost'
 import { Toasts } from '@/ui/primitives'
 import { useDeckStore } from '@/state/deckStore'
@@ -76,8 +78,10 @@ export default function App() {
       </div>
       <Toasts />
       <StudioHost />
+      <ForgeHost />
       <PrintHost />
       <Dialogs />
+      <Onboarding />
       {mode === 'play' ? <Player /> : null}
     </div>
   )

@@ -24,6 +24,7 @@ import {
 } from '@/editor/toolbar/commandRegistry'
 import { insertBlankSvg, insertText, insertThree } from '@/editor/toolbar/insertActions'
 import { sendIntent } from '@/editor/panels/studioBridge'
+import { openForge } from '@/forge/ForgeHost'
 import './dialogs.css'
 
 export function CommandPalette() {
@@ -82,6 +83,7 @@ export function CommandPalette() {
     setMode,
     setRightMode,
     setInspectorTab,
+    openForge: (source) => openForge(source),
     toggleGrid,
     setLang,
     cycleTheme: () => {
@@ -92,7 +94,6 @@ export function CommandPalette() {
     rewrite,
     notify: (message) => pushToast({ kind: 'info', message }),
   }
-
   const commands = buildCommands(ctx)
   const hits = useMemo(
     () => searchCommands(commands, query, (command) => t(command.titleKey)),

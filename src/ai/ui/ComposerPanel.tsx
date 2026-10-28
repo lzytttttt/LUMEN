@@ -16,6 +16,7 @@ import { useSettingsStore } from '@/state/settingsStore'
 import { useUiStore } from '@/state/uiStore'
 import { useT } from '@/i18n'
 import { Button, Field, Row, Segmented, Select, Switch, TextArea, TextInput } from '@/ui/primitives'
+import type { MessageKey } from '@/i18n'
 import {
   AiError,
   aiErrorMessage,
@@ -26,6 +27,7 @@ import {
   installIntentListener,
   isAborted,
   rebuildOutlineSlide,
+  type AiErrorCode,
   type ComposeInput,
 } from '@/ai'
 import { OutlineEditor } from './OutlineEditor'
@@ -37,6 +39,23 @@ type Phase = 'idle' | 'outlining' | 'outline' | 'building' | 'done'
 
 const LENGTHS: ComposeInput['length'][] = ['short', 'normal', 'deep']
 const DURATIONS = [5, 10, 20]
+
+/**
+ * 错误码 → 中文短句（`05` §6）：只给 ≤ 6 字的结论，原始 detail 收进折叠区。
+ * `auth` 没有专属短句 key，回落到 `aiErrorMessage`（原始片段）。
+ */
+const SHORT_ERROR_KEYS: Partial<Record<AiErrorCode, MessageKey>> = {
+  network: 'ai.error.network',
+  timeout: 'ai.error.timeout',
+  badJson: 'ai.error.badJson',
+  notConfigured: 'ai.error.notConfigured',
+  rateLimit: 'ai.error.rateLimit',
+  quota: 'ai.error.quota',
+  contextLength: 'ai.error.contextLength',
+  modelNotFound: 'ai.error.modelNotFound',
+  streamBroken: 'ai.error.streamBroken',
+  cors: 'ai.error.cors',
+}
 
 export default function ComposerPanel() {
   const t = useT()
@@ -58,6 +77,8 @@ export default function ComposerPanel() {
   const [progress, setProgress] = useState({ done: 0, total: 0 })
   const [warnings, setWarnings] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
+  /** 原始 detail：只出现在折叠区，不进主气泡（§6.1）。 */
+  const [errorDetail, setErrorDetail] = useState<string | null>(null)
   const [retrying, setRetrying] = useState<number | null>(null)
   const abortRef = useRef<AbortController | null>(null)
 
@@ -82,14 +103,24 @@ export default function ComposerPanel() {
   const reasonOf = useCallback(
     (err: unknown): string => {
       if (err instanceof AiError) {
-        if (err.code === 'notConfigured') return t('ai.error.notConfigured')
-        if (err.code === 'badJson') return `${t('ai.error.badJson')}：${err.detail.slice(0, 160)}`
-        if (err.code === 'timeout') return `${t('ai.error.aborted')}：${err.detail.slice(0, 120)}`
+        // 真取消才说「已取消」；超时是「太慢了」（§6.1 的第一个修正）。
+        if (isAborted(err)) return t('ai.error.aborted')
+        const key = SHORT_ERROR_KEYS[err.code]
+        if (key) return t(key)
         return aiErrorMessage(err)
       }
       return aiErrorMessage(err)
     },
     [t],
+  )
+
+  /** 一处收敛：短句进气泡、detail 进折叠区。 */
+  const fail = useCallback(
+    (err: unknown) => {
+      setError(reasonOf(err))
+      setErrorDetail(err instanceof AiError ? err.detail.trim() : null)
+    },
+    [reasonOf],
   )
 
   const cancel = useCallback(() => {
@@ -105,6 +136,7 @@ export default function ComposerPanel() {
     const controller = new AbortController()
     abortRef.current = controller
     setError(null)
+    setErrorDetail(null)
     setWarnings([])
     setProgress({ done: 0, total: 0 })
     setPhase('outlining')
@@ -129,12 +161,12 @@ export default function ComposerPanel() {
         setPhase(outline ? 'outline' : 'idle')
         return
       }
-      setError(reasonOf(err))
+      fail(err)
       setPhase('idle')
     } finally {
       abortRef.current = null
     }
-  }, [audience, busy, include3d, includeSvg, lang, length, outline, prompt, reasonOf, themeId, durationMin])
+  }, [audience, busy, fail, include3d, includeSvg, lang, length, outline, prompt, themeId, durationMin])
 
   const build = useCallback(async () => {
     if (!outline || busy) return
@@ -142,6 +174,7 @@ export default function ComposerPanel() {
     const controller = new AbortController()
     abortRef.current = controller
     setError(null)
+    setErrorDetail(null)
     setWarnings([])
     setProgress({ done: 0, total: outline.slides.length })
     setPhase('building')
@@ -163,18 +196,28 @@ export default function ComposerPanel() {
         setPhase('outline')
         return
       }
-      setError(reasonOf(err))
+      fail(err)
       setPhase('outline')
     } finally {
       abortRef.current = null
     }
-  }, [busy, outline, prompt, reasonOf, t, themeId])
+  }, [busy, fail, outline, prompt, t, themeId])
 
-  const channelLabel = channel.ready
-    ? t('ai.panel.channelEndpoint', { host: channel.host || 'endpoint', model: channel.model || 'model' })
-    : llm.provider === 'openai'
-      ? t('ai.panel.channelNotConfigured')
-      : t('ai.panel.providerMock')
+  /**
+   * 通道文案（`05` §14.5）：`replay` 走独立分支，**不显示**「离线示例模式」；
+   * 只有真正的 mock 兜底才挂 mockBadge（下面徽标那一行按 `channel.ready` 决定）。
+   */
+  const channelLabel =
+    channel.channel === 'replay'
+      ? t('ai.panel.channelEndpoint', { host: 'replay', model: channel.model || 'fixture' })
+      : channel.channel === 'openai'
+        ? t('ai.panel.channelEndpoint', {
+            host: channel.host || 'endpoint',
+            model: channel.model || 'model',
+          })
+        : llm.provider === 'openai'
+          ? t('ai.panel.channelNotConfigured')
+          : t('ai.panel.providerMock')
 
   /** 单幕重试：只重建这一幕并写回（单步撤销），用于"部分失败"。 */
   const retrySlide = useCallback(
@@ -194,12 +237,12 @@ export default function ComposerPanel() {
         setWarnings((prev) => prev.filter((warning) => !warning.startsWith(`#${index + 1} `)))
         useUiStore.getState().pushToast({ kind: 'success', message: t('ai.panel.buildDone', { count: 1 }) })
       } catch (err) {
-        if (!isAborted(err)) setError(reasonOf(err))
+        if (!isAborted(err)) fail(err)
       } finally {
         setRetrying(null)
       }
     },
-    [outline, prompt, reasonOf, retrying, t, themeId],
+    [fail, outline, prompt, retrying, t, themeId],
   )
 
   return (
@@ -337,6 +380,27 @@ export default function ComposerPanel() {
         <div className="ai-error" role="alert">
           <strong>{t('ai.panel.errorTitle')}</strong>
           <span>{error}</span>
+          {errorDetail ? (
+            <details className="ai-error__more" style={{ maxWidth: '100%' }}>
+              {/* 折叠的「…」：i18n 尚未给出 detail 标签的 key（i18n 由 Lead 锁定），先只留符号。 */}
+              <summary>…</summary>
+              <pre
+                style={{
+                  margin: 0,
+                  maxWidth: '100%',
+                  maxHeight: 120,
+                  overflow: 'auto',
+                  fontSize: 10.5,
+                  lineHeight: 1.45,
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                  opacity: 0.8,
+                }}
+              >
+                {errorDetail}
+              </pre>
+            </details>
+          ) : null}
           <Button size="sm" variant="ghost" onClick={() => void generate()} disabled={busy}>
             {t('ai.panel.retry')}
           </Button>

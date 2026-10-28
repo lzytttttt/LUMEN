@@ -1,0 +1,73 @@
+{
+  "kind": "lumen.replay",
+  "version": 1,
+  "fixtureId": "zh-normal.outline.1",
+  "task": "outline",
+  "promptDigest": "1977saq0om",
+  "request": {
+    "system": "[TASK:outline]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把一句话需求变成一套可编辑的大纲（3–20 幕）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"title\": \"演示标题，≤ 24 字，必须是一个观点而不是名词堆砌\",\n  \"subtitle\": \"一行副标题，说明听众与场合\",\n  \"lang\": \"zh | en\",\n  \"slides\": [\n    {\n      \"recipe\": \"见下方配方表\",\n      \"headline\": \"这一幕的标题，≤ 24 字，有观点\",\n      \"lead\": \"一句引导语，≤ 40 字，可选\",\n      \"points\": [\"3–5 条要点，每条 ≤ 40 字\"],\n      \"visual\": { \"kind\": \"svg\", \"brief\": \"画面描述，≤ 60 字\" }\n                | { \"kind\": \"three\", \"preset\": \"orbit|showcase|wave-field|particle-cloud|torus|stack|globe\" }\n                | { \"kind\": \"none\" },\n      \"notes\": \"讲者备注：怎么讲这一页，≤ 60 字\"\n    }\n  ]\n}\n\n结构要求：\n- 第一幕必须是 cover，最后一幕必须是 closing；\n- 中间按\"问题 → 证据 → 方案 → 取舍 → 行动\"的顺序推进，不要平铺功能清单；\n- 每幕 3–5 条要点；data / timeline / process / compare 的要点必须遵守配方表里的分隔符；\n- 全篇最多 1 个 svg 幕与 1 个 three 幕；没有画面时 visual.kind = \"none\"；\n- notes 是给讲者的动作提示，不是内容的复述。\n\nrecipe 只能取以下值（按场景选择，不要连续三幕用同一个）：\n- cover 封面：观点式标题 + 一句引导，只出现一次且必须第一幕\n- statement 主张：一句大字 + 一行注解，用于转折\n- split 分栏：左边 2–3 条要点，右边一张插图（visual 用 svg）\n- grid3 / grid4：3 / 4 个并列要点，每个要点写成「**小标题**：一句话」\n- timeline 时间线：要点写成「时间｜标题｜说明」，2–5 个节点\n- compare 对比：要点写成「左组｜一句话」与「右组｜一句话」，左右各 2–3 条\n- quote 引用：headline 是一句可被复述的话，lead 是出处\n- data 数据页：要点写成「标签=数值」（数值可带 %），2–5 项\n- process 流程：要点写成「步骤｜时长｜说明」，3–4 步\n- gallery 图集：3 条图注，用于展示同一叙事的不同画面\n- closing 收尾：一个明确的下一步，必须最后一幕",
+    "user": "{\n  \"prompt\": \"给管理层讲：AI 写作助手试点三个月的结论，要不要继续投\",\n  \"lang\": \"zh\",\n  \"audience\": \"\",\n  \"length\": \"normal\",\n  \"slideCount\": 9,\n  \"durationMin\": 10,\n  \"includeSvg\": true,\n  \"include3d\": true,\n  \"themeId\": null\n}",
+    "temperature": 0.65,
+    "format": "auto"
+  },
+  "chunks": [
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"{\\\"title\\\":\\\"三个月，初稿时间砍了一半\\\",\\\"subtitle\\\":\\\"AI 写作助手试点结论 · 面向管理层\\\",\\\"lang\\\":\\\"zh\\\",\\\"slides\\\":[{\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"\\\"recipe\\\":\\\"cover\\\",\\\"headline\\\":\\\"三个月，我们把初稿时间砍了一半\\\",\\\"lead\\\":\\\"AI 写作助手试点结论 · 面向管理层\\\",\\\"points\\\":[],\\\"visual\\\":{\\\"kind\\\":\\\"th\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"ree\\\",\\\"preset\\\":\\\"particle-cloud\\\"},\\\"notes\\\":\\\"先给结论，再给证据。停留 40 秒。\\\"},{\\\"recipe\\\":\\\"statement\\\",\\\"headli\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"ne\\\":\\\"真正的收益不是写得更快，而是改得更少\\\",\\\"lead\\\":\\\"初稿只是起点，返工才是成本。\\\",\\\"points\\\":[],\\\"visual\\\":{\\\"kind\\\":\\\"none\\\"},\\\"notes\\\":\\\"这一页要慢，让这\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"句话落地后再翻页。\\\"},{\\\"recipe\\\":\\\"data\\\",\\\"headline\\\":\\\"三个指标同时转好\\\",\\\"points\\\":[\\\"初稿耗时↓=52%\\\",\\\"返工轮次↓=38%\\\",\\\"满意度=8.7\\\",\\\"周活留存=71%\\\"],\\\"visua\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"l\\\":{\\\"kind\\\":\\\"none\\\"},\\\"notes\\\":\\\"先指柱子再看环形，强调三个方向一致。\\\"},{\\\"recipe\\\":\\\"timeline\\\",\\\"headline\\\":\\\"三个月，三步走\\\",\"},\"finish_reason\":null}]}\n\n",
+    ": ping\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"\\\"points\\\":[\\\"第 1 月｜小范围试用｜12 人，只用在周报\\\",\\\"第 2 月｜扩到 6 个团队｜接入内部知识库\\\",\\\"第 3 月｜停掉两处旧流程｜改为默认路径\\\"],\\\"vis\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"ual\\\":{\\\"kind\\\":\\\"none\\\"},\\\"notes\\\":\\\"重点讲第 3 月的\\\\\\\"停旧流程\\\\\\\"，那才是真投入。\\\"},{\\\"recipe\\\":\\\"split\\\",\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"\\\"headline\\\":\\\"谁受益最大\\\",\\\"lead\\\":\\\"收益不均，但方向一致。\\\",\\\"points\\\":[\\\"**产品经理**：需求文档从 2 天到 4 小时\\\",\\\"**销售**：标书初\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"稿一周变两天\\\",\\\"**设计**：方案说明不再靠口头\\\"],\\\"visual\\\":{\\\"kind\\\":\\\"svg\\\",\\\"brief\\\":\\\"三根递增的柱子与一条穿过它们的折线\\\"},\\\"\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"notes\\\":\\\"这里停一下，问有没有人想补一个角色。\\\"},{\\\"recipe\\\":\\\"grid3\\\",\\\"headline\\\":\\\"三条可复制的做法\\\",\\\"poi\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"nts\\\":[\\\"**先给模板**：好结构比好模型更省时间\\\",\\\"**只做初稿**：不追求一次成稿，改一轮更便宜\\\",\\\"**留一个人**：终稿必须有人署名\\\"],\\\"visual\\\":{\\\"kind\"},\"finish_reason\":null}]}\n\n",
+    ": ping\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"\\\":\\\"none\\\"},\\\"notes\\\":\\\"这三条是这次试点唯一值得抄走的东西。\\\"},{\\\"recipe\\\":\\\"compare\\\",\\\"headline\\\":\\\"推，还是不推\\\",\\\"points\\\":[\\\"\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"继续投｜留存 71%，周均省 6.2 小时\\\",\\\"继续投｜培训成本已被复用摊薄\\\",\\\"暂停｜法务对客户数据的口径未定\\\",\\\"暂停｜两个团队仍靠人肉校对\\\"],\\\"visual\\\":{\\\"kind\\\":\\\"none\\\"},\\\"n\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"otes\\\":\\\"别急着给答案，先让两边都说完。\\\"},{\\\"recipe\\\":\\\"quote\\\",\\\"headline\\\":\\\"工具改的不是速度，是心理负担\\\",\\\"lead\\\":\\\"—— 一位参与试\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"点的产品经理\\\",\\\"points\\\":[],\\\"visual\\\":{\\\"kind\\\":\\\"none\\\"},\\\"notes\\\":\\\"原话念完，停 3 秒。\\\"},{\\\"recip\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"e\\\":\\\"closing\\\",\\\"headline\\\":\\\"下一步：把默认路径换掉\\\",\\\"lead\\\":\\\"Q4 起，新项目默认用这套流程。\\\",\\\"points\\\":[],\\\"visual\\\":{\\\"kind\\\":\\\"none\\\"},\\\"notes\\\":\\\"\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{\"content\":\"落一个决策，别落一个愿望。\\\"}]}\"},\"finish_reason\":null}]}\n\n",
+    "data: {\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\"}],\"model\":\"self@dsh-session\",\"usage\":{\"prompt\":707,\"completion\":1900,\"total\":2607}}\n\n",
+    "data: [DONE]\n\n"
+  ],
+  "delays": [
+    620,
+    10,
+    25,
+    11,
+    13,
+    13,
+    6,
+    25,
+    21,
+    17,
+    13,
+    19,
+    21,
+    6,
+    9,
+    17,
+    17,
+    19,
+    27,
+    14,
+    16,
+    4
+  ],
+  "text": "{\"title\":\"三个月，初稿时间砍了一半\",\"subtitle\":\"AI 写作助手试点结论 · 面向管理层\",\"lang\":\"zh\",\"slides\":[{\"recipe\":\"cover\",\"headline\":\"三个月，我们把初稿时间砍了一半\",\"lead\":\"AI 写作助手试点结论 · 面向管理层\",\"points\":[],\"visual\":{\"kind\":\"three\",\"preset\":\"particle-cloud\"},\"notes\":\"先给结论，再给证据。停留 40 秒。\"},{\"recipe\":\"statement\",\"headline\":\"真正的收益不是写得更快，而是改得更少\",\"lead\":\"初稿只是起点，返工才是成本。\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"这一页要慢，让这句话落地后再翻页。\"},{\"recipe\":\"data\",\"headline\":\"三个指标同时转好\",\"points\":[\"初稿耗时↓=52%\",\"返工轮次↓=38%\",\"满意度=8.7\",\"周活留存=71%\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"先指柱子再看环形，强调三个方向一致。\"},{\"recipe\":\"timeline\",\"headline\":\"三个月，三步走\",\"points\":[\"第 1 月｜小范围试用｜12 人，只用在周报\",\"第 2 月｜扩到 6 个团队｜接入内部知识库\",\"第 3 月｜停掉两处旧流程｜改为默认路径\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"重点讲第 3 月的\\\"停旧流程\\\"，那才是真投入。\"},{\"recipe\":\"split\",\"headline\":\"谁受益最大\",\"lead\":\"收益不均，但方向一致。\",\"points\":[\"**产品经理**：需求文档从 2 天到 4 小时\",\"**销售**：标书初稿一周变两天\",\"**设计**：方案说明不再靠口头\"],\"visual\":{\"kind\":\"svg\",\"brief\":\"三根递增的柱子与一条穿过它们的折线\"},\"notes\":\"这里停一下，问有没有人想补一个角色。\"},{\"recipe\":\"grid3\",\"headline\":\"三条可复制的做法\",\"points\":[\"**先给模板**：好结构比好模型更省时间\",\"**只做初稿**：不追求一次成稿，改一轮更便宜\",\"**留一个人**：终稿必须有人署名\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"这三条是这次试点唯一值得抄走的东西。\"},{\"recipe\":\"compare\",\"headline\":\"推，还是不推\",\"points\":[\"继续投｜留存 71%，周均省 6.2 小时\",\"继续投｜培训成本已被复用摊薄\",\"暂停｜法务对客户数据的口径未定\",\"暂停｜两个团队仍靠人肉校对\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"别急着给答案，先让两边都说完。\"},{\"recipe\":\"quote\",\"headline\":\"工具改的不是速度，是心理负担\",\"lead\":\"—— 一位参与试点的产品经理\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"原话念完，停 3 秒。\"},{\"recipe\":\"closing\",\"headline\":\"下一步：把默认路径换掉\",\"lead\":\"Q4 起，新项目默认用这套流程。\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"落一个决策，别落一个愿望。\"}]}",
+  "usage": {
+    "prompt": 707,
+    "completion": 1900,
+    "total": 2607
+  },
+  "capturedAt": "2026-10-27T18:40:00.000Z",
+  "capturedFrom": {
+    "baseURL": "SELF_BASE_URL",
+    "model": "self@dsh-session",
+    "stream": true
+  }
+}

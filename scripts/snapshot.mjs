@@ -24,10 +24,22 @@ page.on('console', (message) => {
 })
 page.on('pageerror', (error) => errors.push(String(error)))
 
-await page.goto(base, { waitUntil: 'networkidle' })
+await page.goto(base.includes('?') ? `${base}&onboard=0` : `${base}?onboard=0`, { waitUntil: 'networkidle' })
 await page.waitForSelector('.lumen-slide', { timeout: 20000 })
 await page.waitForTimeout(900)
 await page.screenshot({ path: path.join(outDir, 'ui-editor.png') })
+
+// 门户页（独立入口）
+try {
+  await page.goto(new URL('portal.html', base.endsWith('/') ? base : `${base}/`).href, { waitUntil: 'networkidle' })
+  await page.waitForSelector('.portal__claim', { timeout: 10000 })
+  await page.waitForTimeout(400)
+  await page.screenshot({ path: path.join(outDir, 'portal.png') })
+  await page.goto(base.includes('?') ? `${base}&onboard=0` : `${base}?onboard=0`, { waitUntil: 'networkidle' })
+  await page.waitForSelector('.lumen-slide', { timeout: 20000 })
+} catch {
+  /* 门户页失败不影响编辑器截图 */
+}
 
 // 逐幕导出舞台截图（直接截缩放后的舞台容器）
 const slides = await page.locator('.stage-frame .lumen-slide').count()

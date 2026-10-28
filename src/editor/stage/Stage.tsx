@@ -31,6 +31,7 @@ import { IconButton } from '@/ui/primitives'
 import { useT } from '@/i18n'
 import { getTheme, themeCssVars } from '@/themes'
 import { blocksFromFiles, blocksFromPlainText, hasAnyDrag } from '@/editor/dnd/blocksFromData'
+import { openForge } from '@/forge/ForgeHost'
 import {
   alignSelection,
   commitTextEdit,
@@ -301,6 +302,9 @@ export function Stage() {
               <div className="stage-empty">
                 <strong>{t('editor.stage.emptyTitle')}</strong>
                 <span>{t('editor.stage.emptyHint')}</span>
+                <button type="button" className="stage-empty__cta" data-act="forge" onClick={() => openForge('empty')}>
+                  {t('forge.entry')}
+                </button>
               </div>
             ) : null}
 

@@ -16,13 +16,13 @@ import { svgRequest, threeRequest } from './prompts'
 import { parseWithRepair, repairPrompt } from './validate'
 import type { GenerateSvgResult, GenerateThreeResult } from './types'
 
-const svgPayloadSchema = z.object({
+export const svgPayloadSchema = z.object({
   svg: z.string().min(1),
   viewBox: z.array(z.number()).length(4).optional(),
   caption: z.string().max(200).optional(),
 })
 
-const threePayloadSchema = z.object({ descriptor: threeDescriptorSchema })
+export const threePayloadSchema = z.object({ descriptor: threeDescriptorSchema })
 
 function modelOf(providerId: string): string | undefined {
   return providerId === 'openai' ? useSettingsStore.getState().llm.model : undefined

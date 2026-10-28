@@ -18,6 +18,12 @@ import { exportZh } from './messages/export.zh'
 import { exportEn } from './messages/export.en'
 import { studioZh } from './messages/studio.zh'
 import { studioEn } from './messages/studio.en'
+import { forgeZh } from './messages/forge.zh'
+import { forgeEn } from './messages/forge.en'
+import { portalZh } from './messages/portal.zh'
+import { portalEn } from './messages/portal.en'
+import { onboardZh } from './messages/onboard.zh'
+import { onboardEn } from './messages/onboard.en'
 
 export type { Lang } from './types'
 export { LANGS, isLang } from './types'
@@ -30,6 +36,9 @@ const zhDict = {
   play: playZh,
   export: exportZh,
   studio: studioZh,
+  forge: forgeZh,
+  portal: portalZh,
+  onboard: onboardZh,
 }
 
 const enDict: typeof zhDict = {
@@ -39,6 +48,9 @@ const enDict: typeof zhDict = {
   play: playEn,
   export: exportEn,
   studio: studioEn,
+  forge: forgeEn,
+  portal: portalEn,
+  onboard: onboardEn,
 }
 
 type Leaves<T, Prefix extends string = ''> = T extends Record<string, unknown>

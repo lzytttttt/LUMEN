@@ -3,9 +3,8 @@
  */
 import { useT } from '@/i18n'
 import { Button, Modal } from '@/ui/primitives'
+import { APP_VERSION, APP_BUILD_TIME } from '@/version'
 import './dialogs.css'
-
-const APP_VERSION = '0.1.0'
 
 export function AboutDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const t = useT()
@@ -30,9 +29,15 @@ export function AboutDialog({ open, onClose }: { open: boolean; onClose: () => v
             LUMEN<span>.</span>
           </span>
           <span className="ldlg-about-card__meta">
-            {t('editor.dialog.aboutVersion', { version: APP_VERSION })}
+            {t('editor.dialog.aboutVersion', { version: APP_VERSION })} · {APP_BUILD_TIME}
           </span>
         </div>
+        <p className="ldlg-about__tagline" style={{ fontSize: 12, color: 'var(--ui-fg-mute)' }}>
+          {t('editor.dialog.aboutAuthor')} ·{' '}
+          <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noreferrer" style={{ color: 'var(--ui-accent)' }}>
+            {t('editor.dialog.aboutLicense')}
+          </a>
+        </p>
         <div>
           <div className="ins-group__title" style={{ padding: 0, marginBottom: 4 }}>
             {t('editor.dialog.aboutStack')}

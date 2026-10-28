@@ -461,6 +461,8 @@ export const editorEn = {
     aboutStack: 'Built with',
     aboutPrivacy: 'Everything stays in this browser: decks live in IndexedDB, no telemetry, no backend.',
     aboutVersion: 'Version {version}',
+    aboutAuthor: 'By 无极Ayaya',
+    aboutLicense: 'License CC BY-NC 4.0',
     exportMissing: 'Export kernel is not ready',
     exportMissingHint: 'The export modules come from exporter; until they land this notice stays and nothing crashes.',
     shortcutsSubtitle: 'Everyday operations at a glance',

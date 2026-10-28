@@ -4,15 +4,16 @@
  * 关键教训：idb-keyval 的 `createStore(db, name)` 只在**新建数据库**时创建该 store。
  * 先打开的 store 占住 v1，后打开的 store 在同一个库里根本不存在，`transaction` 直接抛
  * NotFoundError —— 表现为"重启后数据消失 + 静默切到内存模式"。
- * 因此这里自己开库：一次 upgrade 建齐全部 store，并把版本推到 2 以修复已损坏的 v1 库。
+ * 因此这里自己开库：一次 upgrade 建齐全部 store，并把版本推到 3 以修复已损坏的 v1 库，
+ * 同时为 v0.2.0 的造幕台（`forge`）与响应缓存（`aiCache`）新增两个 store。
  */
-export type StoreName = 'decks' | 'assets' | 'settings'
+export type StoreName = 'decks' | 'assets' | 'settings' | 'forge' | 'aiCache'
 
 export type StorageMode = 'idb' | 'memory'
 
 const DB_NAME = 'lumen-deck'
-const DB_VERSION = 2
-const STORE_NAMES: StoreName[] = ['decks', 'assets', 'settings']
+const DB_VERSION = 3
+const STORE_NAMES: StoreName[] = ['decks', 'assets', 'settings', 'forge', 'aiCache']
 
 let storageMode: StorageMode = 'idb'
 let dbPromise: Promise<IDBDatabase> | null = null

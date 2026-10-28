@@ -12,6 +12,12 @@ import { exportZh } from '@/i18n/messages/export.zh'
 import { exportEn } from '@/i18n/messages/export.en'
 import { studioZh } from '@/i18n/messages/studio.zh'
 import { studioEn } from '@/i18n/messages/studio.en'
+import { forgeZh } from '@/i18n/messages/forge.zh'
+import { forgeEn } from '@/i18n/messages/forge.en'
+import { portalZh } from '@/i18n/messages/portal.zh'
+import { portalEn } from '@/i18n/messages/portal.en'
+import { onboardZh } from '@/i18n/messages/onboard.zh'
+import { onboardEn } from '@/i18n/messages/onboard.en'
 
 const pairs: [string, object, object][] = [
   ['common', commonZh, commonEn],
@@ -20,6 +26,9 @@ const pairs: [string, object, object][] = [
   ['play', playZh, playEn],
   ['export', exportZh, exportEn],
   ['studio', studioZh, studioEn],
+  ['forge', forgeZh, forgeEn],
+  ['portal', portalZh, portalEn],
+  ['onboard', onboardZh, onboardEn],
 ]
 
 function flatten(node: unknown, prefix = '', out: Record<string, string> = {}) {

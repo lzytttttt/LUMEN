@@ -1,7 +1,7 @@
 /**
  * types.ts —— AI 模块的公共类型（对外 API 的一部分）。
  */
-import type { Block, Deck, RecipeId } from '@/schema/deck'
+import type { Block, Deck, RecipeId, Slide } from '@/schema/deck'
 
 export type AiLang = 'zh' | 'en'
 
@@ -96,10 +96,37 @@ export interface GenerateThreeResult {
   model?: string
 }
 
+/* --------------------------- 造幕台阶段事件（v0.2.0） --------------------------- */
+
+/** 管线阶段（04 §4.1 的七状态）：只用于流程脉冲，不代表数据结构。 */
+export type ForgeStage = 'think' | 'plan' | 'write' | 'draw' | 'set' | 'check' | 'seal'
+
+/**
+ * `onStage` 的唯一事件联合（02 §4.3 + 04 §4.4 的并集）：
+ * - `stage`：管线阶段脉冲（04）；
+ * - `slide:*` / `deck:*`：造幕台单幕推进与收尾（02）。
+ * 事件在对应步骤**完成的同一帧**发出，不预发、不延时（D2）。
+ */
+export type ForgeStageEvent =
+  | { type: 'stage'; stage: ForgeStage; index?: number; done?: number; total?: number; at: number }
+  | { type: 'slide:start'; index: number }
+  | { type: 'slide:content'; index: number; tokens: number; text?: string }
+  | { type: 'slide:visual'; index: number; kind: 'svg' | 'three' | 'none' }
+  | { type: 'slide:layout'; index: number; blocks: number }
+  | { type: 'slide:gate'; index: number; errors: string[]; warns: string[] }
+  | { type: 'slide:landed'; index: number; slide: Slide }
+  | { type: 'slide:recast'; index: number; slide: Slide; warnings: string[] }
+  | { type: 'deck:done'; deck: Deck; warnings: string[] }
+  | { type: 'deck:aborted' }
+
 export interface BuildDeckOptions {
   themeId?: string
   prompt?: string
   onProgress?: (done: number, total: number) => void
+  /** 公共阶段回调（纯增量：不传时行为与 v0.1.0 完全一致）。 */
+  onStage?: (event: ForgeStageEvent) => void
+  /** 是否在管线结束时一次性落库（默认 true）；造幕台传 false，由自己按「已完成幕」落库（D12）。 */
+  persist?: boolean
   signal?: AbortSignal
 }
 

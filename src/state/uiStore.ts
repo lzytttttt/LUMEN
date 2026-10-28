@@ -5,7 +5,7 @@
 import { create } from 'zustand'
 import { newId } from '@/schema/ids'
 
-export type WorkbenchMode = 'edit' | 'preview' | 'play'
+export type WorkbenchMode = 'edit' | 'preview' | 'play' | 'forge'
 export type InspectorTab = 'props' | 'layers' | 'motion' | 'notes' | 'theme' | 'lint'
 export type RightPanelMode = 'inspector' | 'composer'
 export type DialogId = 'settings' | 'export' | 'shortcuts' | 'about' | 'import' | 'library' | 'open'

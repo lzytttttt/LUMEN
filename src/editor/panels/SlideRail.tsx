@@ -7,7 +7,7 @@
  * - 拖拽只用一个插入指示线，落点用 DOM 实测矩形计算，不依赖估算。
  */
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
-import { ChevronDown, ChevronUp, Copy, Pencil, Plus, StickyNote, Trash2 } from 'lucide-react'
+import { ChevronDown, ChevronUp, Copy, Pencil, Plus, Sparkles, StickyNote, Trash2 } from 'lucide-react'
 import type { Slide } from '@/schema/deck'
 import { useDeckStore } from '@/state/deckStore'
 import { useUiStore } from '@/state/uiStore'
@@ -15,6 +15,7 @@ import { useSelectionStore } from '@/state/selectionStore'
 import { slideOps } from '@/state/ops'
 import { activeSlideIdOf } from '@/state/selectors'
 import { useT } from '@/i18n'
+import { openForge } from '@/forge/ForgeHost'
 import { SlideRenderer } from '@/render/SlideRenderer'
 import { ContextMenu, type MenuItem } from './ContextMenu'
 import { inVisibleRange, moveTargetIndex, visibleRange } from './virtual'
@@ -59,7 +60,10 @@ export function SlideRail() {
   const [viewportH, setViewportH] = useState(600)
   const [drag, setDragState] = useState<DragState | null>(null)
   const [menu, setMenu] = useState<{ x: number; y: number; slideId: string } | null>(null)
+  const [addMenu, setAddMenu] = useState<{ x: number; y: number } | null>(null)
   const [renaming, setRenaming] = useState<RenameState | null>(null)
+  const addPressRef = useRef<number | null>(null)
+  const addLongRef = useRef(false)
 
   const setDrag = (next: DragState | null) => {
     dragRef.current = next
@@ -368,10 +372,42 @@ export function SlideRail() {
         <button
           type="button"
           className="rail__add"
+          data-rail-add="1"
+          onPointerDown={(event) => {
+            addLongRef.current = false
+            if (addPressRef.current !== null) window.clearTimeout(addPressRef.current)
+            const rect = event.currentTarget.getBoundingClientRect()
+            addPressRef.current = window.setTimeout(() => {
+              addLongRef.current = true
+              setAddMenu({ x: rect.right + 8, y: Math.max(8, rect.top - 6) })
+            }, 400)
+          }}
+          onPointerUp={() => {
+            if (addPressRef.current !== null) window.clearTimeout(addPressRef.current)
+            addPressRef.current = null
+          }}
+          onPointerLeave={() => {
+            if (addPressRef.current !== null) window.clearTimeout(addPressRef.current)
+            addPressRef.current = null
+          }}
+          onPointerCancel={() => {
+            if (addPressRef.current !== null) window.clearTimeout(addPressRef.current)
+            addPressRef.current = null
+          }}
+          onContextMenu={(event) => {
+            event.preventDefault()
+            const rect = event.currentTarget.getBoundingClientRect()
+            setAddMenu({ x: rect.right + 8, y: Math.max(8, rect.top - 6) })
+          }}
           onClick={() => {
+            if (addLongRef.current) {
+              addLongRef.current = false
+              return
+            }
             slideOps.add({ at: slides.length })
             pushToast({ kind: 'success', message: t('editor.toast.slideAdded') })
           }}
+          title={t('editor.rail.newSlide')}
         >
           <Plus size={13} />
           {t('editor.rail.newSlide')}
@@ -384,6 +420,31 @@ export function SlideRail() {
         y={menu?.y ?? 0}
         items={menuItems}
         onClose={() => setMenu(null)}
+      />
+
+      <ContextMenu
+        open={addMenu !== null}
+        x={addMenu?.x ?? 0}
+        y={addMenu?.y ?? 0}
+        width={190}
+        items={[
+          {
+            id: 'rail.add-blank',
+            label: t('editor.rail.newSlide'),
+            icon: <Plus size={13} />,
+            onSelect: () => {
+              slideOps.add({ at: slides.length })
+              pushToast({ kind: 'success', message: t('editor.toast.slideAdded') })
+            },
+          },
+          {
+            id: 'rail.generate',
+            label: t('forge.entry'),
+            icon: <Sparkles size={13} />,
+            onSelect: () => openForge('rail'),
+          },
+        ]}
+        onClose={() => setAddMenu(null)}
       />
     </aside>
   )
