@@ -1,5 +1,7 @@
 # LUMEN 幕光
 
+**中文** · [English](README.en.md)
+
 **浏览器里的 AI 原生演示工作台。** 从造幕台开始：一句话 → 大纲 → 成稿 → 检查 → 播放，五段在同一个台面上走完；画布上继续改，最后导出一个双击就能播的单文件 HTML。
 
 **An AI-native deck workbench in the browser.** Start at the Forge: prompt, outline, build, check, play — five stages on one stage. Keep editing on a real canvas, then ship a single self-contained HTML file that plays on double-click.
