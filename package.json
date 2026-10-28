@@ -1,11 +1,11 @@
 {
   "name": "lumen-deck",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "LUMEN 幕光 — AI 原生 HTML 演示工作台",
   "scripts": {
-    "dev": "vite --port 5273 --strictPort",
+    "dev": "node --import=./scripts/watch-guard.mjs ./node_modules/vite/bin/vite.js --port 5273 --strictPort",
     "predev": "node scripts/build-player.mjs",
     "build": "tsc --noEmit && vite build",
     "prebuild": "node scripts/build-player.mjs",
@@ -46,5 +46,6 @@
     "typescript": "5.9.3",
     "vite": "7.3.7",
     "vitest": "3.2.7"
-  }
+  },
+  "license": "CC-BY-NC-4.0"
 }
