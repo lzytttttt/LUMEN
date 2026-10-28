@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.git/
+.vercel/
+
+# 只在本地阅读/验收，构建不需要
+doc/
+plan/
+harness/
+tests/
+test-results/
+playwright-report/
+*.md
+LICENSE*
+*.log
+*.tmpdir/

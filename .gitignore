@@ -1,10 +1,24 @@
+# 依赖与构建产物
 node_modules/
 dist/
 public/player/
+public/player.bak/
 harness/out/
 .tmp/
+*.tmpdir/
+
+# 测试与截图产物
 test-results/
 playwright-report/
 *.log
+
+# 本地环境与密钥：端点与密钥只存在浏览器里，但本地调试脚本可能落盘
+.env
+.env.*
+!.env.example
 *.local
+
+# Vercel CLI 的本地链接信息（含 projectId / orgId，不入库）
+.vercel/
+
 .DS_Store

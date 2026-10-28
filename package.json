@@ -17,7 +17,9 @@
     "typecheck": "tsc --noEmit",
     "e2e": "playwright test",
     "snapshot": "node scripts/snapshot.mjs",
-    "lint:i18n": "vitest run tests/unit/i18n.test.ts"
+    "lint:i18n": "vitest run tests/unit/i18n.test.ts",
+    "deploy:preview": "npx --yes vercel",
+    "deploy:prod": "npx --yes vercel --prod"
   },
   "dependencies": {
     "@codemirror/lang-html": "6.4.12",
@@ -47,5 +49,8 @@
     "vite": "7.3.7",
     "vitest": "3.2.7"
   },
-  "license": "CC-BY-NC-4.0"
+  "license": "CC-BY-NC-4.0",
+  "engines": {
+    "node": "22.x"
+  }
 }
