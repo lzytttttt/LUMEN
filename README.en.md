@@ -148,7 +148,7 @@ The exported HTML shares its origin with the player core: `public/player/lumen-p
 | Contract | zod 3.25 (`src/schema/deck.ts` is the single data contract) |
 | 3D | three r186 (lazy-loaded on demand; thumbnails never create a WebGL context) |
 | Other | DOMPurify 3 (SVG sanitizing) · CodeMirror 6 (SVG/HTML editing) · hand-rolled IndexedDB wrapper (`kv.ts`: single database `lumen-deck` v3 / five stores) |
-| Tests | vitest 3 (jsdom, 19 files / 362 cases, sampled 2026-10-28) · Playwright 1.64 (8 e2e specs / 14 cases + screenshot harness) |
+| Tests | vitest 3 (jsdom, 24 files / 454 cases, sampled 2026-10-29) · Playwright 1.64 (8 e2e specs / 16 cases + screenshot harness) |
 
 ## Layout
 
@@ -165,28 +165,21 @@ src/
 ├─ play/ player/                                 # player and player-core entry (IIFE build)
 ├─ export/                                       # standalone HTML, print/PDF, PNG, project file
 ├─ ui/ i18n/ sample/ version.ts                  # primitives, copy, 9-slide sample, single source of truth for the version
-tests/unit/                                       # 19 files: pure logic, channel contracts, copy budgets
+tests/unit/                                       # 24 files: pure logic, channel contracts, copy budgets
 tests/e2e/                                        # Playwright: editor/play/i18n/export/print/Forge
 scripts/                                          # dev server, player build, screenshot harness
-doc/                                              # design and contract docs (00–09)
-plan/v0.2.0/                                      # this release's evidence and constraints (00–09 + samples + traces)
+doc/screenshots/                                  # screenshots and brand art (README images; doc bodies stay local)
 ```
 
 ## Docs
 
-| Doc | Contents |
-|---|---|
-| [00 Engineering contract](doc/00-工程契约.md) | Technical facts, file ownership, commands, reporting format |
-| [01 Product overview](doc/01-产品概述.md) | Positioning, seven AI-native principles, four main lines |
-| [02 Architecture](doc/02-架构设计.md) | Module map, data flow, key decisions, startup sequence |
-| [03 Data model and DSL](doc/03-数据模型与DSL.md) | Every Deck/Slide/Block/Theme field, grid, migration |
-| [04 Editor](doc/04-编辑器.md) | Canvas, hit testing, drag/resize/rotate, snapping, shortcuts |
-| [05 SVG and 3D rendering](doc/05-SVG与3D渲染.md) | Render contract, three runtime, SVG/HTML security boundary, lint |
-| [06 AI orchestration](doc/06-AI编排.md) | Channels and error codes, 5 prompt sets, repair loop, 12 recipes, provenance |
-| [07 Playback and export](doc/07-播放与导出.md) | Playback state machine and 5 transitions, presenter protocol, standalone HTML assembly, PDF/PNG/project files |
-| [08 Design system](doc/08-设计系统.md) | Two token sets, 6 themes, type scale, primitives, accessibility |
-| [09 Development and acceptance](doc/09-开发与验收.md) | Commands, test layers, DoD, FAQ |
-| [plan/v0.2.0](plan/v0.2.0/README.md) | The Forge's scope, interface, game layer, motion, LLM spec, and acceptance matrix (this release's evidence) |
+The design and contract docs (`00` engineering contract … `11` licensing) and each release's `plan/` evidence pack (scope, contracts, motion, acceptance matrix) **are kept in the local working copy only and are not published with the repository**:
+
+- Doc bodies: `doc/00-工程契约.md` … `doc/11-许可与合规.md`
+- Release evidence: `plan/v0.2.0/` (the Forge), `plan/v0.2.5/` (materials / steering / design presets)
+- The repository keeps only `doc/screenshots/`; every README image is served from there
+
+Ask the author for those docs; user-facing change summaries live in [CHANGELOG.md](CHANGELOG.md).
 
 ## Deploy
 
@@ -198,7 +191,7 @@ pnpm run deploy:prod      # production deploy
 ```
 
 > The `run` matters: `pnpm deploy` is pnpm's built-in workspace deploy command and shadows the same-named script.
-> Steps, cache headers, pitfalls, and the acceptance checklist live in [doc/10-Vercel部署.md](doc/10-Vercel部署.md).
+> Steps, cache headers, pitfalls, and the acceptance checklist live in the deploy doc (`doc/10-Vercel部署.md`, local).
 
 ## License
 

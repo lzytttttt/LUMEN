@@ -23,5 +23,9 @@ playwright-report/
 
 .DS_Store
 
-# 本地文档草稿副本（与 doc/、plan/ 的入库版本同步用，不入库）
+# 内部文档：全部 md 与整份 plan/ 只在本地保留，不随仓库发布
+# （doc 下只放行图片：README 的截图与 logo 从这里引用）
+doc/*.md
+doc/**/*.md
+plan/
 local-docs/

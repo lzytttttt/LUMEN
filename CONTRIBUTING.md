@@ -1,8 +1,8 @@
 # 参与 LUMEN 开发
 
 LUMEN（幕光）是浏览器里的 AI 原生演示工作台：没有后端、没有遥测、不加载外链字体，数据只在本地 IndexedDB，模型端点由使用者自己填。
-本文件是给贡献者看的操作手册——环境、命令、目录、契约、提交与许可。工程事实的权威版本在
-[doc/00-工程契约.md](doc/00-工程契约.md) 与 [doc/09-开发与验收.md](doc/09-开发与验收.md)，两者冲突时以文档为准，并请顺手提 PR 修正本文。
+本文件是给贡献者看的操作手册——环境、命令、目录、契约、提交与许可。工程事实的权威版本在本地文档
+`doc/00-工程契约.md` 与 `doc/09-开发与验收.md`（正文不随仓库发布，向作者索取），两者冲突时以文档为准，并请顺手提 PR 修正本文。
 
 - 用法提问、方案探讨、作品展示 → [Discussions](https://github.com/lzytttttt/LUMEN/discussions)
 - 缺陷 → [Bug 报告表单](https://github.com/lzytttttt/LUMEN/issues/new?template=bug_report.yml)
@@ -77,9 +77,10 @@ src/
 tests/unit/       # 纯逻辑单测（jsdom）
 tests/e2e/        # Playwright 端到端
 scripts/          # dev server、播放器构建、截图 harness、导出探针
-doc/              # 设计与契约文档（00–10）
-plan/             # 各版本的范围与证据
+doc/screenshots/  # 截图与品牌图（README 用图）
 ```
+
+> `doc/*.md` 与 `plan/` 只在本地保留，已被 `.gitignore` 排除，不要提交（`doc/screenshots/` 的图片照常入库）。
 
 `public/player/` 是**构建产物**，被 `.gitignore` 排除，不要提交。
 

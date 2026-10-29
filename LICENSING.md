@@ -30,7 +30,7 @@
 | :--- | :--- | :--- |
 | `src/**`、`scripts/**`、`api/**`、`tests/**`、根目录构建配置（`vite*.config.ts`、`tsconfig.json`、`package.json`、`playwright.config.ts`、`vitest.config.ts` 等） | Apache-2.0 + Commons Clause（或 FSL-1.1-MIT，二选一） | 软件源码与构建脚本 |
 | `public/player/**` | 同源码 | 由 `src/player` 构建出的播放器内核，属于软件产物 |
-| `doc/**`（除图片）、`README*.md`、`CHANGELOG.md`、`LICENSING.md`、`CONTRIBUTING.md`、`SECURITY.md` | 同源码 | 文档随源码授权；引用第三方内容时以第三方许可为准 |
+| `README*.md`、`CHANGELOG.md`、`LICENSING.md`、`CONTRIBUTING.md`、`SECURITY.md`、`CODE_OF_CONDUCT.md`、`NOTICE`、`TRADEMARK.md` | 同源码 | 随仓库发布的文档，文档随源码授权；引用第三方内容时以第三方许可为准 |
 | `doc/screenshots/**`、`doc/*.png`、`public/icons/**` 中的品牌图 | **CC BY-NC 4.0** | 截图、品牌视觉、宣传图：可署名非商业分享，不可商业使用 |
 | `src/sample/sample-deck.ts`、`src/fixtures/**`、`src/ai/corpus.ts`、`src/ai/recipes.ts` 中的示例文案与模板内容 | **CC BY-NC 4.0** | 代码结构仍按源码许可；其中的示例文案/模板内容不可直接用于商业交付，商用请替换为你自己的内容 |
 | `LUMEN` / `幕光` 名称、Logo、品牌视觉 | **保留商标权** | 见 [`TRADEMARK.md`](TRADEMARK.md)；Apache-2.0 §6 不授予商标许可 |

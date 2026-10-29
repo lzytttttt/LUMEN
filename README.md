@@ -150,7 +150,7 @@ node node_modules/@playwright/test/cli.js test
 | 契约 | zod 3.25（`src/schema/deck.ts` 是唯一数据契约） |
 | 3D | three r186（按需动态加载，缩略图不建 WebGL） |
 | 其它 | DOMPurify 3（SVG 净化）· CodeMirror 6（SVG/HTML 编辑）· 自建 IndexedDB 封装（`kv.ts`：单库 `lumen-deck` v3 / 五个 store） |
-| 测试 | vitest 3（jsdom，19 文件 / 362 用例，采样 2026-10-28）· Playwright 1.64（e2e 8 spec / 14 用例 + 截图 harness） |
+| 测试 | vitest 3（jsdom，24 文件 / 454 用例，采样 2026-10-29）· Playwright 1.64（e2e 8 spec / 16 用例 + 截图 harness） |
 
 ## 目录 / Layout
 
@@ -167,28 +167,21 @@ src/
 ├─ play/ player/                                 # 播放器与播放器内核入口（IIFE 构建）
 ├─ export/                                       # 独立 HTML、打印/PDF、PNG、工程文件
 ├─ ui/ i18n/ sample/ version.ts                  # 基元、文案、9 幕示例、版本号唯一来源
-tests/unit/                                       # 19 文件：纯逻辑、通道契约、文案预算
+tests/unit/                                       # 24 文件：纯逻辑、通道契约、文案预算
 tests/e2e/                                        # Playwright：编辑/播放/i18n/导出/打印/造幕台
 scripts/                                          # dev server、播放器构建、截图 harness
-doc/                                              # 设计与契约文档（00–09）
-plan/v0.2.0/                                      # 本版的证据与约束（00–09 + 样张 + trace）
+doc/screenshots/                                  # 截图与品牌图（README 用图；文档正文只在本地）
 ```
 
 ## 文档 / Docs
 
-| 文档 | 内容 |
-|---|---|
-| [00 工程契约](doc/00-工程契约.md) | 技术事实、文件所有权、命令、回报格式 |
-| [01 产品概述](doc/01-产品概述.md) | 定位、七条 AI 原生原则、四条主线 |
-| [02 架构设计](doc/02-架构设计.md) | 模块图、数据流、关键决策、启动流程 |
-| [03 数据模型与DSL](doc/03-数据模型与DSL.md) | Deck/Slide/Block/Theme 全字段、栅格、迁移 |
-| [04 编辑器](doc/04-编辑器.md) | 画布、命中、拖拽/缩放/旋转、吸附、快捷键 |
-| [05 SVG与3D渲染](doc/05-SVG与3D渲染.md) | 渲染契约、three 运行时、SVG/HTML 安全边界、lint |
-| [06 AI编排](doc/06-AI编排.md) | 通道与错误码、5 套 prompt、修复环、12 配方、溯源 |
-| [07 播放与导出](doc/07-播放与导出.md) | 播放状态机与 5 种转场、讲者视图协议、独立 HTML 组装、PDF/PNG/工程文件 |
-| [08 设计系统](doc/08-设计系统.md) | 两套令牌、6 套主题、字号阶、基元、可访问性 |
-| [09 开发与验收](doc/09-开发与验收.md) | 命令、测试分层、DoD、常见问题 |
-| [plan/v0.2.0](plan/v0.2.0/README.md) | 造幕台的范围、界面、游戏化、动效、LLM 规格与验收矩阵（本版证据） |
+设计与契约文档（`00` 工程契约 … `11` 许可与合规）与每版的 `plan/` 证据包（范围、契约、动效、验收矩阵）**只在本地工作副本里保留，不随仓库发布**：
+
+- 文档正文：`doc/00-工程契约.md` … `doc/11-许可与合规.md`
+- 版本证据：`plan/v0.2.0/`（造幕台）、`plan/v0.2.5/`（材料 / 纠偏 / 设计预设）
+- 仓库内只留 `doc/screenshots/` 的截图与品牌图，README 的图都从这里引用
+
+要看这些文档请向作者索取；面向使用者的变化摘要都在 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 部署 / Deploy
 
@@ -200,7 +193,7 @@ pnpm run deploy:prod      # 生产部署
 ```
 
 > 必须走 `pnpm run`：`pnpm deploy` 是 pnpm 内建的 workspace 部署命令，会盖掉同名脚本。
-> 步骤、缓存头、坑与验收清单见 [doc/10-Vercel部署.md](doc/10-Vercel部署.md)。
+> 步骤、缓存头、坑与验收清单见部署篇（本地文档 `doc/10-Vercel部署.md`）。
 
 ## License
 

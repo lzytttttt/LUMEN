@@ -10,8 +10,8 @@ body:
         **先对齐边界**：LUMEN 是纯前端工作台——没有后端、没有遥测、不加载外链字体，数据只在本地 IndexedDB，
         模型端点由使用者自己填。与这三条前提冲突的需求，请先说明怎么在不引入服务端的前提下落地。
 
-        也请先看一眼 [doc/01-产品概述.md](https://github.com/lzytttttt/LUMEN/blob/main/doc/01-%E4%BA%A7%E5%93%81%E6%A6%82%E8%BF%B0.md) 的定位与七条原则，
-        以及 [doc/00-工程契约.md](https://github.com/lzytttttt/LUMEN/blob/main/doc/00-%E5%B7%A5%E7%A8%8B%E5%A5%91%E7%BA%A6.md) 里不可改的技术事实。
+        也请先看一眼 [CONTRIBUTING.md](https://github.com/lzytttttt/LUMEN/blob/main/CONTRIBUTING.md) 的「工程契约」一节：
+        数据契约唯一、舞台 1600×900、不加运行时依赖、不加载外链资源这几条是不可改的技术事实。
 
   - type: textarea
     id: scenario

@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        **先看这两处**：[doc/09-开发与验收.md](https://github.com/lzytttttt/LUMEN/blob/main/doc/09-%E5%BC%80%E5%8F%91%E4%B8%8E%E9%AA%8C%E6%94%B6.md) 的「常见问题」表列了端口占用、导出 HTML 空白、IndexedDB 降级等高频症状；[Discussions](https://github.com/lzytttttt/LUMEN/discussions) 里可能已经有同样的问题。
+        **先看这两处**：[CONTRIBUTING.md](https://github.com/lzytttttt/LUMEN/blob/main/CONTRIBUTING.md) 的「五分钟上手」「命令」两节覆盖了端口占用、导出 HTML 空白、IndexedDB 降级等高频症状的排查顺序；[Discussions](https://github.com/lzytttttt/LUMEN/discussions) 里可能已经有同样的问题。
 
         **隐私提醒（重要）**：请勿粘贴 API Key、模型端点账号、私人讲稿原文或未公开的客户材料。
         贴配置时用 `sk-***` 这样的占位符替换密钥；贴演示内容时优先用仓库自带的 9 幕示例复现。
@@ -94,7 +94,7 @@ body:
     id: expected
     attributes:
       label: 期望结果
-      description: 按 README 与 doc/ 的描述，这里本来应该发生什么
+      description: 按 README 与 CONTRIBUTING 的描述，这里本来应该发生什么
     validations:
       required: true
 
