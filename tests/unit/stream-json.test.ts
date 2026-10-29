@@ -2,7 +2,7 @@
  * stream-json.test.ts —— 增量字段流（`05` §4.7 + `07` L-05）。
  *
  * 覆盖：key 被切两半、转义 `\"`、`\u4e2d` 逐位到达、`points[2]` 跨 chunk、
- * 未闭合在 `end()` 丢弃、64KB 上限暂停、1e6 字符 < 20ms、嵌套同名 key 不触发。
+ * 未闭合在 `end()` 丢弃、64KB 上限暂停、1e6 字符单遍扫描（预算按环境分档）、嵌套同名 key 不触发。
  */
 import { describe, expect, it } from 'vitest'
 import { createFieldStreamer, FIELD_BUFFER_LIMIT } from '@/ai/streamJson'
@@ -93,7 +93,14 @@ describe('ai/streamJson', () => {
     expect(finalOf(emits, 'headline')).toBeUndefined()
   })
 
-  it('1e6 字符单遍扫描 < 20ms', () => {
+  /**
+   * 预算分档：这条守的是「单遍线性扫描」的量级（1e6 字符 O(n)，不是 O(n²)），
+   * 不是某一台机器的绝对毫秒数。本机（Windows，单核独占）实测 12–18ms；
+   * 共享 vCPU 的 GitHub runner 首跑实测 37.8ms，按 20ms 卡会在 CI 上假红。
+   */
+  const SCAN_BUDGET_MS = process.env.CI ? 120 : 20
+
+  it(`1e6 字符单遍扫描 < ${SCAN_BUDGET_MS}ms（CI 分档）`, () => {
     const payload = `{"headline":"${'慢'.repeat(999_980)}"}`
     expect(payload.length).toBeGreaterThan(999_000)
     const { streamer } = collect(['headline'])
@@ -102,7 +109,7 @@ describe('ai/streamJson', () => {
     for (let i = 0; i < payload.length; i += 997) streamer.push(payload.slice(i, i + 997))
     streamer.end()
     const elapsed = performance.now() - started
-    expect(elapsed).toBeLessThan(20)
+    expect(elapsed).toBeLessThan(SCAN_BUDGET_MS)
   })
 
   it('snapshot() 含未完成字段的最新前缀', () => {
