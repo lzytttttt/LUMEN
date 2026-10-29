@@ -4,11 +4,13 @@
 
 **An AI-native deck workbench in the browser.** Start at the Forge: prompt, outline, build, check, play — five stages on one stage. Keep editing on a real canvas, then ship a single self-contained HTML file that plays on double-click.
 
-**Version: [v0.2.0](https://github.com/lzytttttt/LUMEN/releases/tag/v0.2.0)** — the Forge release.
+**Version: [v0.2.5](https://github.com/lzytttttt/LUMEN/releases/tag/v0.2.5)** — Forge with materials and in-flight steering.
 
-Author: **无极Ayaya** · Project: [github.com/lzytttttt/LUMEN](https://github.com/lzytttttt/LUMEN) · Contact: [lzytttttt@gmail.com](mailto:lzytttttt@gmail.com) · License: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)
+Author: **无极Ayaya** · Project: [github.com/lzytttttt/LUMEN](https://github.com/lzytttttt/LUMEN) · Contact: [lzytttttt@gmail.com](mailto:lzytttttt@gmail.com) · License: [Apache-2.0 + Commons Clause](LICENSE) · [licensing guide](LICENSING.md)
 
 > No backend, no telemetry, no remote fonts. Data lives in IndexedDB, the model endpoint is yours to fill in (local Ollama included), and the default is an offline Mock. `?channel=replay` can play a whole deck with no network at all.
+
+![The five-stage Forge: prompt → outline → build → gate → premiere](doc/screenshots/forge-flow.webp)
 
 ## Portal
 
@@ -16,7 +18,7 @@ A standalone entry point, `portal.html` (the build artifact is likewise `dist/po
 
 The portal is a waterfall long page: the pitch → why (four real objections) → the five-stage Forge → five real interface windows → six capabilities → preferences and the closing call → author and license. It does not load the editor or the renderer; it only depends on settings and copy. The preferences drawer — generation channel / endpoint presets / fidelity tier / sound / reduced motion / UI language — writes straight to `lumen.prefs` and takes effect the moment you enter the workbench. `Enter` enters the workbench.
 
-The author avatar is the GitHub one ([@lzytttttt](https://github.com/lzytttttt)). Author: **无极Ayaya** · Project: [github.com/lzytttttt/LUMEN](https://github.com/lzytttttt/LUMEN) · Contact: [lzytttttt@gmail.com](mailto:lzytttttt@gmail.com) · License: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)
+The author avatar is the GitHub one ([@lzytttttt](https://github.com/lzytttttt)). Author: **无极Ayaya** · Project: [github.com/lzytttttt/LUMEN](https://github.com/lzytttttt/LUMEN) · Contact: [lzytttttt@gmail.com](mailto:lzytttttt@gmail.com) · License: [Apache-2.0 + Commons Clause](LICENSE) · [licensing guide](LICENSING.md)
 
 ## First run
 
@@ -94,7 +96,9 @@ Slides: [01](doc/screenshots/slides/slide-01.png) · [02](doc/screenshots/slides
 - **Playback**: full-screen, 5 transitions, presenter view (notes + timer + next slide), overview, autoplay, clicker support.
 - **Export**: single-file HTML (plays from `file://`, `?print=1` to print a PDF), PDF, per-slide PNG, `.lumen.json` project files.
 - **Lint**: overflow / contrast / font size / 3D budget / reading time under one ruler; AI output and hand-made output are held to the same standard, and errors become visible blockers on the Forge.
-- **Bilingual**: instant ZH/EN UI switching (1,088 keys × 2 languages, and the keys must stay in parity).
+- **Bilingual**: instant ZH/EN UI switching (1,100+ keys × 2 languages, and the keys must stay in parity).
+- **Engineering**: GitHub Actions CI (typecheck / test / build / Playwright), fine-grained Vite chunks, installable offline PWA, optional Edge CORS relay.
+- **License**: source under Apache-2.0 + Commons Clause (or FSL-1.1-MIT, at your option); design assets and sample copy under CC BY-NC 4.0. See [LICENSING.md](LICENSING.md) for commercial and contribution terms.
 
 ## Quick start
 
@@ -198,12 +202,15 @@ pnpm run deploy:prod      # production deploy
 
 ## License
 
-This project is released under **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
+Since `v0.2.5`, the source is source-available under **Apache-2.0 + Commons Clause**, with **FSL-1.1-MIT** as an alternative track. Design and sample assets remain **CC BY-NC 4.0**. Releases up to `v0.2.0` keep their historical `CC BY-NC 4.0` terms.
 
-- You may: copy, distribute, modify, and adapt it for non-commercial purposes.
-- You must: credit **无极Ayaya**, link the license, and indicate whether changes were made.
-- You may not: use this project or its derivatives for commercial purposes.
-- Full legal text: [LICENSE-CC-BY-NC-4.0.txt](LICENSE-CC-BY-NC-4.0.txt); license home: <https://creativecommons.org/licenses/by-nc/4.0/>.
-- For commercial licensing, contact: [lzytttttt@gmail.com](mailto:lzytttttt@gmail.com).
+- You may: self-host, modify, build on it, embed it in a larger product, use it for teaching and research; Apache-2.0's patent grant still applies.
+- You must: keep the copyright and license notices; ship [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE) with redistributed derivatives.
+- You may not: sell LUMEN itself (or a renamed equivalent), use the sample copy, screenshots or brand assets in commercial delivery, or use the LUMEN name/logo as your own brand.
+- Need the certainty of "automatically MIT two years after each release"? Elect [`LICENSE-FSL-1.1-MIT.md`](LICENSE-FSL-1.1-MIT.md) instead — pick one track, not both.
+- Full texts: [`LICENSE`](LICENSE), [`LICENSE-FSL-1.1-MIT.md`](LICENSE-FSL-1.1-MIT.md), [`LICENSE-CC-BY-NC-4.0.txt`](LICENSE-CC-BY-NC-4.0.txt); scope and commercial terms: [`LICENSING.md`](LICENSING.md) and [`TRADEMARK.md`](TRADEMARK.md).
+- Commercial licensing: [lzytttttt@gmail.com](mailto:lzytttttt@gmail.com).
 
-Unless a file says otherwise, this license applies to the whole repository (source code, docs, and design assets).
+Because of the Commons Clause, this project is **source-available**, not OSI open source; please do not market it as "open source".
+
+Contributing and security: see [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) (report vulnerabilities privately, not in a public issue).

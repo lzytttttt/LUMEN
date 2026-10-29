@@ -7,6 +7,7 @@ import { PortalApp } from './PortalApp'
 import { loadSettings } from '@/persistence/decks'
 import { startSettingsSync } from '@/persistence/settingsSync'
 import { useSettingsStore } from '@/state/settingsStore'
+import { registerServiceWorker } from '@/pwa/register'
 import '@/styles/tokens.css'
 import '@/styles/base.css'
 import './portal.css'
@@ -21,4 +22,5 @@ export async function mountPortal(container: HTMLElement): Promise<void> {
   startSettingsSync()
   document.documentElement.dataset.portal = '1'
   createRoot(container).render(<PortalApp />)
+  registerServiceWorker()
 }

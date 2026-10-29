@@ -9,13 +9,21 @@
  * - 落位只在 `slide:landed` 后发生（`active` 变化），所以"看到的"与成品同源（D2）。
  *
  * L3 的环境粒子交给 `fx/ambient.ts`（lazy import('three')），本文件不 import three。
+ *
+ * v0.2.5 打磨（`plan/v0.2.5/02` §6.1）：
+ * - FX-1 落位冲击波：`.forge-stage__shock` 用 `key={done-active}` 重挂载——它的每一次重播
+ *   都对应一次真实的 `slide:landed`（`done` 只由该事件自增），没有任何计时器；
+ * - FX-2 完成栈深度：每层写 `--forge-depth`（0 = 栈顶），L3 走 `translateZ(-i·18px)` + 逐层降亮，
+ *   L2 只降亮，L1/L0 不做纵深（v0.2.0 的静态亮度保留，见 03-视觉动效.md 的回落表）；
+ * - FX-4 粒子随进度加速：`deriveProg(stage, done, total)` 复算 `state.prog` 的读数，
+ *   落位时调一次 `rip()`；L2 及以下根本没有粒子（`startAmbient` 直接返回 NOOP）。
  */
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import type { CSSProperties } from 'react'
 import { useT } from '@/i18n'
 import { SlideRenderer } from '@/render/SlideRenderer'
 import { isLanded } from '../state'
-import { startAmbient } from '../fx/ambient'
+import { deriveProg, startAmbient, type AmbientHandle } from '../fx/ambient'
 import type { ForgeSlideState, SlideStatus } from '../types'
 import type { AssembleProps } from '../ui'
 
@@ -36,7 +44,7 @@ function landedOf(slides: ForgeSlideState[]): ForgeSlideState[] {
 
 export function Assemble(props: AssembleProps) {
   const t = useT()
-  const { tier, slides, deck, active, done, stopped } = props
+  const { tier, slides, deck, active, done, total, stopped } = props
   const ambientRef = useRef<HTMLDivElement | null>(null)
   const stageRef = useRef<HTMLDivElement | null>(null)
 
@@ -61,11 +69,36 @@ export function Assemble(props: AssembleProps) {
   /* 只有"中心这一幕自己"有 error 时才停在门前；别人的 error 由 Gate 的「!」承担，不劫持当前幕。 */
   const holding = (activeEntry?.errors.length ?? 0) > 0 && !stopped
 
+  /**
+   * FX-4：`state.prog` 的等价读数（0–7，只由真实事件推进）。
+   * `AssembleProps` 不持有 `prog`（`ui.ts` 归 flow-state），所以按 reducer 的同一条公式复算。
+   */
+  const prog = deriveProg(props.stage, done, total)
+  const progRef = useRef(prog)
+  progRef.current = prog
+  const ambientHandle = useRef<AmbientHandle | null>(null)
+
   /* 环境粒子：只在 L3 且用户没关时创建，卸载即 dispose（含 canvas 移除）。 */
   useEffect(() => {
-    const handle = startAmbient({ tier, host: ambientRef.current })
-    return () => handle.dispose()
+    const handle = startAmbient({ tier, host: ambientRef.current, prog: progRef.current })
+    ambientHandle.current = handle
+    return () => {
+      handle.dispose()
+      if (ambientHandle.current === handle) ambientHandle.current = null
+    }
   }, [tier])
+
+  /* FX-4：进度连续推（不重建 WebGL）。 */
+  useEffect(() => {
+    ambientHandle.current?.setProgress(prog)
+  }, [prog])
+
+  /* FX-4：`done` 自增 = 一次真实的 `slide:landed`，那一帧打一次 rip。 */
+  const prevDone = useRef(done)
+  useEffect(() => {
+    if (done > prevDone.current) ambientHandle.current?.rip()
+    prevDone.current = done
+  }, [done])
 
   /**
    * `forge.css` 用 `animation` 简写（含 `animation-delay: 0s`）覆盖 `slide.css` 的 520/560ms 入场，
@@ -125,7 +158,13 @@ export function Assemble(props: AssembleProps) {
         style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}
       />
 
-      <div className="forge-assemble__stack" style={stackStyle} aria-hidden="true">
+      <div
+        className="forge-assemble__stack"
+        style={stackStyle}
+        data-forge-depth={done}
+        data-forge-stack={stack.length}
+        aria-hidden="true"
+      >
         {early > 0 ? (
           <span className="forge-assemble__more" data-forge-text>
             +{early}
@@ -142,6 +181,8 @@ export function Assemble(props: AssembleProps) {
             style={{
               opacity: Math.max(0.3, Number((1 - depth * 0.13).toFixed(2))),
               filter: `brightness(${Number((1 - depth * 0.12).toFixed(2))})`,
+              // FX-2：深度是 CSS 侧的读数（translateZ 与逐层降亮都从这里取），0 = 栈顶。
+              ['--forge-depth' as string]: depth,
             }}
           >
             {deck && slide.slide ? (
@@ -196,6 +237,20 @@ export function Assemble(props: AssembleProps) {
 
         {/* 落位闷响环：以幕心为心的 1px 椭圆，每次落位重播（04 §2.4）。 */}
         <span className="forge-stage__ping" key={`ping-${done}`} data-forge-ping={done} aria-hidden="true" />
+
+        {/*
+         * FX-1 落位冲击波：与 `.forge-stage__ping` 同源（`done` 只在 `slide:landed` 自增），
+         * 但它是"向外扩散的 520ms 冲击波 + L3 外环"，钝响环只负责 320ms 的贴面回弹。
+         * `key` 里的 `active` 让"重落同一幕"（重铸）也能重播，仍不含任何计时器。
+         */}
+        {done > 0 ? (
+          <span
+            className="forge-stage__shock"
+            key={`shock-${done}-${active ?? 'none'}`}
+            data-forge-shock={done}
+            aria-hidden="true"
+          />
+        ) : null}
 
         {/* 右侧在铸幕：同尺寸、30% 不透明，表达"两幕并行落下"（04 §3.3）。 */}
         <div

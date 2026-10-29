@@ -17,6 +17,71 @@
   background: var(--slide-bg, var(--d-bg));
 }
 
+/* ------------------------ 主题表面 v0.2.5（纹理 / 光晕） ------------------------ */
+/*
+ * 两层纯装饰，都挂在幕根上、z-index:-1（幕根有 isolation:isolate，
+ * 所以负层只压在幕底色之上、所有内容块之下），不吃指针事件。
+ *
+ * 纹理：--d-texture-image 是一块 alpha 瓦片（grain/grid/scan/dots），
+ * 这里用 mask 平铺、--d-texture-op 控强度、墨色取 fg 的 55%，
+ * 于是同一块瓦片在深浅两套主题里都能自动"进墨"。kind 为 none 时
+ * themeCssVars 会把 --d-texture-op 归零，这一层就是透明的。
+ */
+.lumen-slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: color-mix(in srgb, var(--d-fg) 55%, transparent);
+  -webkit-mask-image: var(--d-texture-image, none);
+  mask-image: var(--d-texture-image, none);
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  -webkit-mask-position: 0 0;
+  mask-position: 0 0;
+  opacity: var(--d-texture-op, 0);
+}
+
+/*
+ * 光晕：accent 的 12% 软底（--d-accent-soft）+ accent2 的 10% 冷角，
+ * 强度由 --d-glow 控制。只有 play 会呼吸；编辑/缩略/打印/静止一律静态。
+ */
+.lumen-slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(58% 48% at 16% 8%, var(--d-accent-soft, transparent) 0%, transparent 72%),
+    radial-gradient(46% 42% at 88% 96%, color-mix(in srgb, var(--d-accent2) 10%, transparent) 0%, transparent 70%);
+  opacity: var(--d-glow, 0);
+}
+.lumen-slide[data-mode='play']::after {
+  animation: lumen-glow-breathe 7.2s var(--d-ease) infinite;
+}
+@keyframes lumen-glow-breathe {
+  0%,
+  100% {
+    opacity: calc(var(--d-glow, 0) * 0.78);
+  }
+  50% {
+    opacity: var(--d-glow, 0);
+  }
+}
+/* 静止态：编辑 / 缩略图 / 打印 / 导出快照 / ?still=1 / 减少动效 —— 光晕静态，纹理保留 */
+.lumen-slide[data-mode='stage']::after,
+.lumen-slide[data-mode='thumb']::after,
+.lumen-slide[data-mode='print']::after,
+.lumen-slide[data-mode='export']::after,
+[data-forge-still='1'] .lumen-slide::after,
+[data-still='1'] .lumen-slide::after,
+[data-reduced-motion='true'] .lumen-slide::after,
+.lumen-print .lumen-slide::after {
+  animation: none !important;
+}
+
 .lumen-block {
   position: absolute;
   box-sizing: border-box;
@@ -115,7 +180,8 @@
   font-size: 0.86em;
   padding: 0.1em 0.34em;
   border-radius: 4px;
-  background: color-mix(in srgb, var(--d-fg) 10%, transparent);
+  /* accent 的 12% 软底：深浅两套主题里都保持"同族染色"，不再用 fg 10% 的中性灰 */
+  background: var(--d-accent-soft, color-mix(in srgb, var(--d-fg) 10%, transparent));
   color: var(--d-accent);
 }
 
@@ -136,7 +202,9 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: color-mix(in srgb, var(--d-surface) 62%, transparent);
+  /* 二级表面：媒体框比卡片再起一步，空图时也能看出这是一块"面"而不是幕底 */
+  background: color-mix(in srgb, var(--d-surface-2, var(--d-surface)) 62%, transparent);
+  box-shadow: var(--d-shadow-1, none);
 }
 .lumen-image img {
   width: 100%;
@@ -156,9 +224,9 @@
   inset: 0;
   background: linear-gradient(
     100deg,
-    color-mix(in srgb, var(--d-surface) 70%, transparent) 0%,
+    color-mix(in srgb, var(--d-surface-2, var(--d-surface)) 70%, transparent) 0%,
     color-mix(in srgb, var(--d-line) 55%, transparent) 50%,
-    color-mix(in srgb, var(--d-surface) 70%, transparent) 100%
+    color-mix(in srgb, var(--d-surface-2, var(--d-surface)) 70%, transparent) 100%
   );
   opacity: 0.55;
 }
@@ -250,7 +318,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 99px;
-  background: color-mix(in srgb, var(--d-surface) 76%, transparent);
+  background: color-mix(in srgb, var(--d-surface-2, var(--d-surface)) 76%, transparent);
   color: var(--d-muted);
   font-family: var(--d-font-mono);
   font-size: 10px;
@@ -304,6 +372,8 @@
   height: 100%;
   overflow: hidden;
   border-radius: var(--d-radius);
+  /* 3D 是幕上的焦点媒体：吃第二档阴影（layered 主题下才有实感，flat 主题为 none） */
+  box-shadow: var(--d-shadow-2, none);
   --three-grain: 0.06;
 }
 .lumen-three__canvas-host {
@@ -333,7 +403,7 @@
   color: var(--d-muted);
   background: radial-gradient(120% 100% at 30% 20%, color-mix(in srgb, var(--d-accent) 22%, transparent), transparent 62%),
     radial-gradient(90% 90% at 80% 90%, color-mix(in srgb, var(--d-accent2) 16%, transparent), transparent 60%),
-    var(--d-surface);
+    var(--d-surface-2, var(--d-surface));
 }
 .lumen-three__preset {
   font-family: var(--d-font-mono);
@@ -376,6 +446,7 @@
   overflow: hidden;
   border-radius: var(--d-radius);
   background: transparent;
+  box-shadow: var(--d-shadow-1, none);
 }
 .lumen-html iframe {
   width: 100%;
@@ -400,6 +471,8 @@
   gap: 6px;
   border: 1px dashed color-mix(in srgb, var(--d-fg) 22%, transparent);
   border-radius: var(--d-radius);
+  background: color-mix(in srgb, var(--d-surface-2, var(--d-surface)) 55%, transparent);
+  box-shadow: var(--d-shadow-1, none);
   color: var(--d-muted);
   font-family: var(--d-font-body);
   font-size: 15px;
@@ -469,6 +542,10 @@
     transition: none !important;
   }
   .lumen-slide[data-mode='stage'] .lumen-image[data-image-state='false']::before {
+    animation: none !important;
+  }
+  /* 光晕静态化；纹理不是动画，照旧保留（?still=1 同理，见文首表面区块） */
+  .lumen-slide::after {
     animation: none !important;
   }
 }

@@ -6,12 +6,13 @@
  * 这里刻意不放进 i18n 词典：门户是独立入口，文案随版式一起改。
  */
 import type { Lang } from '@/i18n'
+import { APP_VERSION } from '@/version'
 
 export const PROJECT_URL = 'https://github.com/lzytttttt/LUMEN'
 export const PROJECT_LABEL = 'github.com/lzytttttt/LUMEN'
 export const CONTACT_EMAIL = 'lzytttttt@gmail.com'
 export const GITHUB_URL = 'https://github.com/lzytttttt'
-export const LICENSE_URL = 'https://creativecommons.org/licenses/by-nc/4.0/'
+export const LICENSE_URL = 'https://github.com/lzytttttt/LUMEN/blob/main/LICENSE'
 
 export interface PortalCopy {
   nav: {
@@ -112,7 +113,7 @@ const zh: PortalCopy = {
     enterHint: '按 Enter 直接开始',
   },
   hero: {
-    eyebrow: 'LUMEN 幕光 · v0.2.0',
+    eyebrow: `LUMEN 幕光 · v${APP_VERSION}`,
     titleA: '从一句话的想法，',
     titleB: '到稳稳当当地上台。',
     subtitle: 'LUMEN 幕光 —— 装在浏览器里的 AI 演示工作台。',
@@ -285,9 +286,9 @@ const zh: PortalCopy = {
     email: CONTACT_EMAIL,
     copy: '复制',
     copied: '已复制',
-    licenseLabel: '开源许可',
-    license: 'CC BY-NC 4.0',
-    licenseNote: '欢迎自由复制、修改与分享，只要保留署名、不用于商业用途即可；如需商业授权请发邮件联系。',
+    licenseLabel: '源码许可',
+    license: 'Apache-2.0 + Commons Clause',
+    licenseNote: '源码可自由自建、修改与分享，但不得转售本软件本身；示例文案、截图与品牌资产为非商业许可。转售或托管服务需商业授权。',
     licenseLink: '查看协议',
   },
   footer: {
@@ -310,7 +311,7 @@ const en: PortalCopy = {
     enterHint: 'Press Enter to start',
   },
   hero: {
-    eyebrow: 'LUMEN · v0.2.0',
+    eyebrow: `LUMEN · v${APP_VERSION}`,
     titleA: 'From a single line,',
     titleB: 'to walking on stage calm.',
     subtitle: 'LUMEN — an AI deck workbench that lives in the browser.',
@@ -484,8 +485,8 @@ const en: PortalCopy = {
     copy: 'Copy',
     copied: 'Copied',
     licenseLabel: 'License',
-    license: 'CC BY-NC 4.0',
-    licenseNote: 'Copy, modify and share freely with attribution and for non-commercial use; email for commercial licensing.',
+    license: 'Apache-2.0 + Commons Clause',
+    licenseNote: 'Self-host, modify and share freely, but do not resell the software itself; sample copy, screenshots and brand assets are non-commercial. Resale or hosted service needs a commercial license.',
     licenseLink: 'Read the license',
   },
   footer: {

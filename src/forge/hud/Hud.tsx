@@ -15,6 +15,7 @@ export function Hud(props: HudProps) {
       <button
         type="button"
         className="forge-hud__back"
+        data-act="close"
         aria-label={t('forge.a11y.close')}
         disabled={!canClose}
         onClick={props.onClose}

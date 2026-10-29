@@ -9,7 +9,7 @@
  *   4. 素材：assetId → dataURL 内联在 `#lumen-assets`，播放器写进 `window.__LUMEN_ASSETS__`；
  *   5. 打印样式内联，同一文件支持 `?print=1` / `#print` 打印成 PDF。
  *
- * 体积护栏：>12MB 提示，>24MB 直接拒绝产出（避免把浏览器拖死）。
+ * 体积护栏：素材先经 `assetCompress` 重采样为 ≤1920px WebP；>12MB 提示，>24MB 直接拒绝产出。
  */
 import type { Deck } from '@/schema/deck'
 import { slugify } from '@/schema/ids'
@@ -18,6 +18,7 @@ import { t } from '@/i18n'
 import { collectAssetDataUrls } from '@/assets/assetStore'
 import { collectAssetIds, triggerDownload } from './projectFile'
 import { PRINT_CSS } from './printRoute'
+import { compressDataUrlAssets } from './assetCompress'
 
 /** 超过就提示（仍产出）。 */
 export const STANDALONE_WARN_BYTES = 12 * 1024 * 1024
@@ -25,6 +26,25 @@ export const STANDALONE_WARN_BYTES = 12 * 1024 * 1024
 export const STANDALONE_ABORT_BYTES = 24 * 1024 * 1024
 /** 播放器内核产物路径（相对站点根）。 */
 export const PLAYER_ASSET_BASE = 'player/lumen-player'
+
+/**
+ * 导出文件的 CSP：单文件 HTML 的卖点是"零外部请求"，所以默认全禁，只放行内联脚本/样式
+ * 与 data:/blob: 图片（3D 抓帧、素材表都用 dataURL）。HTML 块的 iframe 走 srcdoc，
+ * 继承本 CSP，`frame-src 'self'` 放行 about:srcdoc。
+ */
+export const STANDALONE_CSP = [
+  "default-src 'none'",
+  "script-src 'unsafe-inline'",
+  "style-src 'unsafe-inline'",
+  'img-src data: blob:',
+  'font-src data:',
+  'media-src data: blob:',
+  "connect-src 'none'",
+  "frame-src 'self' data: blob:",
+  "object-src 'none'",
+  "base-uri 'none'",
+  "form-action 'none'",
+].join('; ')
 
 export interface StandaloneOptions {
   /** 内嵌讲者备注（默认 false：连数据都不进文件）。 */
@@ -35,6 +55,8 @@ export interface StandaloneOptions {
   fileName?: string
   /** panels 的开关：关闭时不内联素材（会给出 warning）。 */
   includeAssets?: boolean
+  /** 内联前把大图重采样为 ≤1920px WebP（默认 true；导出弹窗可关）。 */
+  compressAssets?: boolean
   /** panels 的范围开关；独立 HTML 始终是整份 deck。 */
   scope?: 'all' | 'current'
 }
@@ -164,12 +186,16 @@ export function composeStandaloneHtml(input: ComposeInput): string {
   const slideCount = deck.slides.length
 
   return `<!doctype html>
+<!-- LUMEN / 幕光 — Copyright (c) 2026 无极Ayaya.
+     Source: Apache-2.0 + Commons Clause (see LICENSE in the repository).
+     Design assets and sample copy: CC BY-NC 4.0. "LUMEN" is a trademark of the author. -->
 <html lang="${deck.lang === 'en' ? 'en' : 'zh-CN'}" data-lumen-standalone="1" data-lumen-slides="${slideCount}" data-lumen-theme="${escapeHtmlText(deck.themeId)}">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="dark light" />
 <meta name="generator" content="LUMEN · 幕光" />
+<meta http-equiv="Content-Security-Policy" content="${escapeHtmlText(STANDALONE_CSP)}" />
 <title>${safeTitle}</title>
 <style id="lumen-theme">${theme}
 html,body{margin:0;height:100%;background:#000;overflow:hidden;}
@@ -259,6 +285,16 @@ export async function buildStandaloneHtml(
       const missing = Array.from(new Set(assetIds)).filter((id) => !assets[id])
       if (missing.length > 0) {
         warnings.push(t('export.warnAssetMissing', { count: missing.length }))
+      }
+      if (options.compressAssets !== false && Object.keys(assets).length > 0) {
+        const report = await compressDataUrlAssets(assets)
+        assets = report.assets
+        if (report.failed.length > 0) {
+          warnings.push(t('export.warnAssetCompress', { count: report.failed.length }))
+        }
+        if (report.savedBytes > 0) {
+          warnings.push(t('export.assetOptimized', { saved: formatBytes(report.savedBytes) }))
+        }
       }
     }
   }

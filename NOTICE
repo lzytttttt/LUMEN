@@ -1,0 +1,42 @@
+LUMEN / 幕光
+Copyright (c) 2026 无极Ayaya
+https://github.com/lzytttttt/LUMEN
+
+This product includes software developed by third parties. The following
+components are distributed under their own licenses; nothing in this
+repository's LICENSE modifies those terms. Version numbers refer to the
+versions pinned in package.json at the time of release.
+
+Runtime dependencies
+--------------------
+React 19.2.9, React DOM 19.2.9 ................ MIT
+three.js 0.186.1 .............................. MIT
+zod 3.25.76 ................................... MIT
+zustand 5.0.16 ................................ MIT
+immer 11.2.9 .................................. MIT
+DOMPurify 3.4.17 .............................. MPL-2.0 OR Apache-2.0
+html-to-image 1.11.13 ......................... MIT
+idb-keyval 6.3.0 .............................. Apache-2.0
+CodeMirror 6.0.2 and @codemirror/* ............ MIT
+lucide-react 1.62.0 ........................... ISC
+
+Build and test tooling
+----------------------
+Vite 7.3.7 .................................... MIT
+TypeScript 5.9.3 .............................. Apache-2.0
+Vitest 3.2.7 .................................. MIT
+jsdom 30.1.3 .................................. MIT
+@vitejs/plugin-react 5.2.0 .................... MIT
+@playwright/test 1.64.1 ....................... Apache-2.0
+
+The single-file HTML export inlines the compiled LUMEN player, which bundles
+the runtime dependencies listed above. Their license notices are available in
+the corresponding packages under node_modules/ and in the upstream
+repositories.
+
+No remote fonts, analytics, telemetry or third-party runtime assets are
+embedded in the product. Sample decks, screenshots and brand artwork are
+covered by LICENSE and LICENSING.md, not by the third-party licenses above.
+
+If you redistribute a build of LUMEN, keep this NOTICE file and the LICENSE
+files with it.

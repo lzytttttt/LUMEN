@@ -6,11 +6,13 @@
 
 **An AI-native deck workbench in the browser.** Start at the Forge: prompt, outline, build, check, play — five stages on one stage. Keep editing on a real canvas, then ship a single self-contained HTML file that plays on double-click.
 
-**版本 / Version: [v0.2.0](https://github.com/lzytttttt/LUMEN/releases/tag/v0.2.0)** — 造幕台版本（Forge）。
+**版本 / Version: [v0.2.5](https://github.com/lzytttttt/LUMEN/releases/tag/v0.2.5)** — 造幕台 + 材料/纠偏迭代。
 
-作者 / Author：**无极Ayaya** · 项目：[github.com/lzytttttt/LUMEN](https://github.com/lzytttttt/LUMEN) · 联系：[lzytttttt@gmail.com](mailto:lzytttttt@gmail.com) · 许可：[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)
+作者 / Author：**无极Ayaya** · 项目：[github.com/lzytttttt/LUMEN](https://github.com/lzytttttt/LUMEN) · 联系：[lzytttttt@gmail.com](mailto:lzytttttt@gmail.com) · 许可：[Apache-2.0 + Commons Clause](LICENSE) · [许可导读](LICENSING.md)
 
 > 本仓库没有后端、没有遥测、没有外链字体：数据在 IndexedDB，模型端点由你自己填（含本地 Ollama），默认离线 Mock；`?channel=replay` 可以完全离线地把一整套演示放完。
+
+![造幕台五段流转：输入 → 大纲 → 生成 → 检查 → 播放](doc/screenshots/forge-flow.webp)
 
 ## 门户 / Portal
 
@@ -18,7 +20,7 @@
 
 门户是一张瀑布式长页：主张 → 为什么（四个真实顾虑）→ 五步造幕台 → 五种真实界面窗口 → 六项能力 → 偏好设置与最终召唤 → 作者与许可。它不加载编辑器与渲染器，只依赖设置与文案；设置抽屉里的生成通道 / 接口预设 / 画面档位 / 声音 / 减少动效 / 界面语言直接写 `lumen.prefs`，进入工作台后立即生效。`Enter` 进入工作台。
 
-作者头像是 GitHub 同款（[@lzytttttt](https://github.com/lzytttttt)）。作者：**无极Ayaya** · 项目：[github.com/lzytttttt/LUMEN](https://github.com/lzytttttt/LUMEN) · 联系：[lzytttttt@gmail.com](mailto:lzytttttt@gmail.com) · 许可：[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)
+作者头像是 GitHub 同款（[@lzytttttt](https://github.com/lzytttttt)）。作者：**无极Ayaya** · 项目：[github.com/lzytttttt/LUMEN](https://github.com/lzytttttt/LUMEN) · 联系：[lzytttttt@gmail.com](mailto:lzytttttt@gmail.com) · 许可：[Apache-2.0 + Commons Clause](LICENSE) · [许可导读](LICENSING.md)
 
 ## 首启 / First run
 
@@ -96,7 +98,9 @@ http://127.0.0.1:5273/?still=1&channel=replay&speed=0   # 再叠一层 L0（截�
 - **播放**：全屏、5 种转场、讲者视图（备注 + 计时 + 下一幕）、总览、自动播放、翻页器。
 - **导出**：单文件 HTML（`file://` 可播、`?print=1` 打 PDF）、PDF、逐幕 PNG、`.lumen.json` 工程文件。
 - **过检**：溢出 / 对比度 / 字号 / 3D 预算 / 阅读时长统一 lint；AI 产物与人工产物同一把尺子，error 在造幕台上变成看得见的卡点。
-- **双语**：UI 中/英即时切换（1,088 个键 × 2 语言，键必须对等）。
+- **双语**：UI 中/英即时切换（1,100+ 个键 × 2 语言，键必须对等）。
+- **工程化**：GitHub Actions CI（typecheck / test / build / Playwright）、Vite 细粒度拆包、PWA 离线安装、可选的 Edge CORS 转发。
+- **许可**：源码 Apache-2.0 + Commons Clause（可另选 FSL-1.1-MIT），设计资产与示例文案 CC BY-NC 4.0；商用与贡献规则见 [LICENSING.md](LICENSING.md)。
 
 ## 5 分钟上手 / Quick start
 
@@ -200,12 +204,15 @@ pnpm run deploy:prod      # 生产部署
 
 ## License
 
-本项目以 **Creative Commons Attribution-NonCommercial 4.0 International（CC BY-NC 4.0）** 协议发布。
+从 `v0.2.5` 起，本项目源码采用 **Apache-2.0 + Commons Clause**（可另选 **FSL-1.1-MIT**）的 source-available 双轨授权；设计与示例资产仍为 **CC BY-NC 4.0**。`v0.2.0` 及更早版本保持历史 `CC BY-NC 4.0` 不变。
 
-- 你可以：复制、分发、修改、演绎，用于非商业目的。
-- 你必须：署名 **无极Ayaya**、附上协议链接、标明是否修改。
-- 你不可以：将本项目或其演绎作品用于商业目的。
-- 完整法律文本：[LICENSE-CC-BY-NC-4.0.txt](LICENSE-CC-BY-NC-4.0.txt)；协议主页：<https://creativecommons.org/licenses/by-nc/4.0/>。
+- 你可以：自建、内部部署、修改、二次开发、嵌入更大的产品，用于教学与研究；Apache-2.0 的专利授权继续有效。
+- 你需要：保留版权与许可声明；分发衍生作品时附上 [`LICENSE`](LICENSE) 与 [`NOTICE`](NOTICE)。
+- 你不可以：转售 LUMEN 本身或改名后的等价物、把示例文案/截图/品牌资产用于商业交付、把 LUMEN 名称与 Logo 当作自己的品牌。
+- 需要“版本发布满两年自动转为 MIT”的确定性？改用 [`LICENSE-FSL-1.1-MIT.md`](LICENSE-FSL-1.1-MIT.md)，两条路径二选一。
+- 完整文本：[`LICENSE`](LICENSE)、[`LICENSE-FSL-1.1-MIT.md`](LICENSE-FSL-1.1-MIT.md)、[`LICENSE-CC-BY-NC-4.0.txt`](LICENSE-CC-BY-NC-4.0.txt)；边界与商用说明见 [`LICENSING.md`](LICENSING.md) 与 [`TRADEMARK.md`](TRADEMARK.md)。
 - 商业授权请联系：[lzytttttt@gmail.com](mailto:lzytttttt@gmail.com)。
 
-除非某个文件另有说明，本协议适用于整个仓库（源代码、文档与设计资产）。
+Commons Clause 使本项目属于 source-available（源码可用）而非 OSI 开源；请勿在宣传中称其为 “open source”。
+
+贡献与安全：见 [CONTRIBUTING.md](CONTRIBUTING.md) 与 [SECURITY.md](SECURITY.md)（安全问题请私下邮件，不要开公开 issue）。

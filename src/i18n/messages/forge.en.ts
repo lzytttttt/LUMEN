@@ -31,6 +31,20 @@ export const forgeEn = {
     clear: 'Clear',
     offline: 'Local',
     lang: 'EN',
+    /* v0.2.5 §5: sources before prompt */
+    materials: 'Sources',
+    materialAdd: 'Add',
+    materialPaste: 'Paste',
+    materialUrl: 'Link',
+    materialFile: 'File',
+    /* v0.2.5 §5: audience and design presets */
+    audience: 'Audience',
+    audienceExec: 'Exec',
+    audienceTeam: 'Team',
+    audienceClient: 'Client',
+    audienceClass: 'Class',
+    theme: 'Theme',
+    reuse: 'Recent',
   },
   deal: {
     count: '{count} slides',
@@ -45,6 +59,10 @@ export const forgeEn = {
     back: 'Back',
     add: 'Add',
     remove: 'Remove',
+    /* v0.2.5 §5: per-slide editing */
+    brief: 'Brief',
+    briefHint: 'What it says',
+    theme: 'Theme',
   },
   card: {
     cover: 'Open',
@@ -77,6 +95,11 @@ export const forgeEn = {
     },
     progress: '{done}/{total}',
     cancel: 'Stop',
+    /* v0.2.5 §5: steering during generation */
+    steer: 'Steer',
+    steerHint: 'From next',
+    steerUndo: 'Undo',
+    steerQueued: 'Queued {n}',
   },
   error: {
     notConfigured: 'No endpoint',
@@ -88,6 +111,9 @@ export const forgeEn = {
     emptyOutline: 'No outline',
     schemaFailed: 'Bad schema',
     storeDegraded: 'Storage off',
+    materialTooLong: 'Too long',
+    materialFailed: 'Read failed',
+    materialLimit: 'Full',
     action: {
       settings: 'Settings',
       retry: 'Retry',
@@ -134,8 +160,8 @@ export const forgeEn = {
   premiere: {
     start: 'Play',
     again: 'New deck',
-    back: 'Editor',
-    edit: 'Edit',
+    edit: 'Open editor',
+    more: 'Add slides',
     exit: 'Exit',
   },
   combo: {

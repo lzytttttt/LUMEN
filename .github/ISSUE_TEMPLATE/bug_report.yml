@@ -1,0 +1,139 @@
+name: Bug 报告
+description: 工作台、造幕台、播放、导出或门户出现异常行为时使用（安全问题请走 SECURITY.md，不要开公开 issue）
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **先看这两处**：[doc/09-开发与验收.md](https://github.com/lzytttttt/LUMEN/blob/main/doc/09-%E5%BC%80%E5%8F%91%E4%B8%8E%E9%AA%8C%E6%94%B6.md) 的「常见问题」表列了端口占用、导出 HTML 空白、IndexedDB 降级等高频症状；[Discussions](https://github.com/lzytttttt/LUMEN/discussions) 里可能已经有同样的问题。
+
+        **隐私提醒（重要）**：请勿粘贴 API Key、模型端点账号、私人讲稿原文或未公开的客户材料。
+        贴配置时用 `sk-***` 这样的占位符替换密钥；贴演示内容时优先用仓库自带的 9 幕示例复现。
+        本项目没有后端、没有遥测，需要别人看懂现场时，请在「设置 → 导出诊断 JSON」里手动导出 `lumen-diagnostics.json` 再贴上关键片段。
+
+        **安全漏洞请勿开公开 issue**，按 [SECURITY.md](https://github.com/lzytttttt/LUMEN/blob/main/SECURITY.md) 里的邮箱私下报告。
+
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: 取自「设置 → 关于」，或仓库根 package.json 的 version 字段
+      placeholder: "0.2.5"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: 出问题的界面
+      description: 同一现象在不同界面下成因不同，请选最贴近的一项
+      options:
+        - 工作台画布（编辑 / 幕栏 / 检查器）
+        - 造幕台（输入 → 大纲 → 生成 → 检查 → 播放）
+        - 3D / SVG 工作室
+        - 播放与讲者视图
+        - 导出（独立 HTML / PDF / PNG / .lumen.json）
+        - 门户页 portal.html 与首启三步
+        - 设置、i18n 语言切换、本地存储持久化
+        - 其它或不确定
+    validations:
+      required: true
+
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: 运行方式
+      description: 出问题的页面是怎么起来的
+      options:
+        - pnpm dev（源码开发服 127.0.0.1:5273）
+        - pnpm build 之后的 dist/（静态托管或 pnpm preview）
+        - 导出的单文件 HTML（file:// 双击打开）
+        - 门户页 portal.html
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: 环境
+      description: 操作系统与版本、浏览器与版本、Node 版本（engines 要求 22.x）、pnpm 版本
+      placeholder: Windows 11 23H2 / Chrome 141 / Node 22.x / pnpm 最新版
+    validations:
+      required: true
+
+  - type: dropdown
+    id: replay
+    attributes:
+      label: 离线回放下的可复现性
+      description: '打开 http://127.0.0.1:5273/?still=1&channel=replay&speed=0 之后，问题是否还在？回放只读 src/fixtures/ai 里的本地 fixture，零外网请求、零等待，用来把「网络与模型端点」从变量里排除。'
+      options:
+        - 必现（每次都能复现）
+        - 偶发（重试若干次才出现）
+        - 只在开启回放（channel=replay&speed=0）时出现
+        - 只在接入真实模型端点时出现
+        - 还没试过回放
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 从打开页面开始，一步一步写到看到问题为止；带上关键 URL 参数与快捷键
+      placeholder: |
+        1. pnpm dev 后打开 http://127.0.0.1:5273/?still=1&channel=replay&speed=0
+        2. 顶栏「✦ 生成」进入造幕台，输入一句话并提交
+        3. 在大纲段删掉第 4 幕
+        4. ……
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果
+      description: 按 README 与 doc/ 的描述，这里本来应该发生什么
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际结果
+      description: 真实发生了什么；涉及数值时写清具体数字（幕数、耗时、导出体积等）
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: 控制台错误与诊断信息
+      description: 浏览器控制台的 error 与页面异常（pageerror）原文；有 pnpm snapshot 的话附上 harness/out/console-errors.json 的内容。贴之前先确认其中没有密钥与私人内容。
+      render: text
+      placeholder: |
+        TypeError: Cannot read properties of undefined (reading 'blocks')
+            at SlideRenderer (src/render/SlideRenderer.tsx:88:19)
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 截图或录屏
+      description: 直接拖进输入框即可；造幕台相关建议用 ?still=1 拍，避开动效中间帧
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我已经去掉或替换了 API Key、模型端点、私人讲稿与未公开材料
+          required: true
+        - label: 我已在最新 main 分支或最新构建产物上确认过这个问题仍然存在
+          required: true
+        - label: 这不是安全漏洞（漏洞按 SECURITY.md 私下报告，不走公开 issue）
+          required: true

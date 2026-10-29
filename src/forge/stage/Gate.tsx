@@ -3,7 +3,7 @@
  *
  * 「门」是全屏装置：两道 1px 竖线，间距 160px（translateX ±80），不属于任何一张幕。
  * 三档反馈：
- *   error  → 门转红 + 8 束金色短线（span，不用 canvas/SVG）+ 幕右上方形「!」+ 唯一「重试」；
+ *   error  → 门转红 + 金色短线（L3 12 / L2 6 / L1 3 / L0 0 束，span，不用 canvas/SVG）+ 幕右上方形「!」+ 唯一「重试」；
  *   warn   → 幕右上 6px 四角星（不阻断、不弹 toast）；
  *   info   → 不上屏（`ForgeSlideState` 里根本没有 info 字段，这里也不建 DOM）。
  *
@@ -11,14 +11,22 @@
  */
 import { useMemo } from 'react'
 import { useT, type MessageKey } from '@/i18n'
-import type { ForgeSlideState, SlideStatus } from '../types'
+import type { ForgeSlideState, ForgeTier, SlideStatus } from '../types'
 import type { GateProps } from '../ui'
 
 const IN_FLIGHT: SlideStatus[] = ['drafting', 'art', 'typesetting', 'gating']
 
-/** 04 §5.4：8 束；L1 减到 4 束、无渐变；L0 只有「!」角标。 */
-const RAYS_L3 = 8
-const RAYS_L1 = 4
+/**
+ * FX-6 火花密度分级（`plan/v0.2.5/02` §6.1）：L3 12 / L2 6 / L1 3 / L0 0。
+ * 只改「几束」，不改「有没有 error」——`data-severity` 的两个钩子（error / warn）数量不变，
+ * 所以读屏与 e2e 的判据不受档位影响（04 §5.4/§10.1 的形态语言继续成立）。
+ */
+export const SPARK_DENSITY: Record<ForgeTier, number> = { L3: 12, L2: 6, L1: 3, L0: 0 }
+
+/** 当前档位的火花束数（纯函数，单测直接断言四档）。 */
+export function sparkCount(tier: ForgeTier): number {
+  return SPARK_DENSITY[tier] ?? 0
+}
 
 interface Ray {
   i: number
@@ -29,7 +37,7 @@ interface Ray {
   opacity: number
 }
 
-/** 椭圆轨道：x = cosθ×470、y = sinθ×300，θ = 45°×i + 13.8°（错开四角）。 */
+/** 椭圆轨道：x = cosθ×470、y = sinθ×300，θ = 360°/n×i + 13.8°（错开四角）。 */
 function raysOf(count: number): Ray[] {
   const list: Ray[] = []
   for (let i = 0; i < count; i += 1) {
@@ -76,8 +84,8 @@ export function Gate({ slides, active, tier, onRecast }: GateProps) {
   const retryIndex = errorEntry?.index ?? null
 
   const rays = useMemo(() => {
-    if (!bad || tier === 'L0') return []
-    return raysOf(tier === 'L1' ? RAYS_L1 : RAYS_L3)
+    const count = bad ? sparkCount(tier) : 0
+    return count > 0 ? raysOf(count) : []
   }, [bad, tier])
 
   const lineStyle = (side: 'left' | 'right') => ({
@@ -169,12 +177,13 @@ export function Gate({ slides, active, tier, onRecast }: GateProps) {
         />
       ) : null}
 
-      {/* error：8 束金色短线，元素底端锚在椭圆轨道点，沿法线朝外。 */}
+      {/* error：金色短线，元素底端锚在椭圆轨道点，沿法线朝外（束数按档位分级，FX-6）。 */}
       {rays.length > 0 ? (
         <div
           key={`rays-${errorEntry?.index ?? 'none'}`}
           className="forge-gate__burst"
           data-forge-burst={errorEntry?.index ?? undefined}
+          data-forge-sparks={rays.length}
           aria-hidden="true"
           style={{
             position: 'absolute',

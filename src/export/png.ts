@@ -16,6 +16,7 @@ import { getTheme } from '@/themes'
 import { t } from '@/i18n'
 import { useUiStore } from '@/state/uiStore'
 import { STAGE_H, STAGE_W } from '@/schema/deck'
+import { getAssetMeta } from '@/assets/assetStore'
 import { triggerDownload } from './projectFile'
 import { prepareSlideForSnapshot } from './threeFrames'
 import { SnapshotStage } from './SnapshotStage'
@@ -23,6 +24,8 @@ import { SnapshotStage } from './SnapshotStage'
 export interface PngOptions {
   /** 只导出这一幕（缺省用 uiStore.activeSlideId / 全部幕）。 */
   slideId?: string
+  /** 只导出这些幕（失败页重试用；优先于 slideId）。 */
+  slideIds?: string[]
   /** 像素比，默认 2（1–4）。 */
   scale?: number
   /** panels 弹窗的范围开关：current = 只导当前幕。 */
@@ -31,9 +34,18 @@ export interface PngOptions {
   fileName?: string
 }
 
+/** 单幕失败：保留 slideId，导出弹窗据此做"只重试失败页"。 */
+export interface PngFailure {
+  slideId: string
+  /** 0 基下标（提示时 +1）。 */
+  index: number
+  reason: string
+}
+
 export interface PngResult {
   count: number
   warnings: string[]
+  failed: PngFailure[]
 }
 
 const MIN_SCALE = 1
@@ -113,6 +125,19 @@ export async function snapshotSlideToPng(deck: Deck, slide: Slide, scale = 2): P
 }
 
 function resolveTargets(deck: Deck, options: PngOptions, warnings: string[]): Array<{ index: number; slide: Slide }> {
+  const explicitIds = options.slideIds?.filter((id) => typeof id === 'string' && id !== '')
+  if (explicitIds && explicitIds.length > 0) {
+    const wanted = new Set(explicitIds)
+    const picked = deck.slides
+      .map((slide, index) => ({ index, slide }))
+      .filter((item) => wanted.has(item.slide.id))
+    if (picked.length === 0) warnings.push(t('export.warnSlideMissing'))
+    else if (picked.length < wanted.size) {
+      warnings.push(t('export.pngSlidesMissing', { count: wanted.size - picked.length }))
+    }
+    return picked
+  }
+
   const explicit = options.slideId
   const currentOnly = options.scope === 'current'
   const wanted = explicit ?? (currentOnly ? useUiStore.getState().activeSlideId : null)
@@ -126,6 +151,43 @@ function resolveTargets(deck: Deck, options: PngOptions, warnings: string[]): Ar
   return [{ index, slide: deck.slides[index] }]
 }
 
+/**
+ * 导出前资源预检：图片块与 3D 海报引用的 assetId 是否还在本地库里。
+ * 缺素材不 abort（渲染层会画占位），但要提前告诉用户"哪几幕会缺图"，
+ * 而不是让用户在下载下来的 PNG 里自己发现。
+ */
+async function collectMissingAssetPages(targets: Array<{ index: number; slide: Slide }>): Promise<number[]> {
+  const pagesByAsset = new Map<string, Set<number>>()
+  for (const { index, slide } of targets) {
+    for (const block of slide.blocks) {
+      const assetId =
+        block.type === 'image' ? block.assetId : block.type === 'three' ? block.posterAssetId : undefined
+      if (!assetId) continue
+      const pages = pagesByAsset.get(assetId) ?? new Set<number>()
+      pages.add(index)
+      pagesByAsset.set(assetId, pages)
+    }
+  }
+  if (pagesByAsset.size === 0) return []
+
+  const missing = new Set<string>()
+  await Promise.all(
+    [...pagesByAsset.keys()].map(async (assetId) => {
+      try {
+        if (!(await getAssetMeta(assetId))) missing.add(assetId)
+      } catch {
+        /* 存储不可用（无痕/配额）时不做误报，交给渲染层兜底 */
+      }
+    }),
+  )
+  const pages = new Set<number>()
+  for (const [assetId, indexes] of pagesByAsset) {
+    if (!missing.has(assetId)) continue
+    for (const index of indexes) pages.add(index)
+  }
+  return [...pages].sort((a, b) => a - b)
+}
+
 function downloadBlockedLikely(count: number): boolean {
   if (count <= 1) return false
   const activation = (navigator as Navigator & { userActivation?: { hasBeenActive?: boolean } }).userActivation
@@ -137,6 +199,7 @@ function downloadBlockedLikely(count: number): boolean {
  */
 export async function exportPng(deck: Deck, options: PngOptions = {}): Promise<PngResult> {
   const warnings: string[] = []
+  const failed: PngFailure[] = []
   const scale = clampScale(options.scale)
   const targets = resolveTargets(deck, options, warnings)
   // 交互式 HTML 块是 iframe：跨文档内容无法序列化进 SVG foreignObject，位图里会是空白。
@@ -144,6 +207,9 @@ export async function exportPng(deck: Deck, options: PngOptions = {}): Promise<P
     slide.blocks.some((block) => block.type === 'html' && !block.hidden),
   )
   if (hasHtmlBlocks) warnings.push(t('export.pngFallback'))
+  for (const index of await collectMissingAssetPages(targets)) {
+    warnings.push(t('export.pngMissingAsset', { index: index + 1 }))
+  }
   const stem = slugify(options.fileName?.replace(/\.png$/i, '') ?? deck.title ?? 'lumen-deck')
   const files: Array<{ name: string; blob: Blob }> = []
 
@@ -156,6 +222,7 @@ export async function exportPng(deck: Deck, options: PngOptions = {}): Promise<P
       files.push({ name, blob })
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error)
+      failed.push({ slideId: slide.id, index, reason })
       warnings.push(t('export.pngSkipped', { index: index + 1, reason }))
       console.warn(`[export] 第 ${index + 1} 幕 PNG 失败`, error)
     }
@@ -178,7 +245,7 @@ export async function exportPng(deck: Deck, options: PngOptions = {}): Promise<P
     warnings.push(t('export.pngBlocked'))
   }
 
-  return { count: files.length, warnings }
+  return { count: files.length, warnings, failed }
 }
 
 /** panels 的候选名兼容（exporterBridge 按名字探测）。 */

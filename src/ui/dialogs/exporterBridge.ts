@@ -12,6 +12,8 @@ export type ExportKind = 'standalone' | 'pdf' | 'png'
 export interface ExportOutcome {
   status: 'ok' | 'missing' | 'error'
   error?: string
+  /** 导出函数的返回值（PNG 导出会带 failed 清单，弹窗据此提供单页重试）。 */
+  result?: unknown
 }
 
 const modules = import.meta.glob('../../export/*.ts')
@@ -45,8 +47,8 @@ export async function runExporter(
       .find((value) => typeof value === 'function')
     const fn = candidate ?? (typeof mod.default === 'function' ? mod.default : undefined)
     if (typeof fn !== 'function') return { status: 'missing' }
-    await (fn as (deckArg: Deck, opts?: Record<string, unknown>) => unknown)(deck, options)
-    return { status: 'ok' }
+    const result = await (fn as (deckArg: Deck, opts?: Record<string, unknown>) => unknown)(deck, options)
+    return { status: 'ok', result }
   } catch (error) {
     return { status: 'error', error: error instanceof Error ? error.message : String(error) }
   }

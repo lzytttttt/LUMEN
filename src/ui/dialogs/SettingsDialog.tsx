@@ -2,7 +2,7 @@
  * SettingsDialog.tsx —— 设置：语言、UI 主题、减少动效、模型端点、关于入口。
  * 所有配置写进 useSettingsStore（由 persistence/settingsSync 落盘），弹窗本身不另存状态。
  */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Lang } from '@/i18n'
 import { LANGS, useT } from '@/i18n'
 import {
@@ -14,6 +14,15 @@ import {
   type UiTheme,
 } from '@/state/settingsStore'
 import { useUiStore } from '@/state/uiStore'
+import { useDeckStore } from '@/state/deckStore'
+import {
+  getFileSyncState,
+  linkDeckFile,
+  restoreFileLink,
+  subscribeFileSync,
+  unlinkDeckFile,
+  type FileSyncState,
+} from '@/persistence/fileSync'
 import { resetProgress } from '@/forge/game/progress'
 import { downloadDiagnostics } from '@/forge/diagnostics'
 import { PRESETS, applyPreset, type PresetId } from '@/ai/presets'
@@ -45,10 +54,38 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
   const patchForge = useSettingsStore((s) => s.patchForge)
   const pushToast = useUiStore((s) => s.pushToast)
   const openDialog = useUiStore((s) => s.openDialog)
+  const deck = useDeckStore((s) => s.deck)
 
   const [testing, setTesting] = useState(false)
   const [testResult, setTestResult] = useState<{ ok: boolean; text: string } | null>(null)
   const [resetArmed, setResetArmed] = useState(false)
+  const [fileSync, setFileSync] = useState<FileSyncState>(() => getFileSyncState())
+
+  useEffect(() => subscribeFileSync(setFileSync), [])
+
+  useEffect(() => {
+    if (!open) return
+    void restoreFileLink().then(() => setFileSync(getFileSyncState()))
+  }, [open])
+
+  const linkLocalFile = async () => {
+    const next = await linkDeckFile(deck)
+    setFileSync(next)
+    if (next.status === 'linked') {
+      pushToast({ kind: 'success', message: t('editor.dialog.fileSyncLinked', { name: next.fileName ?? '' }) })
+    } else if (next.status === 'unsupported') {
+      pushToast({ kind: 'info', message: t('editor.dialog.fileSyncUnsupported') })
+    } else if (next.status === 'denied') {
+      pushToast({ kind: 'info', message: t('editor.dialog.fileSyncDenied') })
+    } else if (next.status === 'error') {
+      pushToast({ kind: 'error', message: t('editor.dialog.fileSyncError', { reason: next.error ?? '' }) })
+    }
+  }
+
+  const unlinkLocalFile = async () => {
+    setFileSync(await unlinkDeckFile())
+    pushToast({ kind: 'info', message: t('editor.dialog.fileSyncUnlinked') })
+  }
 
   const runTest = async () => {
     setTesting(true)
@@ -129,6 +166,42 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
             onCheckedChange={setReducedMotion}
           />
         </Field>
+      </Section>
+
+      <Section title={t('editor.dialog.fileSyncTitle')} actions={<span className="insp-char">FILE</span>}>
+        <p className="insp-note">{t('editor.dialog.fileSyncHint')}</p>
+        <div className="ldlg-file">
+          {fileSync.status === 'linked' || fileSync.status === 'denied' || fileSync.status === 'error'
+            ? fileSync.fileName ?? '—'
+            : t('editor.dialog.fileSyncNotLinked')}
+        </div>
+        <div className="ldlg-actions">
+          <Button
+            variant="outline"
+            disabled={fileSync.status === 'unsupported'}
+            onClick={() => void linkLocalFile()}
+          >
+            {fileSync.status === 'linked' ? t('editor.dialog.fileSyncRelink') : t('editor.dialog.fileSyncLink')}
+          </Button>
+          {fileSync.status === 'linked' || fileSync.status === 'denied' || fileSync.status === 'error' ? (
+            <Button variant="ghost" onClick={() => void unlinkLocalFile()}>
+              {t('editor.dialog.fileSyncUnlink')}
+            </Button>
+          ) : null}
+        </div>
+        {fileSync.status === 'linked' ? (
+          <div className="ldlg-status ldlg-status--ok">
+            {t('editor.dialog.fileSyncLinked', { name: fileSync.fileName ?? '' })}
+          </div>
+        ) : fileSync.status === 'unsupported' ? (
+          <div className="ldlg-status ldlg-status--warn">{t('editor.dialog.fileSyncUnsupported')}</div>
+        ) : fileSync.status === 'denied' ? (
+          <div className="ldlg-status ldlg-status--warn">{t('editor.dialog.fileSyncDenied')}</div>
+        ) : fileSync.status === 'error' ? (
+          <div className="ldlg-status ldlg-status--error">
+            {t('editor.dialog.fileSyncError', { reason: fileSync.error ?? '' })}
+          </div>
+        ) : null}
       </Section>
 
       <Section title={t('editor.dialog.modelSection')} actions={<span className="insp-char">LLM</span>}>

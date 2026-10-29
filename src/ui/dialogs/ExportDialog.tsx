@@ -31,6 +31,35 @@ interface Status {
   text: string
 }
 
+/** PNG 导出返回值里的失败页（导出内核可选，故用鸭子类型读取）。 */
+interface PngFailureInfo {
+  slideId: string
+  index: number
+  reason: string
+}
+
+function readPngFailures(result: unknown): PngFailureInfo[] {
+  if (!result || typeof result !== 'object') return []
+  const failed = (result as { failed?: unknown }).failed
+  if (!Array.isArray(failed)) return []
+  return failed.flatMap((item) => {
+    if (!item || typeof item !== 'object') return []
+    const record = item as Record<string, unknown>
+    if (typeof record.slideId !== 'string' || typeof record.index !== 'number') return []
+    return [
+      {
+        slideId: record.slideId,
+        index: record.index,
+        reason: typeof record.reason === 'string' ? record.reason : '',
+      },
+    ]
+  })
+}
+
+function pageList(failures: PngFailureInfo[]): string {
+  return failures.map((failure) => failure.index + 1).join('、')
+}
+
 export function ExportDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const t = useT()
   const deck = useDeckStore((s) => s.deck)
@@ -40,28 +69,44 @@ export function ExportDialog({ open, onClose }: { open: boolean; onClose: () => 
   const [status, setStatus] = useState<Status | null>(null)
   const [includeAssets, setIncludeAssets] = useState(true)
   const [includeNotes, setIncludeNotes] = useState(false)
+  const [compressAssets, setCompressAssets] = useState(true)
   const [scope, setScope] = useState<'all' | 'current'>('all')
+  /** PNG 逐幕失败清单：只重试这些页，不再整份重跑。 */
+  const [pngFailures, setPngFailures] = useState<PngFailureInfo[]>([])
 
   useEffect(() => {
     if (!open) return
     setStatus(null)
     setBusy(null)
+    setPngFailures([])
   }, [open, tab])
 
   const fileStem = deck ? slugify(deck.title || 'lumen-deck') : 'lumen-deck'
 
-  const runKernel = async (kind: ExportKind) => {
+  const runKernel = async (kind: ExportKind, overrides: Record<string, unknown> = {}) => {
     if (!deck) return
     setBusy(kind)
     const outcome = await runExporter(kind, deck, {
       includeAssets,
       includeNotes,
+      compressAssets,
       scope,
       scale: 2,
       fileName: fileStem,
+      ...overrides,
     })
     setBusy(null)
     if (outcome.status === 'ok') {
+      if (kind === 'png') {
+        const failures = readPngFailures(outcome.result)
+        setPngFailures(failures)
+        if (failures.length > 0) {
+          const text = t('export.pngFailedList', { pages: pageList(failures) })
+          setStatus({ kind: 'warn', text })
+          pushToast({ kind: 'info', message: text })
+          return
+        }
+      }
       setStatus({ kind: 'ok', text: t('export.done') })
       pushToast({ kind: 'success', message: t('export.done') })
       return
@@ -74,6 +119,39 @@ export function ExportDialog({ open, onClose }: { open: boolean; onClose: () => 
     const text = t('export.failed', { reason: outcome.error ?? '' })
     setStatus({ kind: 'error', text })
     pushToast({ kind: 'error', message: text })
+  }
+
+  /** 只重跑上一轮失败的那几幕；成功后清空清单。 */
+  const retryPngFailures = async () => {
+    if (!deck || pngFailures.length === 0) return
+    setBusy('png')
+    const outcome = await runExporter('png', deck, {
+      includeAssets,
+      includeNotes,
+      compressAssets,
+      scope,
+      scale: 2,
+      fileName: fileStem,
+      slideIds: pngFailures.map((failure) => failure.slideId),
+    })
+    setBusy(null)
+    if (outcome.status !== 'ok') {
+      const text =
+        outcome.status === 'missing'
+          ? t('editor.dialog.exportMissing')
+          : t('export.failed', { reason: outcome.error ?? '' })
+      setStatus({ kind: outcome.status === 'missing' ? 'warn' : 'error', text })
+      pushToast({ kind: outcome.status === 'missing' ? 'info' : 'error', message: text })
+      return
+    }
+    const failures = readPngFailures(outcome.result)
+    setPngFailures(failures)
+    if (failures.length > 0) {
+      setStatus({ kind: 'warn', text: t('export.pngFailedList', { pages: pageList(failures) }) })
+      return
+    }
+    setStatus({ kind: 'ok', text: t('export.pngRetryDone') })
+    pushToast({ kind: 'success', message: t('export.pngRetryDone') })
   }
 
   const exportProject = async () => {
@@ -156,6 +234,10 @@ export function ExportDialog({ open, onClose }: { open: boolean; onClose: () => 
                 <Switch checked={includeNotes} onCheckedChange={setIncludeNotes} label={t('export.includeNotes')} />
                 <span className="insp-note">{t('export.includeNotes')}</span>
               </span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <Switch checked={compressAssets} onCheckedChange={setCompressAssets} label={t('export.compressAssets')} />
+                <span className="insp-note">{t('export.compressAssets')}</span>
+              </span>
             </div>
           </Field>
           <div className="ldlg-actions">
@@ -219,6 +301,24 @@ export function ExportDialog({ open, onClose }: { open: boolean; onClose: () => 
           </div>
           {!exporterAvailable('png') ? (
             <div className="ldlg-status ldlg-status--warn">{t('editor.dialog.exportMissingHint')}</div>
+          ) : null}
+          {pngFailures.length > 0 ? (
+            <div className="ldlg-failures" data-png-failures={pngFailures.length}>
+              <div className="ldlg-failures__title">{t('export.pngFailedList', { pages: pageList(pngFailures) })}</div>
+              <ul>
+                {pngFailures.map((failure) => (
+                  <li key={`${failure.slideId}-${failure.index}`}>
+                    {t('export.pngFailureLine', {
+                      index: failure.index + 1,
+                      reason: failure.reason || '—',
+                    })}
+                  </li>
+                ))}
+              </ul>
+              <Button variant="outline" disabled={busy !== null} onClick={() => void retryPngFailures()}>
+                {t('export.pngRetry')}
+              </Button>
+            </div>
           ) : null}
         </div>
       ) : null}

@@ -10,6 +10,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import { useT } from '@/i18n'
+import { useSettingsStore } from '@/state/settingsStore'
+import { THEME_IDS, getTheme } from '@/themes'
 import type { RecipeId } from '@/schema/deck'
 import { CardFace } from '../cards/CardFace'
 import { RecipeRing } from '../cards/recipeRing'
@@ -18,13 +20,23 @@ import type { DealProps } from '../ui'
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 
+/** 标题硬上限与 reducer 对齐（§2 硬约束 3：headline 截 120）。 */
+const HEADLINE_MAX = 120
+/** 「这一幕想讲什么」上限与 `outlineSlideSchema.brief` 对齐（截 200）。 */
+const BRIEF_MAX = 200
+
 export function Deal(props: DealProps) {
   const t = useT()
+  const lang = useSettingsStore((s) => s.lang)
   const { slides } = props
   const compact = slides.length > 12
   const [focus, setFocus] = useState(0)
   const [ring, setRing] = useState<number | null>(null)
   const [dealing, setDealing] = useState(true)
+  /** 卡内标题的内联编辑（v0.2.5 §1 动作 3）：同一时刻只开一张。 */
+  const [editing, setEditing] = useState<number | null>(null)
+  const [headlineDraft, setHeadlineDraft] = useState('')
+  const closingRef = useRef(false)
 
   useEffect(() => {
     // 发牌动画只在新摊开大纲时播一次（mock：55ms×11 + 620ms）；之后换卡/换序不再重播。
@@ -96,6 +108,49 @@ export function Deal(props: DealProps) {
     [props, slides.length],
   )
 
+  /**
+   * 卡内改标题（v0.2.5 §1 动作 3）：同一时刻只开一张，开的时候顺手收起配方环。
+   * 焦点回收由 `wantFocus` 控制：输入期间一律不许把光标拽回卡片。
+   */
+  const openEdit = useCallback(
+    (index: number) => {
+      const slide = slides[index]
+      if (!slide) return
+      closingRef.current = false
+      setRing(null)
+      setFocus(index)
+      setEditing(index)
+      setHeadlineDraft(slide.headline)
+    },
+    [slides],
+  )
+
+  /** Enter / 失焦提交，Esc 取消；无论哪条路都把焦点还给这张卡，键盘链路不断。 */
+  const closeEdit = useCallback(
+    (commit: boolean) => {
+      const index = editing
+      if (index === null) return
+      if (commit) {
+        const value = headlineDraft.trim().slice(0, HEADLINE_MAX)
+        if (value !== '' && value !== (slides[index]?.headline ?? '')) props.onHeadline(index, value)
+      }
+      setEditing(null)
+      wantFocus.current = true
+      window.requestAnimationFrame(() => cardOf(index)?.focus({ preventScroll: true }))
+    },
+    [cardOf, editing, headlineDraft, props, slides],
+  )
+
+  /** 要点（brief）：唯一的用户 → 生成侧指令通道（§1 动作 3），失焦即提交。 */
+  const commitBrief = useCallback(
+    (index: number, value: string) => {
+      const next = value.trim().slice(0, BRIEF_MAX)
+      if (next === (props.outline?.slides[index]?.brief ?? '')) return
+      props.onBrief(index, next)
+    },
+    [props],
+  )
+
   const onCardKeyDown = (index: number) => (event: KeyboardEvent<HTMLElement>) => {
     const alt = event.altKey
     switch (event.key) {
@@ -129,7 +184,16 @@ export function Deal(props: DealProps) {
         event.preventDefault()
         remove(index)
         break
+      case 'F2':
+        // 只改标题，不动卡型：Enter 仍然是「换一张」（零网络、不计分）。
+        event.preventDefault()
+        openEdit(index)
+        break
       default:
+        if ((event.key === 'e' || event.key === 'E') && !alt && !event.ctrlKey && !event.metaKey) {
+          event.preventDefault()
+          openEdit(index)
+        }
         break
     }
   }
@@ -165,7 +229,72 @@ export function Deal(props: DealProps) {
         <button type="button" className="forge-ghost forge-deal__back" onClick={props.onBack}>
           {t('forge.deal.back')}
         </button>
+        {/* v0.2.5 §1 动作 2：大纲页头也能换设计预设（只在 seed/deal 有效，§2 硬约束 2）。 */}
+        <span
+          className="forge-deal__theme"
+          data-deal-theme={props.themeId}
+          role="radiogroup"
+          aria-label={t('forge.deal.theme')}
+        >
+          <span className="forge-deal__theme-label">{t('forge.deal.theme')}</span>
+          {THEME_IDS.map((id) => {
+            const theme = getTheme(id)
+            const on = props.themeId === id
+            const name = theme.name[lang]
+            return (
+              <button
+                key={id}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                className={on ? 'forge-deal__dot is-on' : 'forge-deal__dot'}
+                data-theme-id={id}
+                data-theme-accent={theme.colors.accent}
+                aria-label={name}
+                title={name}
+                onClick={() => props.onTheme(id)}
+              >
+                <span aria-hidden="true" style={{ background: theme.colors.accent }} />
+              </button>
+            )
+          })}
+        </span>
       </header>
+
+      {/*
+       * 要点编辑区（v0.2.5 §4 的 `data-brief-editor`）：跟着当前卡走，一屏只出现一个。
+       * 失焦提交、Enter 提交、Esc 放弃；Esc 必须 stopPropagation，否则整台造幕台会关掉。
+       */}
+      <div className="forge-deal__brief" data-brief-editor={focus}>
+        <span className="forge-deal__brief-label">{t('forge.deal.brief')}</span>
+        <textarea
+          key={`brief-${focus}`}
+          className="forge-deal__brief-field"
+          data-brief-field={focus}
+          defaultValue={props.outline?.slides[focus]?.brief ?? ''}
+          maxLength={BRIEF_MAX}
+          rows={1}
+          spellCheck={false}
+          placeholder={t('forge.deal.briefHint')}
+          aria-label={t('forge.deal.briefHint')}
+          onBlur={(event) => commitBrief(focus, event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              event.stopPropagation()
+              event.preventDefault()
+              event.currentTarget.value = props.outline?.slides[focus]?.brief ?? ''
+              event.currentTarget.blur()
+              return
+            }
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault()
+              event.stopPropagation()
+              commitBrief(focus, event.currentTarget.value)
+              event.currentTarget.blur()
+            }
+          }}
+        />
+      </div>
 
       <div
         ref={listRef}
@@ -182,6 +311,7 @@ export function Deal(props: DealProps) {
             role="presentation"
             key={`${slide.recipe}-${index}`}
             style={{ ['--i' as string]: index }}
+            onDoubleClick={() => openEdit(index)}
           >
             <CardFace
               index={index}
@@ -196,10 +326,78 @@ export function Deal(props: DealProps) {
               compact={compact}
               selected={focus === index}
               badge={cropped.has(index) ? 'more3d' : null}
-              onOpen={() => setRing(index)}
+              onOpen={() => {
+                setFocus(index)
+                setRing(index)
+              }}
               onRemove={() => remove(index)}
               onKeyDown={onCardKeyDown(index)}
             />
+
+            {/* 改标题：点击铅笔、双击卡面、或按 F2 / E（Enter 仍是「换一张」）。 */}
+            {editing !== index ? (
+              <button
+                type="button"
+                className="forge-deal__pencil"
+                data-deal-edit={index}
+                tabIndex={-1}
+                aria-label={slide.headline}
+                title={slide.headline}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  openEdit(index)
+                }}
+              >
+                <svg viewBox="0 0 12 12" width="9" height="9" aria-hidden="true" focusable="false">
+                  <path
+                    d="M1.4 10.6l.5-2.3 5.6-5.6 1.8 1.8-5.6 5.6-2.3.5z"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.1"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            ) : null}
+
+            {editing === index ? (
+              <input
+                className="forge-deal__edit"
+                data-deal-edit-field={index}
+                type="text"
+                value={headlineDraft}
+                maxLength={HEADLINE_MAX}
+                spellCheck={false}
+                autoComplete="off"
+                autoFocus
+                aria-label={slides[index].headline}
+                onChange={(event) => setHeadlineDraft(event.target.value)}
+                onBlur={() => {
+                  // Enter / Esc 已经关过这一次编辑：卸载引起的 blur 不再提交一遍。
+                  if (closingRef.current) {
+                    closingRef.current = false
+                    return
+                  }
+                  closeEdit(true)
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Escape') {
+                    event.stopPropagation()
+                    event.preventDefault()
+                    closingRef.current = true
+                    closeEdit(false)
+                    return
+                  }
+                  if (event.key === 'Enter') {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    closingRef.current = true
+                    closeEdit(true)
+                  }
+                }}
+              />
+            ) : null}
+
             {ring === index ? (
               <RecipeRing
                 current={slide.recipe}

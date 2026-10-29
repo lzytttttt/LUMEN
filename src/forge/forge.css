@@ -30,6 +30,14 @@
   --fx-stagger: 70ms;
   --fx-glow: 0 0 0 1px var(--ui-accent-line), 0 8px 32px color-mix(in srgb, var(--ui-accent) 16%, transparent);
 
+  /* v0.2.5（plan/v0.2.5/02 §6.1）：只补 5 个值，全部是 --fx-t* 体系的具名延长，不新立第三套 */
+  --fx-ring: 520ms; /* FX-1 落位冲击波 */
+  --fx-ring-fade: 120ms; /* FX-1 · L1 只淡出 */
+  --fx-close: 620ms; /* FX-7 弧线合拢 */
+  --fx-sweep: 640ms; /* FX-5 单张卡片扫光 */
+  --fx-card-stagger: 40ms; /* FX-5 卡片错峰 */
+  --fx-depth-z: 18px; /* FX-2 每层纵深 */
+
   /* 卡档（02 §5.2 / 04 §6.1）：常档 4×3 · 168×224；紧凑档 5×4 · 190×168 */
   --forge-card-w: 168px;
   --forge-card-h: 224px;
@@ -1325,6 +1333,127 @@
   }
 }
 
+/*
+ * FX-1 落位冲击波（v0.2.5 §6.1）：`slide:landed` 那一帧触发，520ms 缩放 + 淡出。
+ * 数据源与 `.forge-stage__ping` 同一个 `done`（只在 `slide:landed` 自增），元素由
+ * `key={shock-${done}-${active}}` 重挂载，所以"重播"永远对应一次真实落位。
+ * 与闷响环的分工：ping 是 320ms 贴面回弹（v0.2.0 基线，不动），shock 是 520ms 向外扩散。
+ */
+.forge-stage__shock {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: 800px;
+  height: 450px;
+  margin: -225px 0 0 -400px;
+  border: 1px solid color-mix(in srgb, var(--ui-accent) 62%, transparent);
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: forge-shock var(--fx-ring) var(--fx-ease-settle) 1 both;
+}
+
+/* L3：外环 + 一点柔光与 0.6px 失真；L2 同形态但无模糊（04 §1.3「模糊只在高档」）。 */
+.forge[data-forge-tier='L3'] .forge-stage__shock {
+  filter: blur(0.6px);
+  box-shadow: 0 0 28px color-mix(in srgb, var(--ui-accent) 24%, transparent);
+}
+
+.forge[data-forge-tier='L2'] .forge-stage__shock {
+  filter: none;
+  box-shadow: none;
+}
+
+.forge-stage__shock::before {
+  content: '';
+  position: absolute;
+  inset: -6%;
+  border: 1px solid color-mix(in srgb, var(--ui-accent-2) 34%, transparent);
+  border-radius: 50%;
+  opacity: 0;
+  animation: forge-shock-outer var(--fx-ring) var(--fx-ease-settle) 1 both;
+}
+
+@keyframes forge-shock {
+  0% {
+    opacity: 0.58;
+    transform: scale(0.72);
+  }
+  38% {
+    opacity: 0.34;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.34);
+  }
+}
+
+@keyframes forge-shock-outer {
+  0% {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  24% {
+    opacity: 0.42;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.14);
+  }
+}
+
+/* L1：只淡出（`--fx-ring-fade` 120ms），不做缩放、不留外环（04 §10.2「降运动幅度，不降信息」）。 */
+.forge[data-forge-tier='L1'] .forge-stage__shock {
+  animation: forge-shock-fade var(--fx-ring-fade) linear 1 both;
+}
+
+.forge[data-forge-tier='L1'] .forge-stage__shock::before {
+  display: none;
+}
+
+@keyframes forge-shock-fade {
+  0% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* L0 / `?still=1`：没有冲击波（回落表最后一列）。 */
+.forge[data-forge-tier='L0'] .forge-stage__shock,
+.forge[data-forge-still='1'] .forge-stage__shock {
+  display: none;
+}
+
+/*
+ * FX-2 完成栈深度：每层的 `--forge-depth`（0 = 栈顶）由 Assemble 写在行内。
+ * L3 → translateZ(-i·18px) + 逐层降亮（亮度是 v0.2.0 已有的行内 filter，这里只给它一条过渡）；
+ * L2 → 只降亮（压平，不做纵深）；L1/L0 → 不做纵深，保留 v0.2.0 的静态亮度终态。
+ */
+.forge[data-forge-tier='L3'] .forge-assemble__thumb {
+  transform: translateZ(calc(var(--forge-depth, 0) * var(--fx-depth-z) * -1));
+  transition: filter var(--fx-t3) var(--fx-ease), opacity var(--fx-t3) linear,
+    transform var(--fx-t3) var(--fx-ease-settle);
+}
+
+.forge[data-forge-tier='L2'] .forge-assemble__thumb {
+  transition: filter var(--fx-t3) var(--fx-ease), opacity var(--fx-t3) linear;
+}
+
+/* L2 / L1 / L0：纵深一律不出现（L0 另有整层 animation/transition 归零）。 */
+.forge[data-forge-tier='L2'] .forge-assemble__thumb,
+.forge[data-forge-tier='L1'] .forge-assemble__thumb,
+.forge[data-forge-tier='L0'] .forge-assemble__thumb {
+  transform: none;
+}
+
+/* FX-2 落位"递进"的看点是今次那 320ms 的亮度变化，`?still=1` 时只剩终态。 */
+.forge[data-forge-still='1'] .forge-assemble__thumb {
+  transition: none;
+}
+
 /* 右侧在铸幕：同尺寸 30% 影子，表达"两幕并行落下"（不透明度由 Assemble 写成行内） */
 .forge-stage__echo {
   position: absolute;
@@ -1551,6 +1680,7 @@
 }
 
 .forge-premiere__card {
+  position: relative;
   width: 160px;
   height: 90px;
   overflow: hidden;
@@ -1566,6 +1696,70 @@
 @keyframes forge-arc-in {
   from { translate: 0 34px; }
   to { translate: 0 0; }
+}
+
+/*
+ * FX-5 错峰序号：`--i` 由结构位置给出（纯 CSS，`Premiere.tsx` 不用改一行）。
+ * 20 是 `normalizeOutline` 的幕数上限（02 §5.2 的 5×4 紧凑档正好 20 位）。
+ */
+.forge-premiere__card:nth-child(1) { --i: 0; }
+.forge-premiere__card:nth-child(2) { --i: 1; }
+.forge-premiere__card:nth-child(3) { --i: 2; }
+.forge-premiere__card:nth-child(4) { --i: 3; }
+.forge-premiere__card:nth-child(5) { --i: 4; }
+.forge-premiere__card:nth-child(6) { --i: 5; }
+.forge-premiere__card:nth-child(7) { --i: 6; }
+.forge-premiere__card:nth-child(8) { --i: 7; }
+.forge-premiere__card:nth-child(9) { --i: 8; }
+.forge-premiere__card:nth-child(10) { --i: 9; }
+.forge-premiere__card:nth-child(11) { --i: 10; }
+.forge-premiere__card:nth-child(12) { --i: 11; }
+.forge-premiere__card:nth-child(13) { --i: 12; }
+.forge-premiere__card:nth-child(14) { --i: 13; }
+.forge-premiere__card:nth-child(15) { --i: 14; }
+.forge-premiere__card:nth-child(16) { --i: 15; }
+.forge-premiere__card:nth-child(17) { --i: 16; }
+.forge-premiere__card:nth-child(18) { --i: 17; }
+.forge-premiere__card:nth-child(19) { --i: 18; }
+.forge-premiere__card:nth-child(20) { --i: 19; }
+
+/*
+ * FX-5 卡片扫光（v0.2.5 §6.1）：开演席首帧（`data-forge='premiere'` 由 `deck:done` 置位）起跑，
+ * 每张卡 40ms 错峰、单张 640ms 单向扫过。纯 CSS，不新增节点、不新增文字。
+ */
+.forge-premiere__card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    104deg,
+    transparent 22%,
+    color-mix(in srgb, var(--ui-accent) 30%, transparent) 46%,
+    transparent 70%
+  );
+  clip-path: inset(0 100% 0 0);
+  opacity: 0;
+  animation: forge-card-sweep var(--fx-sweep) var(--fx-ease) both;
+  animation-delay: calc(var(--i, 0) * var(--fx-card-stagger));
+}
+
+@keyframes forge-card-sweep {
+  0% {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  18% {
+    opacity: 0.8;
+  }
+  62% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    clip-path: inset(0 0 0 0);
+  }
 }
 
 .forge-premiere__card .lumen-slide {
@@ -1596,6 +1790,60 @@
 
 .forge-premiere__grid .forge-premiere__card .lumen-slide {
   transform: scale(0.08);
+}
+
+/*
+ * FX-7 完成收束（v0.2.5 §6.1）：`deck:done` → `phase='premiere'` → `.forge[data-forge='premiere']`。
+ * 触发链全在状态机里（`forgeMark`），CSS 只负责把弧线收进来，不设任何延迟。
+ */
+.forge[data-forge='premiere'][data-forge-tier='L3'] .forge-premiere__arc,
+.forge[data-forge='premiere'][data-forge-tier='L3'] .forge-premiere__grid {
+  animation: forge-arc-close var(--fx-close) var(--fx-ease-settle) both;
+}
+
+@keyframes forge-arc-close {
+  0% {
+    opacity: 0.42;
+    scale: 1.03;
+  }
+  55% {
+    opacity: 0.92;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* L2 / L1：只收不透明度（320ms），不做缩放——"降的是运动幅度，不降发生了什么"（04 §10.2）。 */
+.forge[data-forge='premiere'][data-forge-tier='L2'] .forge-premiere__arc,
+.forge[data-forge='premiere'][data-forge-tier='L2'] .forge-premiere__grid,
+.forge[data-forge='premiere'][data-forge-tier='L1'] .forge-premiere__arc,
+.forge[data-forge='premiere'][data-forge-tier='L1'] .forge-premiere__grid {
+  animation: forge-premiere-fade var(--fx-t3) var(--fx-ease) both;
+}
+
+@keyframes forge-premiere-fade {
+  0% {
+    opacity: 0.42;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* FX-5 的档位回落：L1 只淡入（没有扫光），L0 / still 没有入场动画。 */
+.forge[data-forge-tier='L1'] .forge-premiere__card {
+  animation-name: forge-fade-in;
+  animation-duration: var(--fx-t3);
+  animation-timing-function: var(--fx-ease);
+  animation-delay: 0ms;
+}
+
+.forge[data-forge-tier='L1'] .forge-premiere__card::after,
+.forge[data-forge-tier='L0'] .forge-premiere__card::after,
+.forge[data-forge-still='1'] .forge-premiere__card::after {
+  display: none;
 }
 
 /* 压角：只留中央约 40% 亮区，盖在卡片之上、按钮之下（04 §3.3） */
@@ -1697,6 +1945,82 @@
   background: linear-gradient(180deg, var(--ui-danger) 0 36%, transparent 36% 64%, var(--ui-danger) 64% 100%);
   box-shadow: none;
   opacity: 1;
+}
+
+/*
+ * FX-3 环形进度（v0.2.5 §6.1）：`stroke-dashoffset` 是 `prog` 的直接读数，
+ * 由 `hud/Pulse.tsx` 的 `pulseRingOffset()` 算好写进属性——这里只给一条与柱高同款的过渡。
+ * L3/L2 → 环；L1 → 线性条；L0 / `?still=1` → 静态条（数值仍是真 prog，只是不过渡）。
+ */
+.forge-pulse__ring {
+  display: none;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  color: var(--ui-accent);
+}
+
+.forge[data-forge-tier='L3'] .forge-pulse__ring,
+.forge[data-forge-tier='L2'] .forge-pulse__ring {
+  display: grid;
+}
+
+.forge-pulse__ring svg {
+  display: block;
+  transform: rotate(-90deg);
+}
+
+.forge-pulse__ring-track,
+.forge-pulse__ring-arc {
+  fill: none;
+  stroke-width: 2;
+}
+
+.forge-pulse__ring-track {
+  stroke: color-mix(in srgb, var(--ui-fg) 16%, transparent);
+}
+
+.forge-pulse__ring-arc {
+  stroke: var(--ui-accent);
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--fx-t3) var(--fx-ease), stroke var(--fx-t1) linear;
+}
+
+.forge-pulse[data-bad='1'] .forge-pulse__ring-arc {
+  stroke: var(--ui-danger);
+}
+
+.forge-pulse__linear {
+  display: none;
+  width: 44px;
+  height: 2px;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--ui-fg) 14%, transparent);
+  overflow: hidden;
+}
+
+.forge[data-forge-tier='L1'] .forge-pulse__linear,
+.forge[data-forge-tier='L0'] .forge-pulse__linear {
+  display: block;
+}
+
+.forge-pulse__linear > i {
+  display: block;
+  height: 100%;
+  transform-origin: 0 50%;
+  transform: scaleX(var(--p, 0));
+  background: var(--ui-accent);
+  transition: transform var(--fx-t3) var(--fx-ease), background var(--fx-t1) linear;
+}
+
+.forge-pulse[data-bad='1'] .forge-pulse__linear > i {
+  background: var(--ui-danger);
+}
+
+/* L0 / still：静态条——保留读数，去掉过渡与发光。 */
+.forge[data-forge-tier='L0'] .forge-pulse__linear > i,
+.forge[data-forge-still='1'] .forge-pulse__linear > i {
+  transition: none;
 }
 
 /* 慢态标签：1200ms 才出现，同一时刻只有一个（04 §4.2） */
@@ -1902,9 +2226,23 @@
 
 .forge[data-forge-tier='L0'] *,
 .forge[data-forge-tier='L0'] *::before,
-.forge[data-forge-tier='L0'] *::after {
+.forge[data-forge-tier='L0'] *::after,
+.forge[data-forge-still='1'] *,
+.forge[data-forge-still='1'] *::before,
+.forge[data-forge-still='1'] *::after {
   animation: none !important;
   transition: none !important;
+}
+
+/*
+ * v0.2.5 新增动效的 L0 / `?still=1` 兜底：冲击波与卡片扫光直接不出现
+ * （回落表最后一列是「无」，不是「快一点」）。L1 的形态切换见各段自己的规则。
+ */
+.forge[data-forge-tier='L0'] .forge-stage__shock,
+.forge[data-forge-tier='L0'] .forge-premiere__card::after,
+.forge[data-forge-still='1'] .forge-stage__shock,
+.forge[data-forge-still='1'] .forge-premiere__card::after {
+  display: none;
 }
 
 .forge[data-forge-tier='L0'] .forge-stage {
@@ -1930,6 +2268,29 @@
 
   .forge-pulse__label {
     animation-delay: 0ms !important;
+  }
+
+  /*
+   * v0.2.5：减少动效取各条回落表的「L1 列」——冲击波只淡出、卡片不扫光、
+   * 开演席只做不透明度收束、完成栈没有纵深（04 §10.2 的同一原则）。
+   */
+  .forge-stage__shock {
+    animation-name: forge-shock-fade !important;
+    animation-duration: var(--fx-ring-fade) !important;
+  }
+
+  .forge-stage__shock::before,
+  .forge-premiere__card::after {
+    display: none;
+  }
+
+  .forge[data-forge='premiere'] .forge-premiere__arc,
+  .forge[data-forge='premiere'] .forge-premiere__grid {
+    animation-name: forge-premiere-fade !important;
+  }
+
+  .forge-assemble__thumb {
+    transform: none !important;
   }
 }
 

@@ -33,6 +33,20 @@ export const forgeZh = {
     clear: '清空',
     offline: '离线',
     lang: '中',
+    /* v0.2.5 §5：材料先于提示词（词汇表定稿，不许自创） */
+    materials: '材料',
+    materialAdd: '加料',
+    materialPaste: '粘贴',
+    materialUrl: '网址',
+    materialFile: '文件',
+    /* v0.2.5 §5：受众与设计预设 */
+    audience: '受众',
+    audienceExec: '高管',
+    audienceTeam: '团队',
+    audienceClient: '客户',
+    audienceClass: '课堂',
+    theme: '预设',
+    reuse: '最近',
   },
   deal: {
     count: '{count} 幕',
@@ -47,6 +61,10 @@ export const forgeZh = {
     back: '退回',
     add: '加一幕',
     remove: '删幕',
+    /* v0.2.5 §5：逐幕编辑（标题 = 卡内联，要点 = brief 编辑区） */
+    brief: '要点',
+    briefHint: '讲什么',
+    theme: '预设',
   },
   card: {
     cover: '启幕',
@@ -79,6 +97,11 @@ export const forgeZh = {
     },
     progress: '{done}/{total}',
     cancel: '取消',
+    /* v0.2.5 §5：生成中纠偏（队列在下一幕边界生效） */
+    steer: '纠偏',
+    steerHint: '下一幕起',
+    steerUndo: '撤销',
+    steerQueued: '已排队 {n}',
   },
   error: {
     notConfigured: '未配端点',
@@ -90,6 +113,9 @@ export const forgeZh = {
     emptyOutline: '大纲为空',
     schemaFailed: '结构不符',
     storeDegraded: '存档不可用',
+    materialTooLong: '材料过长',
+    materialFailed: '读取失败',
+    materialLimit: '材料已满',
     action: {
       settings: '设置',
       retry: '重试',
@@ -136,8 +162,8 @@ export const forgeZh = {
   premiere: {
     start: '播放',
     again: '再来一套',
-    back: '回编辑器',
-    edit: '编辑',
+    edit: '继续编辑',
+    more: '再加几幕',
     exit: '退出',
   },
   combo: {

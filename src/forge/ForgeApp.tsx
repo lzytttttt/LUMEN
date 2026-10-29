@@ -35,8 +35,13 @@ import { Deal } from './stage/Deal'
 import { Assemble } from './stage/Assemble'
 import { Gate } from './stage/Gate'
 import { Premiere } from './stage/Premiere'
-import type { ForgeTier, ForgeStageEvent } from './types'
+import type { ForgeTier, ForgeStageEvent, MaterialKind, ReuseEntry } from './types'
+import { makeMaterial } from './materials'
+import { makeSteerNote } from './steer'
+import { loadReuse, pushReuse } from './sessions'
+import { SteerBar } from './stage/SteerBar'
 import './forge.css'
+import './flow.css'
 
 const ERROR_KEYS: Partial<Record<string, MessageKey>> = {
   notConfigured: 'forge.error.notConfigured',
@@ -87,6 +92,12 @@ export function ForgeApp({ onClose, initialPrompt }: ForgeAppProps) {
       lang,
       prompt: initialPrompt ?? '',
       autoPremiere: forgeSettings.autoPremiere && !still,
+      /*
+       * `themeId` 故意不从 deck 预热（保持 ''）：'' 的语义就是「跟随当前 deck」，
+       * 而 composeOutline 会把非空 themeId 写进 user JSON —— 默认值下必须与 v0.2.0 逐字节一致，
+       * 否则 `?channel=replay` 的严格 digest 会整片 miss（tests/e2e/forge-flow.spec.ts 第一条就红）。
+       * 界面要点亮哪一枚，用下面渲染段的 `themeId` 现算。
+       */
     }),
   )
   const stateRef = useRef(state)
@@ -203,6 +214,19 @@ export function ForgeApp({ onClose, initialPrompt }: ForgeAppProps) {
     }
   }, [])
 
+  // 「最近一套」是异步灌入的（初始 []）：kv 坏数据由 sessions.ts 自己吞掉，这里只管展示。
+  useEffect(() => {
+    let alive = true
+    void loadReuse()
+      .then((entries) => {
+        if (alive) dispatch({ type: 'reuse', entries })
+      })
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+  }, [])
+
   // 焦点进入：优先输入框，其次首卡/首按钮。
   useEffect(() => {
     const node = rootRef.current?.querySelector<HTMLElement>('[data-forge-autofocus], input, button')
@@ -308,6 +332,23 @@ export function ForgeApp({ onClose, initialPrompt }: ForgeAppProps) {
       game.castComplete(nextDeck, warnings)
       game.gatePass(summary, nextDeck.id)
       markForgeStep(2)
+
+      // v0.2.5 §1 动作 5：完成的一套进「最近一套」（只存大纲级别，不存成品 Deck）。
+      const current = stateRef.current
+      const outline = current.outline
+      if (outline) {
+        void pushReuse({
+          title: nextDeck.title,
+          prompt: current.prompt,
+          themeId: nextDeck.themeId,
+          count: nextDeck.slides.length,
+          outline,
+        })
+          .then((entries) => {
+            if (mountedRef.current) dispatch({ type: 'reuse', entries })
+          })
+          .catch(() => {})
+      }
     },
     [game],
   )
@@ -396,6 +437,10 @@ export function ForgeApp({ onClose, initialPrompt }: ForgeAppProps) {
           durationMin: current.durationMin,
           includeSvg: current.includeSvg,
           include3d: current.include3d,
+          // v0.2.5：材料先于提示词（§3.4：compose 只取 label + 正文，截断由 prompts 负责）。
+          materials: current.materials,
+          audience: current.audience,
+          themeId: current.themeId || undefined,
         },
         {
           signal: controller.signal,
@@ -422,17 +467,22 @@ export function ForgeApp({ onClose, initialPrompt }: ForgeAppProps) {
 
   const runCast = useCallback(async () => {
     const current = stateRef.current
-    if (!current.outline || current.busy) return
+    const outline = current.outline
+    if (!outline || current.busy) return
     const controller = new AbortController()
     abortRef.current = controller
     clearPacing()
     dispatch({ type: 'cast' })
     try {
-      const result = await buildDeckFromOutline(current.outline, {
+      const result = await buildDeckFromOutline(outline, {
         prompt: current.prompt,
         signal: controller.signal,
         persist: false,
         onStage: onPipelineEvent,
+        themeId: current.themeId || undefined,
+        materials: current.materials,
+        // §3.4：每幕开始前重取一次大纲 —— 纠偏就是在这一幕边界上生效的。
+        liveOutline: () => stateRef.current.outline ?? outline,
       })
       if (!mountedRef.current) return
       warningsRef.current = result.warnings
@@ -510,6 +560,33 @@ export function ForgeApp({ onClose, initialPrompt }: ForgeAppProps) {
 
   playRef.current = play
 
+  /**
+   * 开演席「继续编辑」：先落库，再把编辑器定位到这一套，最后关台。
+   * 与「回编辑器」的差别就在 `setActiveSlide` —— 回去时看得见刚生成的那一套。
+   */
+  const edit = useCallback(() => {
+    persistRef.current()
+    const firstId = useDeckStore.getState().deck?.slides[0]?.id ?? null
+    if (stateRef.current.phase === 'premiere') void kvDel('forge', 'draft')
+    game.close()
+    useUiStore.getState().setActiveSlide(firstId)
+    useUiStore.getState().setMode('edit')
+    onClose()
+  }, [game, onClose])
+
+  /**
+   * 开演席「再加几幕」：回大纲并追加 3 幕。
+   * 只借用现成的 `stop`（保留 outline 与已落位幕、把 phase 拉回 deal），不新造回退动作；
+   * `stopped` 会被下一次 `cast` 复位，不会留在台面上。
+   */
+  const more = useCallback(() => {
+    clearPacing()
+    dispatch({ type: 'stop' })
+    dispatch({ type: 'add' })
+    dispatch({ type: 'add' })
+    dispatch({ type: 'add' })
+  }, [clearPacing])
+
   const close = useCallback(() => {
     clearPacing()
     abortRef.current?.abort()
@@ -535,6 +612,43 @@ export function ForgeApp({ onClose, initialPrompt }: ForgeAppProps) {
     dispatch({ type: 'outline', outline: draft.outline })
     setDraft(null)
   }, [draft])
+
+  /* --------------------------- v0.2.5 的五个动作 --------------------------- */
+
+  /** 动作 1：加材料。截断 / tokens / label 兜底全由 makeMaterial 负责（§3.1）。 */
+  const addMaterial = useCallback((input: { kind: MaterialKind; label: string; text: string }) => {
+    dispatch({ type: 'material:add', material: makeMaterial(input) })
+  }, [])
+  const removeMaterial = useCallback((id: string) => dispatch({ type: 'material:remove', id }), [])
+
+  /** 动作 2：受众 + 设计预设（reducer 只在 seed/deal 认这份主题，casting 期间自动忽略）。 */
+  const setAudience = useCallback((value: string) => dispatch({ type: 'audience', value }), [])
+  const setTheme = useCallback((themeId: string) => dispatch({ type: 'theme', themeId }), [])
+
+  /** 动作 3：逐幕改标题 / 要点。 */
+  const setHeadline = useCallback((index: number, value: string) => dispatch({ type: 'headline', index, value }), [])
+  const setBrief = useCallback((index: number, value: string) => dispatch({ type: 'brief', index, value }), [])
+
+  /**
+   * 动作 4：生成中纠偏。fromIndex = 下一个幕边界（`done + 1`）：
+   * 池化并发是 2，`slides[done]` 通常已经在铸，真正还没开工的是再下一幕（§3.2「下一幕边界」）。
+   */
+  const steer = useCallback((text: string) => {
+    const current = stateRef.current
+    if (current.phase !== 'casting') return
+    const last = Math.max(current.slides.length - 1, 0)
+    const note = makeSteerNote(text, Math.min(current.done + 1, last))
+    if (note) dispatch({ type: 'steer', note })
+  }, [])
+  const undoSteer = useCallback((id: string) => dispatch({ type: 'steer:remove', id }), [])
+
+  /** 动作 5：最近一套（只回灌大纲级别的三件：prompt / theme / outline）。 */
+  const reuseDeck = useCallback((entry: ReuseEntry) => {
+    dispatch({ type: 'prompt', value: entry.prompt })
+    dispatch({ type: 'theme', themeId: entry.themeId })
+    dispatch({ type: 'outline', outline: entry.outline })
+    setDraft(null)
+  }, [])
 
   /* -------------------------------- 键盘 -------------------------------- */
 
@@ -614,6 +728,8 @@ export function ForgeApp({ onClose, initialPrompt }: ForgeAppProps) {
             ? t('forge.cast.stage.outline')
             : null
   const accent = getTheme(deck?.themeId).colors.accent
+  /** `''` 的语义是「跟随当前 deck」（§3.5）；这里换成 UI 真正要点亮的那一枚。 */
+  const themeId = state.themeId || (deck?.themeId ?? '')
 
   return (
     <div
@@ -661,8 +777,17 @@ export function ForgeApp({ onClose, initialPrompt }: ForgeAppProps) {
             busy={state.busy}
             hasDraft={Boolean(draft)}
             error={state.error}
+            materials={state.materials}
+            audience={state.audience}
+            themeId={themeId}
+            reuse={state.reuse}
             onPrompt={(value) => dispatch({ type: 'prompt', value })}
             onOption={(patch) => dispatch({ type: 'option', patch })}
+            onMaterialAdd={addMaterial}
+            onMaterialRemove={removeMaterial}
+            onAudience={setAudience}
+            onTheme={setTheme}
+            onReuse={reuseDeck}
             onLang={() => {
               const next = state.lang === 'zh' ? 'en' : 'zh'
               dispatch({ type: 'option', patch: { lang: next } })
@@ -693,6 +818,10 @@ export function ForgeApp({ onClose, initialPrompt }: ForgeAppProps) {
             slides={state.slides}
             cropped3d={state.cropped3d}
             tier={tier}
+            themeId={themeId}
+            onTheme={setTheme}
+            onHeadline={setHeadline}
+            onBrief={setBrief}
             onSwap={(index) => dispatch({ type: 'swap', index })}
             onRemove={(index) => dispatch({ type: 'remove', index })}
             onAdd={() => dispatch({ type: 'add' })}
@@ -723,6 +852,17 @@ export function ForgeApp({ onClose, initialPrompt }: ForgeAppProps) {
               onPlay={play}
             />
             <Gate slides={state.slides} active={state.active} tier={tier} onRecast={(index) => void recast(index)} />
+            {/* v0.2.5 §1 动作 4：纠偏只在这一段出现（大纲定稿之后、开演之前）。 */}
+            <div className="forge__steer-slot">
+              <SteerBar
+                done={state.done}
+                total={state.total}
+                notes={state.steer}
+                busy={state.busy}
+                onSteer={steer}
+                onUndo={undoSteer}
+              />
+            </div>
           </>
         ) : null}
 
@@ -733,7 +873,8 @@ export function ForgeApp({ onClose, initialPrompt }: ForgeAppProps) {
             tier={tier}
             accent={accent}
             onPlay={play}
-            onBack={close}
+            onEdit={edit}
+            onMore={more}
             onAgain={again}
           />
         ) : null}

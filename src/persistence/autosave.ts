@@ -4,6 +4,7 @@
  */
 import { useDeckStore } from '@/state/deckStore'
 import { saveDeck } from './decks'
+import { flushDeckFileWrite, queueDeckFileWrite } from './fileSync'
 
 let installed = false
 
@@ -19,7 +20,11 @@ export function startAutosave(): () => void {
     const state = useDeckStore.getState()
     if (!state.deck || !pending) return
     pending = false
-    void saveDeck(state.deck)
+    const deck = state.deck
+    void saveDeck(deck).then(() => {
+      // 关联了本地文件时顺带镜像一份；没有关联是零开销 no-op。
+      queueDeckFileWrite(deck)
+    })
   }
 
   const schedule = () => {
@@ -36,9 +41,15 @@ export function startAutosave(): () => void {
   })
 
   const onHide = () => {
-    if (document.visibilityState === 'hidden') flush()
+    if (document.visibilityState === 'hidden') {
+      flush()
+      void flushDeckFileWrite()
+    }
   }
-  const onUnload = () => flush()
+  const onUnload = () => {
+    flush()
+    void flushDeckFileWrite()
+  }
   document.addEventListener('visibilitychange', onHide)
   window.addEventListener('beforeunload', onUnload)
 

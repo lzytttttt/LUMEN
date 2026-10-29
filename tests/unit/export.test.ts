@@ -127,6 +127,13 @@ describe('standalone: HTML 骨架', () => {
     expect(html).toContain('#print')
   })
 
+  it('carries a deny-by-default CSP and the source license notice', () => {
+    expect(html).toContain('http-equiv="Content-Security-Policy"')
+    expect(html).toContain("default-src 'none'")
+    expect(html).toContain('Apache-2.0 + Commons Clause')
+    expect(html).toContain('CC BY-NC 4.0')
+  })
+
   it('keeps a hostile title from closing the inline script', () => {
     const hostile = composeStandaloneHtml({
       title: '</script><img src=x onerror=alert(1)>',

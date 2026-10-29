@@ -12,7 +12,7 @@
 | 播放器内核 `public/player/*` 是构建产物且被 gitignore | `scripts/build-player.mjs`、`vite.player.config.ts` | `pnpm build` 的 `prebuild` 会先生成它，**不要**把 `public/` 加进 `.vercelignore` |
 | `build` = `tsc --noEmit && vite build` | `package.json` | 需要 devDependencies（typescript/@types），CI 不要跳过 devDeps |
 | 无 react-router、无 pushState | `src/portal/PortalApp.tsx`、`src/export/*` | 不需要 SPA catch-all rewrite；导航靠相对链接与 query 参数 |
-| 数据在 IndexedDB，模型端点由用户自填 | `README.md` 隐私段 | Vercel 侧**零环境变量**，不需要 `api/`、不需要 serverless function |
+| 数据在 IndexedDB，模型端点由用户自填 | `README.md` 隐私段 | 默认零环境变量；`api/llm-proxy.ts` 是**可选**的 Edge 转发，不部署也不影响静态站点 |
 
 ## 方案 A：Git 导入（推荐，推一次就有预览 + 生产）
 
@@ -59,7 +59,7 @@ CLI 走的是本地上传 → 云端构建，因此 `.vercelignore` 生效：`do
   "buildCommand": "pnpm build",
   "outputDirectory": "dist",
   "rewrites": [{ "source": "/portal", "destination": "/portal.html" }],
-  "headers": [ /* 静态资源长缓存 + 三个基础安全头 */ ]
+  "headers": [ /* 静态资源长缓存 + 基础安全头 + CSP */ ]
 }
 ```
 
@@ -71,13 +71,31 @@ CLI 走的是本地上传 → 云端构建，因此 `.vercelignore` 生效：`do
 - **没有** `/(.*)` → `/index.html` 的 catch-all：本项目无前端路由，加了只会把 404 伪装成 200。将来接入 react-router 时再加：
   `{ "source": "/((?!assets/|player/|portal/).*)", "destination": "/index.html" }`
 
-## 五个常见坑
+## PWA 与离线缓存
+
+- `public/manifest.webmanifest` + `public/icons/*` 让站点可"安装为应用"；`public/sw.js` 是手写 Service Worker，生产构建自动注册（`src/pwa/register.ts`），dev 不注册。构建会额外产出 `dist/asset-manifest.json`（Vite `build.manifest`），SW 在 install 时按它预缓存全部 chunk（含 three / CodeMirror 等动态块），所以首次在线访问后断网也能启动。
+- 缓存策略：HTML 导航 **network-first**（离线回退最近缓存与内联兜底页）；同源静态资源 **stale-while-revalidate**；`/player/*`、`?print=1`、带 Range 的请求、跨域请求**一律不接管**（AI 流式响应与鉴权头不进缓存）。`cache.match` 使用 `ignoreVary`，避免 `Vary: Origin` 造成离线假阴性。
+- 改了 `sw.js` 记得升 `SW_VERSION`；`activate` 只清理 `lumen-` 前缀的旧缓存，不碰同源其它应用。
+- 部署验收：DevTools → Application → Manifest 无报错；Service Workers 状态 activated；断网刷新仍能进入工作台并打开已缓存演示。
+
+## 可选：CORS 转发函数（`api/llm-proxy.ts`）
+
+纯静态部署时它不会生效，也不会被加载。只有当你需要浏览器直连某个被 CORS 拦截的 OpenAI 兼容端点时：
+
+1. Vercel 会自动把 `api/llm-proxy.ts` 识别为 Edge Function；
+2. 在 Project → Settings → Environment Variables 配 `LUMEN_PROXY_ALLOWLIST`（逗号分隔的额外主机名；默认已含 OpenAI / DeepSeek / OpenRouter / Moonshot / SiliconFlow / 通义 / Groq / Mistral / Gemini）；
+3. 需要限制来源时配 `LUMEN_PROXY_ORIGINS`（逗号分隔；不配则允许任意 Origin）；
+4. 应用里把 baseURL 设为 `https://<你的域名>/api/llm-proxy`，请求头带 `x-lumen-upstream: https://api.deepseek.com/v1/chat/completions`。
+
+安全边界：只允许 `https`、拒绝私网/回环地址与 URL 内嵌凭据、不跟随重定向、不转发 Cookie/Origin/Referer、请求体上限 8MB、无日志无落盘。**不要**把 `LUMEN_PROXY_ALLOWLIST` 设成 `*` 后公开部署——那会变成开放代理。
+
+
 
 1. **`public/player` 是 gitignored 的构建产物**。别在 `.vercelignore` 里写 `public/`，也别把 `build` 改成 `vite build`（会跳过 `prebuild`，产物缺 `lumen-player.js`，导出 HTML 直接坏）。
 2. **不要给构建环境设 `NODE_ENV=production`**。会让 pnpm 跳过 devDependencies，`tsc` 和 `@types/*` 缺席，`tsc --noEmit` 直接失败。
 3. **lockfile 版本**：`pnpm-lock.yaml` 是 `lockfileVersion 9.0`，需 pnpm ≥ 9。若日志出现 unsupported lockfile version，在 `package.json` 加 `"packageManager": "pnpm@<本地 pnpm -v 的输出>"`，或把 `installCommand` 换成 `pnpm install --no-frozen-lockfile`。
 4. **单文件 HTML 里的模型端点**：Vercel 是 HTTPS，浏览器会拦截 `http://` 混合内容。本地 Ollama 端点（`http://127.0.0.1:11434`）在生产页面里不可直连——要不给端点套 HTTPS 反代，要不继续用 Mock / `?channel=replay` 离线通道。
-5. **CSP 别乱加**：编辑器依赖 `data:` / `blob:` / `iframe srcdoc` / 内联样式，过紧的 `Content-Security-Policy` 会让 SVG/3D 画布与播放器白屏。要加就单独一份，先在 Preview 上跑 `pnpm e2e` 再上生产。
+5. **CSP 已落地，改动要跟着改策略**：`vercel.json` 的 CSP 放行了 `'unsafe-inline'`（内联样式/脚本）、`data:` / `blob:`（素材与 3D 抓帧）、`frame-src 'self' data: blob:`（HTML 块 srcdoc）、`connect-src https: http: ws: wss:`（第三方模型端点 + 本地 Ollama）。收紧 `connect-src` 会直接打断模型调用；收紧 `img-src`/`frame-src` 会让 SVG/3D 画布与播放器白屏。改完先在 Preview 跑 `pnpm e2e` 再上生产。
 
 ## 验收清单
 
@@ -87,3 +105,5 @@ CLI 走的是本地上传 → 云端构建，因此 `.vercelignore` 生效：`do
 - [ ] `?channel=replay&speed=0` 离线回放正常（证明无隐形后端依赖）
 - [ ] 刷新深链 `?strict=0` / `?portal=1` 不 404
 - [ ] Preview 域名与生产域名表现一致（相对 `base` 的收益）
+- [ ] Application → Manifest 无报错；Service Worker activated；`asset-manifest.json` 200；断网刷新仍能进入工作台（首次在线访问后）
+- [ ] 安全头：响应含 `Content-Security-Policy`、`X-Content-Type-Options`、`Permissions-Policy`；CSP 没有阻断编辑器/3D/导出（用 `pnpm e2e` 的 export/print 用例复核）

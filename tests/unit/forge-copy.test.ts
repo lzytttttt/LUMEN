@@ -66,11 +66,21 @@ function classOf(key: string): Klass {
   if (key.startsWith('cast.stage.')) return 'A'
   if (B_MAIN.has(key)) return 'B_MAIN'
   if (key === 'seed.placeholder' || key.startsWith('seed.sample')) return 'D'
+  // v0.2.5 §5：两条输入占位提示。D 类的定义就是「示例句、占位符」（09 §2.0），
+  // 且 C 类的英文预算（3 汉字 → 9 符）装不下 "What it says"（12 符，emWidth 比值 2.03×）。
+  if (key === 'deal.briefHint' || key === 'cast.steerHint') return 'D'
   if (key === 'seed.resume') return 'C'
   if (key.startsWith('error.') || key.startsWith('gate.code.') || key.startsWith('ach.')) return 'C'
+  // v0.2.5 起 `premiere.back`（回编辑器）已并入 `premiere.edit`，这条只为历史 key 留位。
   if (key === 'premiere.again' || key === 'premiere.back') return 'C'
+  // v0.2.5 §5 的 C 类新增项：四字标签，按 6 汉字 / 12 符上限走（不是放宽 B 类）。
+  if (key === 'premiere.edit' || key === 'premiere.more') return 'C'
   if (key.startsWith('settings.')) return 'C'
-  if (['deal.count', 'cast.progress', 'deal.dup', 'combo.count', 'gate.count'].includes(key)) return 'F'
+  if (
+    ['deal.count', 'cast.progress', 'deal.dup', 'combo.count', 'gate.count', 'cast.steerQueued'].includes(key)
+  ) {
+    return 'F'
+  }
   return 'B'
 }
 
@@ -193,7 +203,15 @@ describe('forge 文案 · 字数上限', () => {
 
   it('keeps D-class user-content previews at 14 汉字 / 28 符', () => {
     const keys = KEYS.filter((key) => classOf(key) === 'D')
-    expect(keys).toEqual(['seed.placeholder', 'seed.sample1', 'seed.sample2', 'seed.sample3'])
+    // v0.2.5 追加两条输入占位提示（brief / steer），仍是「示例句、占位符」这一族。
+    expect(keys).toEqual([
+      'cast.steerHint',
+      'deal.briefHint',
+      'seed.placeholder',
+      'seed.sample1',
+      'seed.sample2',
+      'seed.sample3',
+    ])
     for (const key of keys) {
       expect(cjk(ZH[key]), `zh:${key}`).toBeLessThanOrEqual(14)
       expect(EN[key].length, `en:${key}`).toBeLessThanOrEqual(28)
@@ -367,6 +385,13 @@ describe('forge 文案 · 文字预算（data-forge-text 计数）', () => {
     expect(countOf(hud, 'data-forge-tier-chip')).toBe(1)
   })
 
+  // v0.2.5 §4：材料篮与纠偏条一个字都不许进文字预算（标签全走 ghost 级小字）。
+  it('keeps the two v0.2.5 panels at 0 text blocks', () => {
+    for (const file of ['src/forge/stage/Materials.tsx', 'src/forge/stage/SteerBar.tsx']) {
+      expect(countOf(source(file), 'data-forge-text'), file).toBe(0)
+    }
+  })
+
   it('exposes the frozen DOM hooks the e2e suite depends on', () => {
     const app = source('src/forge/ForgeApp.tsx')
     expect(app).toContain('data-forge={mark}')
@@ -390,10 +415,13 @@ describe('forge 文案 · 文字预算（data-forge-text 计数）', () => {
 
   it('routes every visible action through a data-act hook', () => {
     // 主按钮一半在 dock（ForgeApp），一半在幕内（Premiere / Gate），两边一起看。
+    // v0.2.5：`close` 的唯一出口挪到 HUD 的返回键（开演席的「回编辑器」并入「继续编辑」），
+    // 所以这里必须把 Hud.tsx 一起看——否则钩子还在，只是换了个文件。
     const union = [
       source('src/forge/ForgeApp.tsx'),
       source('src/forge/stage/Premiere.tsx'),
       source('src/forge/stage/Gate.tsx'),
+      source('src/forge/hud/Hud.tsx'),
     ].join('\n')
     for (const act of ['deal', 'cast', 'recast', 'premiere', 'close', 'again']) {
       expect(union, `data-act="${act}"`).toContain(`data-act="${act}"`)

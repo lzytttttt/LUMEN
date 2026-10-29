@@ -1,6 +1,13 @@
 /**
  * tokens.css —— UI 铬色设计令牌（与 deck 主题解耦）。
  * deck 主题变量 --d-* 由渲染层运行时注入，见 src/themes/index.ts。
+ *
+ * v0.2.5 起主题还带 9 个派生变量：--d-surface-2 / --d-accent-soft /
+ * --d-texture / --d-texture-op / --d-texture-image / --d-glow /
+ * --d-elevation / --d-shadow-1 / --d-shadow-2。
+ * UI 侧不镜像这些令牌：面板要预览主题质感时，在面板根节点注入
+ * themeCssVars(theme, overrides)（Inspector / ThemeTab 已经是这个做法），
+ * 免得 UI 与演示各拿一份色板。
  */
 :root {
   color-scheme: dark;

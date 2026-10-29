@@ -3,10 +3,12 @@
  *
  * 主按钮在 ForgeApp 的 dock 上（这里不画第二枚「生成大纲」）。
  * 文字预算（02 §8）：输入 1 + 示例组 1 + 幕数组 1 + 时长组 1 + 视觉开关组 1 = 5，
- * 加上 dock 的主按钮恰好 6；续上一套 / 清空 / 离线徽标都不计入 `data-forge-text`。
+ * 加上 dock 的主按钮恰好 6；续上一套 / 清空 / 离线徽标都不计入文字预算区块（D5）。
  */
 import { useCallback, useEffect, useRef } from 'react'
-import { useT } from '@/i18n'
+import { useT, type MessageKey } from '@/i18n'
+import { THEME_IDS, getTheme } from '@/themes'
+import { Materials } from './Materials'
 import type { SeedProps } from '../ui'
 
 const SAMPLES = ['sample1', 'sample2', 'sample3'] as const
@@ -16,6 +18,14 @@ const LENGTHS = [
   { length: 'deep', label: '12' },
 ] as const
 const MINUTES = [5, 10, 20] as const
+
+/** 受众五项（v0.2.5 §1 动作 2）：空串 = 不指定。 */
+const AUDIENCES: { value: string; key: MessageKey }[] = [
+  { value: 'exec', key: 'forge.seed.audienceExec' },
+  { value: 'team', key: 'forge.seed.audienceTeam' },
+  { value: 'client', key: 'forge.seed.audienceClient' },
+  { value: 'class', key: 'forge.seed.audienceClass' },
+]
 
 /** 大字：12 字以内 64px，往后线性收到 42px（02 §5.1「56/64，随字数 42–64 自适应」）。 */
 function fontOf(prompt: string, en: boolean): number {
@@ -115,6 +125,89 @@ export function Seed(props: SeedProps) {
               {t(`forge.seed.${sample}`)}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/*
+       * v0.2.5 §1 动作 1/2：材料先于提示词，受众与预设紧随其后。
+       * 这一整段是 ghost 级（11px 小字 + 1px 线），不进文字预算区块（D5）。
+       */}
+      <div className="forge-seed__sources">
+        <Materials
+          materials={props.materials}
+          busy={props.busy}
+          onAdd={props.onMaterialAdd}
+          onRemove={props.onMaterialRemove}
+        />
+
+        <div className="forge-seed__prefs">
+          <span className="forge-pref" role="radiogroup" aria-label={t('forge.seed.audience')}>
+            <span className="forge-pref__label">{t('forge.seed.audience')}</span>
+            {AUDIENCES.map((item) => (
+              <button
+                key={item.value}
+                type="button"
+                role="radio"
+                aria-checked={props.audience === item.value}
+                className={props.audience === item.value ? 'forge-pref__opt is-on' : 'forge-pref__opt'}
+                data-audience={item.value}
+                disabled={props.busy}
+                onClick={() => props.onAudience(props.audience === item.value ? '' : item.value)}
+              >
+                {t(item.key)}
+              </button>
+            ))}
+          </span>
+
+          <span className="forge-pref" role="radiogroup" aria-label={t('forge.seed.theme')}>
+            <span className="forge-pref__label">{t('forge.seed.theme')}</span>
+            {THEME_IDS.map((id) => {
+              const theme = getTheme(id)
+              const on = props.themeId === id
+              const name = theme.name[props.lang]
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  className={on ? 'forge-pref__theme is-on' : 'forge-pref__theme'}
+                  data-theme-id={id}
+                  data-theme-accent={theme.colors.accent}
+                  aria-label={name}
+                  title={name}
+                  disabled={props.busy}
+                  onClick={() => props.onTheme(id)}
+                >
+                  <span
+                    className="forge-pref__dot"
+                    aria-hidden="true"
+                    style={{ background: theme.colors.accent }}
+                  />
+                  <span className="forge-pref__name">{name}</span>
+                </button>
+              )
+            })}
+          </span>
+
+          {props.reuse.length > 0 ? (
+            <span className="forge-pref" role="group" aria-label={t('forge.seed.reuse')}>
+              <span className="forge-pref__label">{t('forge.seed.reuse')}</span>
+              {props.reuse.slice(0, 3).map((entry) => (
+                <button
+                  key={entry.id}
+                  type="button"
+                  className="forge-pref__reuse"
+                  data-forge-reuse={entry.id}
+                  title={entry.title}
+                  disabled={props.busy}
+                  onClick={() => props.onReuse(entry)}
+                >
+                  {entry.title}
+                </button>
+              ))}
+            </span>
+          ) : null}
         </div>
       </div>
 

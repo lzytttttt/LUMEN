@@ -41,15 +41,15 @@
 
 | 文件 | 说明 |
 |---|---|
-| [`mock/portal.html`](mock/portal.html) | **门户样张**：品牌 + 主张 + 「进入工作台」+ 三张幕扇形 + 设置抽屉。抽屉里的档位/音效写 `lumen.prefs`，进工作台即生效。v0.2.1 候选，不是 v0.2.0 产品面（[02](02-造幕台-界面与交互.md) §2.4） |
-| [`mock/forge.html`](mock/forge.html) | **工作台样张**：单文件、零依赖、双击即开。五段可点、一键自动播、L3↔L1↔L0 降级、五类轻音（默认关）。不是产品代码，`src/forge/**` 的落位以 [02](02-造幕台-界面与交互.md) §6 为准 |
-| [`assets/forge-00-portal.png`](assets/forge-00-portal.png) | 门户：一句话主张 + 三张幕扇形 + 主按钮 |
-| [`assets/forge-00-portal-settings.png`](assets/forge-00-portal-settings.png) | 设置抽屉：通道 / 模型 / 台面档位 / 声音 / 减少动效 / 语言 |
-| [`assets/forge-01-seed.png`](assets/forge-01-seed.png) | 输入：一句话 + 一个按钮 + 一束光 |
-| [`assets/forge-02-deal.png`](assets/forge-02-deal.png) | 大纲：12 张剪影卡（168×224 竖版、`01–12` 序号、首末锁金角标） |
-| [`assets/forge-03-cast.png`](assets/forge-03-cast.png) | 生成：左侧完成栈有透视、当前幕的块正在长出来、右上 `6/9` + `×3` |
-| [`assets/forge-04-gate.png`](assets/forge-04-gate.png) | 检查：幕卡在两道门之间、火花、右上 `!`、唯一的「重试」 |
-| [`assets/forge-05-premiere.png`](assets/forge-05-premiere.png) | 播放：9 张缩略排成弧线、暗角、取封面 accent 的「播放」 |
+| [`mock/portal.html`](../../../plan/v0.2.0/mock/portal.html) | **门户样张**：品牌 + 主张 + 「进入工作台」+ 三张幕扇形 + 设置抽屉。抽屉里的档位/音效写 `lumen.prefs`，进工作台即生效。v0.2.1 候选，不是 v0.2.0 产品面（[02](02-造幕台-界面与交互.md) §2.4） |
+| [`mock/forge.html`](../../../plan/v0.2.0/mock/forge.html) | **工作台样张**：单文件、零依赖、双击即开。五段可点、一键自动播、L3↔L1↔L0 降级、五类轻音（默认关）。不是产品代码，`src/forge/**` 的落位以 [02](02-造幕台-界面与交互.md) §6 为准 |
+| [`assets/forge-00-portal.png`](../../../plan/v0.2.0/assets/forge-00-portal.png) | 门户：一句话主张 + 三张幕扇形 + 主按钮 |
+| [`assets/forge-00-portal-settings.png`](../../../plan/v0.2.0/assets/forge-00-portal-settings.png) | 设置抽屉：通道 / 模型 / 台面档位 / 声音 / 减少动效 / 语言 |
+| [`assets/forge-01-seed.png`](../../../plan/v0.2.0/assets/forge-01-seed.png) | 输入：一句话 + 一个按钮 + 一束光 |
+| [`assets/forge-02-deal.png`](../../../plan/v0.2.0/assets/forge-02-deal.png) | 大纲：12 张剪影卡（168×224 竖版、`01–12` 序号、首末锁金角标） |
+| [`assets/forge-03-cast.png`](../../../plan/v0.2.0/assets/forge-03-cast.png) | 生成：左侧完成栈有透视、当前幕的块正在长出来、右上 `6/9` + `×3` |
+| [`assets/forge-04-gate.png`](../../../plan/v0.2.0/assets/forge-04-gate.png) | 检查：幕卡在两道门之间、火花、右上 `!`、唯一的「重试」 |
+| [`assets/forge-05-premiere.png`](../../../plan/v0.2.0/assets/forge-05-premiere.png) | 播放：9 张缩略排成弧线、暗角、取封面 accent 的「播放」 |
 
 观感取向（复审时按这个判）：**深色、单一束光、几乎不写字、动效克制但每次落位都有"咔哒"感**。不是霓虹赛博，不是仪表盘。
 
@@ -59,11 +59,11 @@
 
 | 文件 | 内容 |
 |---|---|
-| [`assets/trace-prompts.json`](assets/trace-prompts.json) | 真实发出去的 10 条 prompt（24.5KB），可用于断言"prompt 未漂移" |
-| [`assets/trace-model-responses.json`](assets/trace-model-responses.json) | 本会话模型的原始答复：大纲 + 9 幕 + SVG + three 描述符 |
-| [`assets/deck-trace.json`](assets/deck-trace.json) | 过完真实管线的 **Deck**（67KB；为体积剥离了 `aiSnapshot`） |
-| [`assets/assemble-manifest.json`](assets/assemble-manifest.json) | 逐幕 `enter` / `enterDelayMs` / 包围盒——装台动效的对拍基线 |
-| [`assets/trace-summary.json`](assets/trace-summary.json) | 指标：9 幕 / 84 块 / 607 字 / 0 error / 12 请求 / 本地排版 P50 0.95ms |
+| [`assets/trace-prompts.json`](../../../plan/v0.2.0/assets/trace-prompts.json) | 真实发出去的 10 条 prompt（24.5KB），可用于断言"prompt 未漂移" |
+| [`assets/trace-model-responses.json`](../../../plan/v0.2.0/assets/trace-model-responses.json) | 本会话模型的原始答复：大纲 + 9 幕 + SVG + three 描述符 |
+| [`assets/deck-trace.json`](../../../plan/v0.2.0/assets/deck-trace.json) | 过完真实管线的 **Deck**（67KB；为体积剥离了 `aiSnapshot`） |
+| [`assets/assemble-manifest.json`](../../../plan/v0.2.0/assets/assemble-manifest.json) | 逐幕 `enter` / `enterDelayMs` / 包围盒——装台动效的对拍基线 |
+| [`assets/trace-summary.json`](../../../plan/v0.2.0/assets/trace-summary.json) | 指标：9 幕 / 84 块 / 607 字 / 0 error / 12 请求 / 本地排版 P50 0.95ms |
 
 核验方式（当时用的就是这套，跑完脚本即删）：
 
@@ -79,7 +79,7 @@ node node_modules\vitest\vitest.mjs run tests\unit\zz-forge-trace.tmp.test.ts
 
 | 你是 | 按这个顺序读 |
 |---|---|
-| 产品 / 评审 | [01](01-迭代计划.md) → [02](02-造幕台-界面与交互.md) §1–§5 → [`mock/portal.html`](mock/portal.html) → [`mock/forge.html`](mock/forge.html) → [01](01-迭代计划.md) §4（预算冲突与砍法） |
+| 产品 / 评审 | [01](01-迭代计划.md) → [02](02-造幕台-界面与交互.md) §1–§5 → [`mock/portal.html`](../../../plan/v0.2.0/mock/portal.html) → [`mock/forge.html`](../../../plan/v0.2.0/mock/forge.html) → [01](01-迭代计划.md) §4（预算冲突与砍法） |
 | 前端实现 | [00](00-范围与决策.md) §4/§6 → [02](02-造幕台-界面与交互.md) 全篇 → [04](04-动效与流程可视化.md) → [07](07-验收与测试矩阵.md) §3 |
 | AI / 后端方向 | [05](05-LLM接入规格.md) 全篇 → [06](06-端到端模拟跑通.md) → [05](05-LLM接入规格.md) §12（replay） |
 | 设计与文案 | [08 设计系统](../../doc/08-设计系统.md) → [04](04-动效与流程可视化.md) §1/§6 → [03](03-游戏化机制.md) §2 → [09](09-文案词表.md) |

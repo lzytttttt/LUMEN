@@ -10,6 +10,19 @@ import type { z } from 'zod'
 import { AiError } from './provider'
 
 /**
+ * 去掉 Markdown 围栏与前后解释。闭合围栏优先；模型被截断时围栏可能没闭合，
+ * 这里也兼容"只有开头 ```json"的情况，交给 closeTruncatedJson 补齐。
+ */
+function stripFenceNoise(text: string): string {
+  const source = text.trim()
+  const closed = /```(?:json|JSON)?\s*([\s\S]*?)```/.exec(source)
+  if (closed && closed[1].trim() !== '') return closed[1].trim()
+  const open = /```(?:json|JSON)?\s*([\s\S]*)$/.exec(source)
+  if (open && open[1].trim() !== '') return open[1].trim()
+  return source
+}
+
+/**
  * 从任意文本里抽出第一个 JSON 对象（支持 ```json 围栏与前后噪音）。
  * 找不到返回 null；括号不平衡时返回尽力而为的切片。
  */
@@ -17,9 +30,7 @@ export function extractJson(text: string): string | null {
   if (typeof text !== 'string') return null
   let source = text.trim()
   if (source === '') return null
-
-  const fence = /```(?:json|JSON)?\s*([\s\S]*?)```/.exec(source)
-  if (fence && fence[1].trim() !== '') source = fence[1].trim()
+  source = stripFenceNoise(source)
 
   const start = source.indexOf('{')
   if (start < 0) return null
@@ -56,6 +67,65 @@ export function zodIssues(error: z.ZodError): string[] {
   })
 }
 
+/**
+ * 尽力修补被截断的 JSON 对象：补未闭合的字符串/对象/数组，清掉悬空的逗号或冒号。
+ *
+ * 使用场景：`none` 降级模式下模型不保证结构化输出，常见尾部截断
+ * （`{"text":"…`、`{"items":["a","b"`）。修不好就返回 null，交给 repair 回喂，
+ * 绝不把"半截 JSON"当成功结果。
+ *
+ * 注意：只在 `JSON.parse` 失败后作为兜底调用；合法 JSON 永远走原路径。
+ */
+export function closeTruncatedJson(text: string): string | null {
+  if (typeof text !== 'string') return null
+  const start = text.indexOf('{')
+  if (start < 0) return null
+  const source = text.slice(start)
+
+  const closers: string[] = []
+  let inString = false
+  let escaped = false
+  let lastSignificant = ''
+
+  for (const char of source) {
+    if (inString) {
+      if (escaped) escaped = false
+      else if (char === '\\') escaped = true
+      else if (char === '"') {
+        inString = false
+        lastSignificant = '"'
+      }
+      continue
+    }
+    if (char === '"') {
+      inString = true
+      lastSignificant = '"'
+      continue
+    }
+    if (char === '{') closers.push('}')
+    else if (char === '[') closers.push(']')
+    else if (char === '}' || char === ']') closers.pop()
+    if (!/\s/.test(char)) lastSignificant = char
+  }
+
+  let out = source
+  if (inString) {
+    if (escaped) out = out.slice(0, -1)
+    out += '"'
+    lastSignificant = '"'
+  }
+  if (lastSignificant === ',') out = out.replace(/,\s*$/, '')
+  else if (lastSignificant === ':') out += ' null'
+
+  for (let i = closers.length - 1; i >= 0; i -= 1) out += closers[i]
+  try {
+    JSON.parse(out)
+    return out
+  } catch {
+    return null
+  }
+}
+
 export interface ParseWithRepairOptions {
   /** 修复回调：拿到 issue 列表，返回模型重写的文本；返回 null 表示不再重试。 */
   repair?: (issues: string[]) => Promise<string | null>
@@ -86,19 +156,34 @@ export async function parseWithRepair<T>(
       current = repaired
     }
 
-    const json = extractJson(current)
+    const json = extractJson(current) ?? closeTruncatedJson(stripFenceNoise(current))
     if (!json) {
       issues = ['输出里没有 JSON 对象']
       continue
     }
 
     let value: unknown
+    let parsed = false
     try {
       value = JSON.parse(json)
+      parsed = true
     } catch (error) {
-      issues = [`JSON 解析失败：${error instanceof Error ? error.message : String(error)}`]
-      continue
+      // 先尝试补齐截断的括号/引号（`none` 降级模式的常见输出），修不好再走 repair。
+      const closed = closeTruncatedJson(json)
+      if (closed) {
+        try {
+          value = JSON.parse(closed)
+          parsed = true
+        } catch {
+          /* 修补后仍解析失败，交给下面的 repair */
+        }
+      }
+      if (!parsed) {
+        issues = [`JSON 解析失败：${error instanceof Error ? error.message : String(error)}`]
+        continue
+      }
     }
+    if (!parsed) continue
 
     const result = schema.safeParse(value)
     if (result.success) return result.data

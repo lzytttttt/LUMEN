@@ -8,10 +8,14 @@
  *    宿主可以重复挂载：新句柄会先清掉同宿主的旧 canvas。
  * 3. `dispose()` 释放 rAF 订阅、geometry / material / renderer 并移除 canvas；SSR / jsdom 下安全 no-op。
  *
+ * v0.2.5 FX-4（`plan/v0.2.5/02` §6.1）：速度倍率随 `prog`（0–7 连续量）从 ×1.0 走到 ×2.2，
+ * `slide:landed` 那一帧打一次 rip；两者都只是改闭包里的两个标量，不重建 WebGL、不重启动画。
+ * 只读最终产物（`state.prog` 的等价读数），自身不产生任何进度。
+ *
  * 信息呈现永远在 DOM（`SlideRenderer`），这里只负责"空气"：一层 Points + 一片加色光晕。
  */
 import { useSettingsStore } from '@/state/settingsStore'
-import type { ForgeTier } from '../types'
+import type { ForgeStage, ForgeTier } from '../types'
 import { raf } from './raf'
 
 export interface AmbientOptions {
@@ -24,15 +28,64 @@ export interface AmbientOptions {
   pixelRatioCap?: number
   /** 粒子数，默认 96（L3）。 */
   particleCount?: number
+  /** 初始进度量（0–7）；之后用 `setProgress` 连续推，不重建 WebGL（v0.2.5 FX-4）。 */
+  prog?: number
+}
+
+/** v0.2.5 §6.1 FX-4：速度倍率的两个端点（prog=0 为 1.0，prog=7 为 2.2）。 */
+export const AMBIENT_SPEED_MIN = 1
+export const AMBIENT_SPEED_MAX = 2.2
+
+/** 落位 rip：一次冲击的能量在 420ms 内线性衰减回 0（不新建任何计时器）。 */
+export const AMBIENT_RIP_MS = 420
+/** rip 的瞬时峰值倍率：speed × (1 + AMBIENT_RIP_GAIN)。 */
+export const AMBIENT_RIP_GAIN = 1.6
+
+/** `prog ∈ [0,7]` → 速度倍率 `1.0 → 2.2`（线性，纯函数；档位不足时由调用方不创建粒子）。 */
+export function ambientSpeed(prog: number): number {
+  const clamped = Math.max(0, Math.min(7, Number.isFinite(prog) ? prog : 0))
+  const speed = AMBIENT_SPEED_MIN + (AMBIENT_SPEED_MAX - AMBIENT_SPEED_MIN) * (clamped / 7)
+  return Number(speed.toFixed(3))
+}
+
+/**
+ * 装台区的进度量：与 `state.ts` 的 reducer 同一把尺子（`prog` 只由真实事件推进）。
+ *
+ * `AssembleProps` 里没有 `prog`（`ui.ts` 归 flow-state，本轮不动），而 `stage` / `done` /
+ * `total` 就是 reducer 算 `prog` 的三个输入，所以这里按同一条公式复算，值恒等于 `state.prog`：
+ *   cast → 2；stage 事件 → `STAGE_PROG`；`slide:landed` → `max(prog, 2 + 3·done/total)`。
+ * 这是**读数**，不是新的进度源：没有 `slide:landed` 就没有 `done` 自增。
+ */
+export function deriveProg(stage: ForgeStage, done: number, total: number): number {
+  const base =
+    stage === 'think'
+      ? 0
+      : stage === 'plan'
+        ? 1
+        : stage === 'write'
+          ? 2
+          : stage === 'draw'
+            ? 3
+            : stage === 'set'
+              ? 4
+              : stage === 'check'
+                ? 5
+                : 6
+  if (done <= 0 || total <= 0) return base
+  return Math.max(base, 2 + (3 * done) / total)
 }
 
 export interface AmbientHandle {
   /** three 已真正绘制过（canvas 在 DOM 里）时为 true。 */
   readonly active: boolean
+  /** 连续推进速度倍率（0–7）；不重建 WebGL、不重启动画（FX-4）。 */
+  setProgress: (prog: number) => void
+  /** `slide:landed` 那一帧的一次冲击；之后能量自行衰减到 0。 */
+  rip: () => void
   dispose: () => void
 }
 
-const NOOP: AmbientHandle = { active: false, dispose: () => {} }
+const NOOP: AmbientHandle = { active: false, setProgress: () => {}, rip: () => {}, dispose: () => {} }
 
 export const AMBIENT_CANVAS_ATTR = 'data-forge-ambient'
 
@@ -93,10 +146,22 @@ export function startAmbient(options: AmbientOptions): AmbientHandle {
   let stopFrames: (() => void) | null = null
   const disposables: { dispose: () => void }[] = []
   let renderer: import('three').WebGLRenderer | null = null
+  /** FX-4：速度倍率由 `prog` 连续推；只在下一帧被读，不重启动画。 */
+  let speed = ambientSpeed(options.prog ?? 0)
+  /** FX-4：落位 rip 的剩余能量（1 → 0，按 420ms 线性衰减）。 */
+  let ripEnergy = 0
 
   const handle: AmbientHandle = {
     get active() {
       return live
+    },
+    setProgress: (prog: number) => {
+      if (disposed) return
+      speed = ambientSpeed(prog)
+    },
+    rip: () => {
+      if (disposed) return
+      ripEnergy = 1
     },
     dispose: () => {
       if (disposed) return
@@ -118,6 +183,7 @@ export function startAmbient(options: AmbientOptions): AmbientHandle {
         /* ignore */
       }
       renderer = null
+      ripEnergy = 0
       if (canvas) {
         canvas.remove()
         canvas = null
@@ -248,12 +314,18 @@ export function startAmbient(options: AmbientOptions): AmbientHandle {
         camera.updateProjectionMatrix()
       }
       const step = Math.min(delta, 64) / 1000
+      /*
+       * FX-4：粒子速度 = 基准 × speed(prog) × (1 + rip)。rip 由 `slide:landed` 打一次，
+       * 之后按 AMBIENT_RIP_MS 线性衰减——这里没有 setTimeout，衰减只发生在 rAF 自己的 delta 上。
+       */
+      if (ripEnergy > 0) ripEnergy = Math.max(0, ripEnergy - (Math.min(delta, 64) / AMBIENT_RIP_MS))
+      const rate = speed * (1 + AMBIENT_RIP_GAIN * ripEnergy)
       for (let i = 0; i < pointsList.length; i += 1) {
         const points = pointsList[i]
-        points.rotation.z += step * (i === 0 ? 0.012 : -0.008)
-        points.rotation.y = Math.sin(now * 0.00004) * 0.06
+        points.rotation.z += step * (i === 0 ? 0.012 : -0.008) * rate
+        points.rotation.y = Math.sin(now * 0.00004 * rate) * 0.06
       }
-      haloMaterial.opacity = 0.05 + Math.sin(now * 0.00035) * 0.015
+      haloMaterial.opacity = 0.05 + Math.sin(now * 0.00035 * rate) * 0.015 + 0.05 * ripEnergy
       renderer.render(scene, camera)
     })
   })()

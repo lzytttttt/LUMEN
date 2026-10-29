@@ -43,6 +43,30 @@ export interface PromptPair {
   user: string
 }
 
+/* ------------------------------ 材料（v0.2.5） ------------------------------ */
+
+/**
+ * 材料进 prompt 的预算（02 §3.4）：至多 5 条、每条至多 200 字。
+ * 为什么不把整段材料塞进去：材料的价值是「让模型看到原话」，不是让它读完整个文档；
+ * 超出预算的节选只会稀释指令，还会把上下文推向截断。
+ */
+export const PROMPT_MATERIAL_MAX = 5
+export const PROMPT_MATERIAL_TEXT_MAX = 200
+/** label 只做定位（和 UI 的 D 类 24 字符预算同尺）。 */
+const PROMPT_MATERIAL_LABEL_MAX = 24
+
+interface PromptMaterial {
+  label: string
+  text: string
+}
+
+function promptMaterials(materials: PromptMaterial[] | undefined): { label: string; text: string }[] {
+  return (materials ?? []).slice(0, PROMPT_MATERIAL_MAX).map((material) => ({
+    label: typeof material?.label === 'string' ? material.label.slice(0, PROMPT_MATERIAL_LABEL_MAX) : '',
+    text: typeof material?.text === 'string' ? material.text.slice(0, PROMPT_MATERIAL_TEXT_MAX) : '',
+  }))
+}
+
 /* --------------------------------- 大纲 --------------------------------- */
 
 export const OUTLINE_SYSTEM = `[TASK:outline]
@@ -80,6 +104,7 @@ ${RECIPE_GUIDE}`
 
 export function outlineRequest(input: ComposeInput): PromptPair {
   const slideCount = input.length === 'short' ? 6 : input.length === 'deep' ? 12 : 9
+  const materials = promptMaterials(input.materials)
   const payload = {
     prompt: input.prompt,
     lang: input.lang,
@@ -90,6 +115,8 @@ export function outlineRequest(input: ComposeInput): PromptPair {
     includeSvg: input.includeSvg !== false,
     include3d: input.include3d !== false,
     themeId: input.themeId ?? null,
+    // 没有材料就整段不出现：默认值下 prompt 与 v0.2.0 逐字节一致（replay fixture 的严格 digest 靠这条活着）。
+    ...(materials.length > 0 ? { materials } : {}),
   }
   return { system: OUTLINE_SYSTEM, user: JSON.stringify(payload, null, 2) }
 }
@@ -121,13 +148,24 @@ export function slideRequest(args: {
   index: number
   lang: AiLang
   audience?: string
+  /** v0.2.5：材料篮（只给 label + 前 200 字，和 outlineRequest 同一把尺子）。 */
+  materials?: { label: string; text: string }[]
 }): PromptPair {
+  const materials = promptMaterials(args.materials)
   const payload = {
     deckTitle: args.outline.title,
     lang: args.lang,
     index: args.index,
     total: args.outline.slides.length,
     audience: args.audience ?? '',
+    /**
+     * v0.2.5：`brief` 是大纲页里用户亲手写的「这一幕想讲什么」，
+     * 也是生成中纠偏（SteerBar）唯一真正抵达单幕生成的通道（02 §3.4）。
+     * 旧 Outline 没有这个字段，统一兜成空串，模型侧就看到一句空指令。
+     */
+    brief: args.slide.brief ?? '',
+    // 没有材料就整段不出现：默认值下 prompt 与 v0.2.0 逐字节一致。
+    ...(materials.length > 0 ? { materials } : {}),
     slide: args.slide,
   }
   return { system: SLIDE_SYSTEM, user: JSON.stringify(payload, null, 2) }

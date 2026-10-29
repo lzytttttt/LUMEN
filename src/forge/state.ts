@@ -6,6 +6,7 @@
  */
 import type { Outline, OutlineSlide, RecipeId } from '@/schema/deck'
 import type { ForgeStage } from '@/ai/types'
+import { MATERIAL_MAX, MATERIAL_TEXT_MAX } from './materials'
 import type {
   ForgeAction,
   ForgePhase,
@@ -41,6 +42,11 @@ export const STAGE_PROG: Record<ForgeStage, number> = {
 }
 
 const LANDED: SlideStatus[] = ['landed', 'flagged', 'stuck']
+
+/** 大纲标题与 schema 同尺（`outlineSlideSchema.headline.max(120)`）。 */
+const HEADLINE_MAX = 120
+/** 「这一幕想讲什么」的硬上限（契约 §2 硬约束 3、§3.4 的 brief 通道）。 */
+const BRIEF_MAX = 200
 
 export function isLanded(status: SlideStatus): boolean {
   return LANDED.includes(status)
@@ -127,6 +133,11 @@ export function initialForgeState(overrides: Partial<ForgeState> = {}): ForgeSta
     premiereAt: 0,
     live: null,
     autoPremiere: true,
+    materials: [],
+    audience: '',
+    themeId: '',
+    steer: [],
+    reuse: [],
     ...overrides,
   }
 }
@@ -149,15 +160,65 @@ function cycleRecipe(current: RecipeId, direction: -1 | 1): RecipeId {
   return RECIPE_ORDER[(at + direction + size) % size] ?? 'statement'
 }
 
-/** 首末锁：第 1 幕恒 cover、末幕恒 closing（契约要求）；只允许内部卡换卡/重排。 */
+/** 一张新卡的完整大纲项：`add` 插卡时必须同时插这一条（只有 headline/recipe 的残缺项会让生成期直接抛）。 */
+function blankOutlineSlide(headline: string, recipe: RecipeId = 'statement'): OutlineSlide {
+  return { recipe, headline, points: [], visual: { kind: 'none' } }
+}
+
+/** 往大纲里插入一条新幕（位置与卡片一致，`move`/`remove` 的既有语义不受影响）。 */
+function insertOutlineSlide(slides: OutlineSlide[], at: number, headline: string): OutlineSlide[] {
+  const next = slides.slice()
+  next.splice(Math.min(Math.max(at, 1), next.length), 0, blankOutlineSlide(headline))
+  return next
+}
+
+/**
+ * 首末锁：第 1 幕恒 cover、末幕恒 closing（契约要求）；只允许内部卡换卡/重排。
+ *
+ * `?? blankOutlineSlide(...)` 是防御而不是装饰：大纲项一旦缺失，
+ * `{...undefined}` 只会留下 `{recipe, headline}`，生成期 `visualOf()` 读 `slide.visual.kind` 就抛，
+ * 而抛的不是 AiError，台面上会显示成「网络断了」（v0.2.5 连加三幕的真实教训）。
+ */
 function syncOutline(state: ForgeState): Outline | null {
   if (!state.outline) return null
   const slides: OutlineSlide[] = state.slides.map((slide) => ({
-    ...state.outline!.slides[slide.index],
+    ...(state.outline!.slides[slide.index] ?? blankOutlineSlide(slide.headline, slide.recipe)),
     recipe: slide.recipe,
     headline: slide.headline,
   }))
   return { ...state.outline, slides }
+}
+
+/**
+ * 写 brief：空串等于删掉这个键。
+ * 为什么删而不是存 ''：旧 Outline（v0.2.0 生成的）没有这个字段，
+ * 保持「没有 brief 就没有这个键」让 draft / fixture 的 JSON 形状稳定可比。
+ */
+function withBrief(slide: OutlineSlide, brief: string): OutlineSlide {
+  const next: OutlineSlide = { ...slide }
+  if (brief.trim() === '') delete next.brief
+  else next.brief = brief.slice(0, BRIEF_MAX)
+  return next
+}
+
+/** 纠偏追加：用「；」接在已有 brief 后，再按 200 字截断（契约 §2 硬约束 4）。 */
+function appendBrief(brief: string | undefined, note: string): string {
+  const base = (brief ?? '').trim()
+  return (base === '' ? note : `${base}；${note}`).slice(0, BRIEF_MAX)
+}
+
+/**
+ * 撤销一条纠偏：把当初追加的那段精确摘掉。
+ * 用整段匹配而不是 split('；')，是因为用户写的纠偏里本身可能带「；」。
+ */
+function dropBriefNote(brief: string | undefined, note: string): string {
+  if (!brief) return ''
+  if (brief === note) return ''
+  if (brief.endsWith(`；${note}`)) return brief.slice(0, brief.length - note.length - 1)
+  if (brief.startsWith(`${note}；`)) return brief.slice(note.length + 1)
+  const middle = `；${note}；`
+  if (brief.includes(middle)) return brief.replace(middle, '；')
+  return brief
 }
 
 export function forgeReducer(state: ForgeState, action: ForgeAction): ForgeState {
@@ -231,17 +292,22 @@ export function forgeReducer(state: ForgeState, action: ForgeAction): ForgeState
       const insertAt = Math.max(1, state.slides.length - 1)
       const slides = state.slides.slice()
       const seed = state.outline?.slides[insertAt - 1]
+      const headline = seed?.headline ?? (state.lang === 'zh' ? '再补一幕' : 'One more slide')
       slides.splice(insertAt, 0, {
         index: insertAt,
         recipe: 'statement',
-        headline: seed?.headline ?? (state.lang === 'zh' ? '再补一幕' : 'One more slide'),
+        headline,
         status: 'queued',
         errors: [],
         warns: [],
         tokens: 0,
       })
       const reindexed = slides.map((slide, index) => ({ ...slide, index }))
-      const next = { ...state, slides: reindexed, total: reindexed.length }
+      // 大纲必须同步长出「完整的一幕」，否则尾部那几张卡在生成期拿不到 visual/points。
+      const outline = state.outline
+        ? { ...state.outline, slides: insertOutlineSlide(state.outline.slides, insertAt, headline) }
+        : null
+      const next = { ...state, slides: reindexed, total: reindexed.length, outline }
       return { ...next, outline: syncOutline(next) }
     }
     case 'cast':
@@ -393,6 +459,78 @@ export function forgeReducer(state: ForgeState, action: ForgeAction): ForgeState
       return { ...state, saved: true }
     case 'live':
       return { ...state, live: action.live }
+    /* ---------------------------- v0.2.5 五组动作 ---------------------------- */
+    case 'material:add': {
+      // 硬约束 5：上限 5，第 6 条原样弹回（UI 据 materials.length===MATERIAL_MAX 显示「材料已满」）。
+      if (state.materials.length >= MATERIAL_MAX) return state
+      return { ...state, materials: [...state.materials, action.material] }
+    }
+    case 'material:patch': {
+      const at = state.materials.findIndex((material) => material.id === action.id)
+      if (at < 0) return state
+      const materials = state.materials.slice()
+      const patch = { ...action.patch }
+      if (typeof patch.text === 'string') patch.text = patch.text.slice(0, MATERIAL_TEXT_MAX)
+      materials[at] = { ...materials[at], ...patch }
+      return { ...state, materials }
+    }
+    case 'material:remove': {
+      const materials = state.materials.filter((material) => material.id !== action.id)
+      if (materials.length === state.materials.length) return state
+      return { ...state, materials }
+    }
+    case 'audience':
+      return state.audience === action.value ? state : { ...state, audience: action.value }
+    case 'theme':
+      // 硬约束 2：只在 seed / deal 可换；生成中与开演后换主题等于重排已生成的幕，一律不动。
+      if (state.phase !== 'seed' && state.phase !== 'deal') return state
+      return state.themeId === action.themeId ? state : { ...state, themeId: action.themeId }
+    case 'headline': {
+      // 硬约束 3：trim 后为空视为误触（清空输入框不算编辑），保留原标题。
+      const value = action.value.trim().slice(0, HEADLINE_MAX)
+      if (value === '') return state
+      const next = withSlide(state, action.index, { headline: value })
+      if (next === state) return state
+      return { ...next, outline: syncOutline(next) }
+    }
+    case 'brief': {
+      const outline = state.outline
+      if (!outline) return state
+      if (action.index < 0 || action.index >= outline.slides.length) return state
+      const slides = outline.slides.slice()
+      slides[action.index] = withBrief(slides[action.index], action.value)
+      return { ...state, outline: { ...outline, slides } }
+    }
+    case 'steer': {
+      const note = action.note
+      const from = Math.trunc(note.fromIndex)
+      // 硬约束 4：fromIndex 必须落在已有个案范围内，否则丢弃整条纠偏（不写入队列）。
+      if (!Number.isFinite(from) || from < 0 || from >= state.slides.length) return state
+      const steer = [...state.steer, note]
+      if (!state.outline) return { ...state, steer }
+      const slides = state.outline.slides.map((slide, index) => {
+        if (index < from) return slide
+        // 已落位（含带病落位 / 卡住）的幕不追溯改写：纠偏只影响还没生成的幕。
+        if (isLanded(state.slides[index]?.status ?? 'queued')) return slide
+        return withBrief(slide, appendBrief(slide.brief, note.text))
+      })
+      return { ...state, steer, outline: { ...state.outline, slides } }
+    }
+    case 'steer:remove': {
+      const note = state.steer.find((item) => item.id === action.id)
+      if (!note) return state
+      const steer = state.steer.filter((item) => item.id !== action.id)
+      if (!state.outline) return { ...state, steer }
+      const from = Math.trunc(note.fromIndex)
+      const slides = state.outline.slides.map((slide, index) => {
+        if (!Number.isFinite(from) || index < from) return slide
+        if (isLanded(state.slides[index]?.status ?? 'queued')) return slide
+        return withBrief(slide, dropBriefNote(slide.brief, note.text))
+      })
+      return { ...state, steer, outline: { ...state.outline, slides } }
+    }
+    case 'reuse':
+      return { ...state, reuse: action.entries }
     case 'reset':
       return initialForgeState({
         lang: state.lang,
@@ -401,6 +539,10 @@ export function forgeReducer(state: ForgeState, action: ForgeAction): ForgeState
         includeSvg: state.includeSvg,
         include3d: state.include3d,
         autoPremiere: state.autoPremiere,
+        // 硬约束 1：材料篮 / 受众 / 预设是「用户的偏好」，重开也要还在。
+        themeId: state.themeId,
+        audience: state.audience,
+        materials: state.materials,
       })
     default:
       return state

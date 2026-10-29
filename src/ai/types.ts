@@ -1,7 +1,7 @@
 /**
  * types.ts —— AI 模块的公共类型（对外 API 的一部分）。
  */
-import type { Block, Deck, RecipeId, Slide } from '@/schema/deck'
+import type { Block, Deck, Outline, RecipeId, Slide } from '@/schema/deck'
 
 export type AiLang = 'zh' | 'en'
 
@@ -16,6 +16,8 @@ export interface ComposeInput {
   themeId?: string
   /** 目标时长（分钟），只影响幕数与要点密度。 */
   durationMin?: number
+  /** v0.2.5：材料篮（只取前 5 条、每条前 200 字进 prompt；02 §3.4）。 */
+  materials?: { label: string; text: string }[]
 }
 
 /** 配方的输入内容：AI 只产出这些槽位，配方负责排版。 */
@@ -128,6 +130,13 @@ export interface BuildDeckOptions {
   /** 是否在管线结束时一次性落库（默认 true）；造幕台传 false，由自己按「已完成幕」落库（D12）。 */
   persist?: boolean
   signal?: AbortSignal
+  /** v0.2.5：每幕开始前重取一次大纲 —— 生成中纠偏（steering）就是靠它生效（02 §3.4）。 */
+  liveOutline?: () => Outline
+  /**
+   * v0.2.5：材料篮，原样透传到单幕 prompt（只取前 5 条、每条前 200 字）。
+   * 契约 §3.4 只写了 `SlideBuildContext.materials`，这里是它的唯一来源（纯增量，默认 undefined 行为不变）。
+   */
+  materials?: { label: string; text: string }[]
 }
 
 export interface BuildDeckResult {

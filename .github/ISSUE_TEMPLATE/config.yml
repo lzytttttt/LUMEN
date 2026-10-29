@@ -1,0 +1,9 @@
+# Issue 入口配置：关闭空白 issue，把提问与漏洞报告分流到固定渠道。
+blank_issues_enabled: false
+contact_links:
+  - name: 讨论区 Discussions（用法提问 / 方案探讨 / 展示作品）
+    url: https://github.com/lzytttttt/LUMEN/discussions
+    about: "「怎么用」「想要什么效果」「我做的演示」走 Discussions；Bug 与需求请用上面的表单。"
+  - name: 私下报告安全问题（安全邮箱）
+    url: mailto:lzytttttt@gmail.com
+    about: "XSS、净化绕过、导入解析、依赖供应链、导出 HTML 注入等问题请勿开公开 issue，直接邮件报告；48 小时内初回，见 SECURITY.md。"

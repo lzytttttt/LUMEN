@@ -1,0 +1,53 @@
+{
+  "id": "./",
+  "name": "LUMEN 幕光",
+  "short_name": "幕光",
+  "description": "AI 原生 HTML 演示工作台：生成、编辑、播放、导出。",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#0a0b0e",
+  "background_color": "#07080b",
+  "categories": ["productivity", "graphics", "presentation"],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "工作台",
+      "short_name": "工作台",
+      "url": "./"
+    },
+    {
+      "name": "门户",
+      "short_name": "门户",
+      "url": "./portal.html"
+    }
+  ]
+}

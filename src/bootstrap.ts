@@ -9,6 +9,8 @@ import { useUiStore } from '@/state/uiStore'
 import { loadDeck, listDeckSummaries, loadSettings, saveDeck } from '@/persistence/decks'
 import { startAutosave } from '@/persistence/autosave'
 import { startSettingsSync } from '@/persistence/settingsSync'
+import { scheduleAssetGc } from '@/assets/gc'
+import { restoreFileLink } from '@/persistence/fileSync'
 
 export async function bootstrap(): Promise<void> {
   const settings = useSettingsStore.getState()
@@ -21,6 +23,9 @@ export async function bootstrap(): Promise<void> {
   }
 
   startSettingsSync()
+
+  // 恢复"关联本地文件"的句柄（若有）；失败不影响启动。
+  await restoreFileLink()
 
   let deck = null
   try {
@@ -55,4 +60,6 @@ export async function bootstrap(): Promise<void> {
   }
 
   startAutosave()
+  // 启动稳定后清理没有任何 deck 引用的旧资产；失败只记日志，不影响编辑。
+  scheduleAssetGc()
 }

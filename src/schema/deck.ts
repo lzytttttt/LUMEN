@@ -50,6 +50,23 @@ const typeStyleSchema = z.object({
 })
 export type TypeStyle = z.infer<typeof typeStyleSchema>
 
+/**
+ * v0.2.5 设计预设：纹理 / 光晕 / 层次。
+ * 三个字段全部可选 —— 旧 Deck（工程文件里根本没存主题对象，只存 themeId）与
+ * 旧主题对象（缺这三个字段）都能原样解析，渲染侧按"无纹理 / 无光晕 / 平层"兜底。
+ */
+export const textureKindSchema = z.enum(['none', 'grain', 'grid', 'scan', 'dots'])
+export type TextureKind = z.infer<typeof textureKindSchema>
+
+export const textureSchema = z.object({
+  kind: textureKindSchema.default('none'),
+  opacity: z.number().min(0).max(1).default(0),
+})
+export type Texture = z.infer<typeof textureSchema>
+
+export const elevationSchema = z.enum(['flat', 'raised', 'layered'])
+export type Elevation = z.infer<typeof elevationSchema>
+
 export const themeSchema = z.object({
   id: z.string(),
   name: z.object({ zh: z.string(), en: z.string() }),
@@ -75,6 +92,12 @@ export const themeSchema = z.object({
     ease: 'cubic-bezier(.32,.72,0,1)',
     ms: 420,
   }),
+  /** 背景纹理（v0.2.5，可选）：缺省 = 无纹理。 */
+  texture: textureSchema.optional(),
+  /** accent 光晕强度 0..1（v0.2.5，可选）：缺省 = 0。 */
+  glow: z.number().min(0).max(1).optional(),
+  /** 层次（v0.2.5，可选）：缺省 = flat。 */
+  elevation: elevationSchema.optional(),
 })
 export type Theme = z.infer<typeof themeSchema>
 export type ThemeColors = Theme['colors']
@@ -316,6 +339,8 @@ export const outlineSlideSchema = z.object({
     ])
     .default({ kind: 'none' }),
   notes: z.string().max(600).optional(),
+  /** v0.2.5：这一幕想讲什么，唯一的用户 → 生成侧指令通道（02 §3.4）；旧 Outline 反序列化不受影响。 */
+  brief: z.string().max(200).optional(),
 })
 export type OutlineSlide = z.infer<typeof outlineSlideSchema>
 

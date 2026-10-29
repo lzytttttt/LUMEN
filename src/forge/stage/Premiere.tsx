@@ -6,7 +6,10 @@
  *   10–20 幕 → T3-b 5×4 网格（128×72，压平 rotateX(12°)，z 按 i%3 抖动 ±16）。
  * 内容一律 poster（`mode="thumb"`，不播块入场，04 §3.3 共同约束）。
  *
- * 这一屏只有三处文字：主按钮「播放」、残影「回编辑器」/「再来一套」。不写进度、不写数字。
+ * 这一屏只有三处文字：主按钮「播放」、下一步「继续编辑」/「再加几幕」、残影「再来一套」。不写进度、不写数字。
+ * v0.2.5 起「回编辑器」并入「继续编辑」——两枚做的是同一件事（关台 + 定位到这一套），
+ * 留着只是让用户在同一个动作前面多选一次；关台的唯一出口仍是 HUD 的返回键与 Esc。
+ *
  * 自动进开演由 ForgeApp 控制（04 §8.3），这里绝不 setTimeout 抢跳。
  */
 import { useMemo } from 'react'
@@ -17,7 +20,7 @@ import type { PremiereProps } from '../ui'
 const ARC_CARD = { w: 160, h: 90 }
 const GRID_CARD = { w: 128, h: 72 }
 
-export function Premiere({ deck, slides, tier, accent, onPlay, onBack, onAgain }: PremiereProps) {
+export function Premiere({ deck, slides, tier, accent, onPlay, onEdit, onMore, onAgain }: PremiereProps) {
   const t = useT()
   const landed = useMemo(
     () => slides.filter((slide) => Boolean(slide.slide)).slice().sort((a, b) => a.index - b.index),
@@ -116,11 +119,12 @@ export function Premiere({ deck, slides, tier, accent, onPlay, onBack, onAgain }
         }}
       />
 
-      {/* 播放按钮：dock 里有一枚主按钮，Premiere 里这一枚是同 key 的第二处入口。 */}
+      {/* 播放按钮：dock 里有一枚主按钮，Premiere 里这一枚是同 key 的第二处入口，也是三枚「下一步」的第一枚。 */}
       <button
         type="button"
         className="forge-premiere__play"
         data-act="premiere"
+        data-forge-next="play"
         aria-disabled={playable ? undefined : 'true'}
         disabled={!playable}
         onClick={onPlay}
@@ -128,10 +132,20 @@ export function Premiere({ deck, slides, tier, accent, onPlay, onBack, onAgain }
         {t('forge.premiere.start')}
       </button>
 
-      <div className="forge-premiere__ghost">
-        <button type="button" className="forge-ghost" data-act="close" onClick={onBack}>
-          {t('forge.premiere.back')}
+      {/*
+       * v0.2.5 §1 动作 5：完成后不跳出工作流。
+       * 继续编辑 = 关闭造幕台并让编辑器定位到这一套；再加几幕 = 回大纲追加 3 幕（onMore）。
+       */}
+      <div className="forge-premiere__next" role="group">
+        <button type="button" className="forge-premiere__next-btn" data-forge-next="edit" onClick={onEdit}>
+          {t('forge.premiere.edit')}
         </button>
+        <button type="button" className="forge-premiere__next-btn" data-forge-next="more" onClick={onMore}>
+          {t('forge.premiere.more')}
+        </button>
+      </div>
+
+      <div className="forge-premiere__ghost">
         <button type="button" className="forge-ghost" data-act="again" onClick={onAgain}>
           {t('forge.premiere.again')}
         </button>

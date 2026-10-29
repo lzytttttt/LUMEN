@@ -262,6 +262,8 @@ interface SlideBuildContext {
   total: number
   signal?: AbortSignal
   onStage?: (event: ForgeStageEvent) => void
+  /** 材料篮（v0.2.5）：原样透传进 `slideRequest`，由 prompts 侧裁到 5 条 × 200 字。 */
+  materials?: { label: string; text: string }[]
 }
 
 function estimateTokens(text: string): number {
@@ -279,7 +281,7 @@ async function buildOneSlide(
   const emit = (event: ForgeStageEvent) => ctx.onStage?.(event)
   const stage = (name: ForgeStage, extra: Partial<Extract<ForgeStageEvent, { type: 'stage' }>> = {}) =>
     emit({ type: 'stage', stage: name, index, at: Date.now(), ...extra })
-  const req = slideRequest({ outline, slide: seed, index, lang: outline.lang })
+  const req = slideRequest({ outline, slide: seed, index, lang: outline.lang, materials: ctx.materials })
   let content = contentOf(seed, outline.lang, index, ctx.total)
 
   emit({ type: 'slide:start', index })
@@ -385,7 +387,14 @@ async function buildOneSlide(
 export async function rebuildOutlineSlide(
   outline: Outline,
   index: number,
-  opts: { themeId?: string; prompt?: string; signal?: AbortSignal; onStage?: (event: ForgeStageEvent) => void } = {},
+  opts: {
+    themeId?: string
+    prompt?: string
+    signal?: AbortSignal
+    onStage?: (event: ForgeStageEvent) => void
+    /** v0.2.5：重试也带上材料，避免「同一幕第一次有材料、重试没有」的口径漂移。 */
+    materials?: { label: string; text: string }[]
+  } = {},
 ): Promise<{ slide: Slide; warnings: string[] }> {
   const seed = outline.slides[index]
   if (!seed) throw new Error(`slide index out of range: ${index}`)
@@ -401,6 +410,7 @@ export async function rebuildOutlineSlide(
     total: outline.slides.length,
     signal: opts.signal,
     onStage: opts.onStage,
+    materials: opts.materials,
   })
   opts.onStage?.({ type: 'slide:recast', index, slide: built.slide, warnings: built.warnings })
   return built
@@ -441,8 +451,15 @@ export async function buildDeckFromOutline(
   await runPool(
     outline.slides,
     2,
-    async (seed, index) => {
+    async (item, index) => {
       if (opts.signal?.aborted) throw new AiError('timeout', 'aborted', true)
+      /**
+       * v0.2.5 的 steering 落点：每幕开始前重取一次大纲，
+       * 于是「生成中追加的要求」只要写进还没开始幕的 brief，就会在下一幕边界自然生效（02 §1 动作 4）。
+       * 实时大纲缺这一幕时退回入参大纲 —— 已有幕数不变，池子不会因为外部缩小大纲而漏幕。
+       */
+      const live = opts.liveOutline?.() ?? outline
+      const seed = live.slides[index] ?? outline.slides[index] ?? item
       const built = await buildOneSlide(seed, index, {
         provider,
         model,
@@ -452,6 +469,7 @@ export async function buildDeckFromOutline(
         total,
         signal: opts.signal,
         onStage: opts.onStage,
+        materials: opts.materials,
       })
       warnings.push(...built.warnings)
       slides[index] = built.slide

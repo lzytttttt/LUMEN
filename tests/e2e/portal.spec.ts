@@ -20,7 +20,7 @@ test('门户：品牌与入口 → 进入工作台 → 首启三步出现', asyn
   await page.getByRole('tab', { name: /全屏开演|Playback/ }).click()
   await expect(page.locator('.shot__view img')).toHaveAttribute('src', /ui-play/)
   await expect(page.locator('.author__body h3')).toHaveText('无极Ayaya')
-  await expect(page.locator('.author__links')).toContainText('CC BY-NC 4.0')
+  await expect(page.locator('.author__links')).toContainText('Apache-2.0 + Commons Clause')
   await expect(page.locator('.author__links')).toContainText('lzytttttt@gmail.com')
 
   // 设置抽屉：打开 / 关闭，零 console error。

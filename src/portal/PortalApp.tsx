@@ -597,7 +597,7 @@ export function PortalApp({ onEnter }: PortalAppProps) {
             GitHub
           </a>
           <a href={LICENSE_URL} target="_blank" rel="noreferrer">
-            CC BY-NC 4.0
+            {copy.about.license}
           </a>
           <a href="#top">{copy.footer.top}</a>
         </span>

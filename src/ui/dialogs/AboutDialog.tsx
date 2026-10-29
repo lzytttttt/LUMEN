@@ -34,7 +34,7 @@ export function AboutDialog({ open, onClose }: { open: boolean; onClose: () => v
         </div>
         <p className="ldlg-about__tagline" style={{ fontSize: 12, color: 'var(--ui-fg-mute)' }}>
           {t('editor.dialog.aboutAuthor')} ·{' '}
-          <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noreferrer" style={{ color: 'var(--ui-accent)' }}>
+          <a href="https://github.com/lzytttttt/LUMEN/blob/main/LICENSE" target="_blank" rel="noreferrer" style={{ color: 'var(--ui-accent)' }}>
             {t('editor.dialog.aboutLicense')}
           </a>
         </p>
