@@ -221,26 +221,46 @@ test('造幕台 v0.2.5：加材料 → 逐幕改标题/要点 → 生成中纠�
   await brief.press('Enter')
   await expect(brief).toHaveValue('三件事：材料、大纲、纠偏')
 
-  // 动作 4：生成中纠偏（队列条数 + 撤销入口都在 data-* 上）
+  // 动作 4：生成中纠偏（累计条数 + 队列条数 + 撤销入口都在 data-* 上）
   await page.locator('[data-act="cast"]').click()
   const steer = page.locator('[data-forge-steer]')
   const steerInput = page.locator('[data-forge-steer-input]')
   await steerInput.fill('后面几幕更短')
   await steerInput.press('Enter')
-  // 一次往返取完整快照：?still=1 把节奏归零，队列在下一幕落位时就会清零，逐条断言会飘。
+  /**
+   * 一次往返取完整快照（逐条 assert 会飘），但 `data-steer-count` 是**活队列长度**：
+   * `?still=1` 把节奏归零后，这条纠偏会在下一幕边界被管线吃掉（`pendingSteer` 用它算「已排队 n」），
+   * 所以快照一定落在两个合法态之一 —— 共享 vCPU 的 CI 上实测读到的是后者（total=1 / count=0）：
+   *   A. 还在队里：count=1、notes=1、撤销入口在、「已排队 1」+「第 n 幕起生效」；
+   *   B. 已被吃掉：count=0、队列块整段收起 —— 这正是「生效后不再可撤销」的契约（`02` §3.2）。
+   * 两态都只证明「一句话进了管线」，真正的生效语义在 `tests/unit/forge-flow-v025.test.ts` 约束 4。
+   */
   const queued = await steer.evaluate((node) => ({
     total: node.getAttribute('data-steer-total'),
     count: node.getAttribute('data-steer-count'),
+    live: node.getAttribute('data-steer-live'),
     notes: node.querySelectorAll('[data-steer-id]').length,
+    undo: node.querySelectorAll('[data-steer-undo]').length,
     label: node.querySelector('.forge-steer__queued')?.textContent?.trim() ?? '',
     from: node.querySelector('.forge-steer__from')?.textContent?.trim() ?? '',
   }))
+  // 累计值单调，不受吃掉时机影响：提交过一次就是 1。
   expect(queued.total).toBe('1')
-  expect(queued.count).toBe('1')
-  expect(queued.notes).toBe(1)
-  // F 类计数器（已排队 {n}）与 steer.ts 的「第 n 幕起生效」各自出现，两句都在这一行。
-  expect(queued.label).toContain('1')
-  expect(queued.from.length).toBeGreaterThan(0)
+  // 纠偏条只在这一段出现，这一刻必然还在生成中。
+  expect(queued.live).toBe('1')
+  if (queued.count === '1') {
+    expect(queued.notes).toBe(1)
+    expect(queued.undo).toBe(1)
+    // F 类计数器（已排队 {n}）与 steer.ts 的「第 n 幕起生效」各自出现，两句都在这一行。
+    expect(queued.label).toContain('1')
+    expect(queued.from.length).toBeGreaterThan(0)
+  } else {
+    expect(queued.count).toBe('0')
+    expect(queued.notes).toBe(0)
+    expect(queued.undo).toBe(0)
+    expect(queued.label).toBe('')
+    expect(queued.from).toBe('')
+  }
 
   // 动作 5：开演下一步（三枚钩子齐全）
   await expect(page.locator('[data-forge="premiere"]')).toBeVisible({ timeout: 60_000 })
