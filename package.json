@@ -1,7 +1,7 @@
 {
   "name": "lumen-deck",
   "private": true,
-  "version": "0.2.5",
+  "version": "0.3.0",
   "type": "module",
   "description": "LUMEN 幕光 — AI 原生 HTML 演示工作台",
   "scripts": {
@@ -18,6 +18,8 @@
     "e2e": "playwright test",
     "snapshot": "node scripts/snapshot.mjs",
     "lint:i18n": "vitest run tests/unit/i18n.test.ts",
+    "sim:llm": "node simulation/v0.3.0/run-simulation.mjs",
+    "sim:llm:selftest": "node simulation/v0.3.0/mock-llm-server.mjs --selftest",
     "deploy:preview": "npx --yes vercel",
     "deploy:prod": "npx --yes vercel --prod"
   },

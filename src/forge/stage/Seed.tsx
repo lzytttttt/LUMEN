@@ -27,11 +27,28 @@ const AUDIENCES: { value: string; key: MessageKey }[] = [
   { value: 'class', key: 'forge.seed.audienceClass' },
 ]
 
-/** 大字：12 字以内 64px，往后线性收到 42px（02 §5.1「56/64，随字数 42–64 自适应」）。 */
-function fontOf(prompt: string, en: boolean): number {
-  const width = en ? prompt.trim().length * 0.62 : prompt.trim().length
-  if (width <= 12) return 64
-  return Math.round(Math.max(42, 64 - (width - 12) * 1.35))
+/**
+ * 大字：按「有效宽度」自适应，最多 64px、最少 36px（02 §5.1「56/64，随字数 42–64 自适应」）。
+ *
+ * v0.3.0 修正：旧公式只数汉字个数，遇到「中文 + PPT / HTML / 数字」这类混排会把行推出输入框
+ * （24 个字按 48px 排 ≈ 1150px，而输入行只有 940px）。这里按 CJK=1、拉丁=0.58 估算行宽，
+ * 再让字号去适配；短句仍是 64px，长混排自动收到 36–44px，不再横向截断。
+ */
+const LINE_WIDTH = 900
+const FONT_MAX = 64
+const FONT_MIN = 36
+
+export function seedFontOf(prompt: string): number {
+  const text = prompt.trim()
+  if (text === '') return FONT_MAX
+  let units = 0
+  for (const char of text) {
+    if (/[\u3000-\u9fff\uff00-\uffef]/.test(char)) units += 1
+    else if (/\s/.test(char)) units += 0.32
+    else units += 0.58
+  }
+  const ideal = LINE_WIDTH / Math.max(units, 1)
+  return Math.floor(Math.min(FONT_MAX, Math.max(FONT_MIN, ideal)))
 }
 
 export function Seed(props: SeedProps) {
@@ -99,7 +116,7 @@ export function Seed(props: SeedProps) {
               spellCheck={false}
               autoComplete="off"
               maxLength={400}
-              style={{ fontSize: `${fontOf(props.prompt, props.lang === 'en')}px` }}
+              style={{ fontSize: `${seedFontOf(props.prompt)}px` }}
               onChange={(event) => props.onPrompt(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') {
@@ -208,11 +225,13 @@ export function Seed(props: SeedProps) {
               ))}
             </span>
           ) : null}
+
+          {/* v0.3.0：离线/本地 Mock 是「这一行」的状态，不再孤零零漂在左下角。 */}
+          {props.offline ? <span className="forge-seed__badge">{t('forge.seed.offline')}</span> : null}
         </div>
       </div>
 
       <div className="forge-seed__dials">
-        {props.offline ? <span className="forge-seed__badge">{t('forge.seed.offline')}</span> : null}
         <span className="forge-seed__dial" role="radiogroup" aria-label="6 / 9 / 12" data-forge-text>
           {LENGTHS.map((item) => (
             <button

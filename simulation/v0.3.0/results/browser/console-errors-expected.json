@@ -1,0 +1,4 @@
+[
+  "Failed to load resource: the server responded with a status of 429 (Too Many Requests)",
+  "Failed to load resource: net::ERR_INCOMPLETE_CHUNKED_ENCODING"
+]

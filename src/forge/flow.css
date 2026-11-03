@@ -13,13 +13,16 @@
 /* ------------------------------ 输入屏：来源区 ------------------------------ */
 
 /* 材料 + 受众 + 预设 + 最近一套：整段是 ghost 级（11px 小字、1px 线），
-   不占 `data-forge-text` 预算（02 §4）。 */
+   不占 `data-forge-text` 预算（02 §4）。
+   v0.3.0：从三行竖排收成一条可换行的横向轨道 —— 输入屏上只剩「输入 / 示例 / 一条偏好」。 */
 .forge-seed__sources {
-  display: grid;
-  justify-items: center;
-  gap: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 18px;
   width: min(100%, 940px);
-  margin-top: 30px;
+  margin-top: 24px;
 }
 
 /* ------------------------------ 材料篮 ------------------------------ */
@@ -31,7 +34,7 @@
   justify-content: center;
   flex-wrap: wrap;
   gap: 6px 8px;
-  width: 100%;
+  width: auto;
   min-height: 26px;
   color: var(--ui-fg-mute);
   font-family: var(--ui-font-mono);
@@ -199,8 +202,8 @@
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 6px 20px;
-  width: 100%;
+  gap: 6px 16px;
+  width: auto;
   color: var(--ui-fg-mute);
   font-family: var(--ui-font-mono);
   font-size: 11px;
@@ -262,12 +265,27 @@
   gap: 5px;
 }
 
-/* accent 色点：预设的唯一色相标记（themes 的 colors.accent 由行内写进 background）。 */
+/* v0.3.0：未选中的预设只留一个色点（名字在 title / aria-label 里），
+ * 选中项才展开名字。六个预设从「六段字」收成「六个点 + 一个名字」，
+ * 这一行因此不再和中轴上的输入抢宽度。 */
+.forge-pref__theme:not(.is-on) {
+  padding: 1px 4px;
+}
+
+.forge-pref__theme:not(.is-on) .forge-pref__name {
+  display: none;
+}
+
+.forge-pref__theme:not(.is-on):hover .forge-pref__dot {
+  transform: scale(1.28);
+}
+
 .forge-pref__dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--ui-bg) 70%, transparent);
+  transition: transform var(--fx-t2) var(--fx-ease-pop);
 }
 
 .forge-pref__reuse {
@@ -323,26 +341,31 @@
 
 /* ------------------------------ 逐幕编辑：要点 ------------------------------ */
 
+/* v0.3.0：brief 从「横贯卡阵的空胶囊」收成一条细下划线输入 ——
+ * 它是逐幕编辑的入口，不该比卡片本身更响。标签给出上下文（这一幕），
+ * 光标落进去才亮 accent；失焦即提交的语义不变。 */
 .forge-deal__brief {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   width: min(100%, var(--forge-grid-w));
-  min-height: 28px;
-  padding: 0 8px;
-  border: 1px solid color-mix(in srgb, var(--ui-line) 46%, transparent);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--ui-fg) 3%, transparent);
+  min-height: 26px;
+  padding: 0 2px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ui-line) 52%, transparent);
+  border-radius: 0;
+  background: transparent;
+  transition: border-color var(--fx-t2) var(--fx-ease);
 }
 
 .forge-deal__brief:focus-within {
-  border-color: var(--ui-accent-line);
+  border-bottom-color: var(--ui-accent-line);
 }
 
 .forge-deal__brief-label {
   color: color-mix(in srgb, var(--ui-fg-mute) 88%, transparent);
   font-family: var(--ui-font-mono);
-  font-size: 10.5px;
+  font-size: 10px;
   letter-spacing: 0.16em;
   white-space: nowrap;
 }
@@ -350,19 +373,19 @@
 .forge-deal__brief-field {
   flex: 1;
   min-width: 0;
-  padding: 4px 0;
+  padding: 5px 0;
   border: 0;
   background: transparent;
-  color: color-mix(in srgb, var(--ui-fg) 84%, transparent);
+  color: color-mix(in srgb, var(--ui-fg) 88%, transparent);
   font-family: inherit;
-  font-size: 11.5px;
+  font-size: 12px;
   line-height: 1.4;
   resize: none;
   outline: none;
 }
 
 .forge-deal__brief-field::placeholder {
-  color: color-mix(in srgb, var(--ui-fg-mute) 72%, transparent);
+  color: color-mix(in srgb, var(--ui-fg-mute) 66%, transparent);
 }
 
 /* ------------------------------ 逐幕编辑：卡内标题 ------------------------------ */

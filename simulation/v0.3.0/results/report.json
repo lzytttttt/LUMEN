@@ -1,0 +1,574 @@
+{
+  "version": "v0.3.0",
+  "startedAt": "2026-11-03T00:43:57.314Z",
+  "finishedAt": "2026-11-03T00:44:42.848Z",
+  "base": "http://127.0.0.1:5273",
+  "llm": {
+    "endpoint": "http://127.0.0.1:5299/v1",
+    "model": "lumen-sim-0.3"
+  },
+  "env": {
+    "node": "v22.23.2",
+    "platform": "win32"
+  },
+  "steps": [
+    {
+      "id": "connect",
+      "title": "设置：通道切到模拟端点并测试连通性",
+      "ok": true,
+      "ms": 2426,
+      "detail": {
+        "endpoint": "http://127.0.0.1:5299/v1",
+        "model": "lumen-sim-0.3"
+      }
+    },
+    {
+      "id": "forge.outline",
+      "title": "造幕台：一句话 → 9 幕可编辑大纲",
+      "ok": true,
+      "ms": 2066,
+      "detail": {
+        "cards": 9
+      }
+    },
+    {
+      "id": "forge.brief",
+      "title": "造幕台：逐幕「这一幕想讲什么」进入生成请求",
+      "ok": true,
+      "ms": 93,
+      "detail": {
+        "brief": "用三个真实数字说明：一次改版要花多少小时"
+      }
+    },
+    {
+      "id": "forge.cast",
+      "title": "造幕台：九幕成稿（文案 + SVG + 3D + 过检）",
+      "ok": true,
+      "ms": 3408,
+      "detail": {
+        "count": 9
+      }
+    },
+    {
+      "id": "forge.play",
+      "title": "造幕台：开演 → 全屏播放真实成稿",
+      "ok": true,
+      "ms": 3000,
+      "detail": {}
+    },
+    {
+      "id": "forge.persist",
+      "title": "造幕台：成稿落库、AI 溯源、SVG/3D 块齐全",
+      "ok": true,
+      "ms": 717,
+      "detail": {
+        "slides": 9,
+        "types": [
+          "text",
+          "shape",
+          "three",
+          "svg"
+        ],
+        "providers": [
+          "openai"
+        ]
+      }
+    },
+    {
+      "id": "composer.open",
+      "title": "AI 编排：从顶栏打开精密模式，通道徽标为真端点",
+      "ok": true,
+      "ms": 188,
+      "detail": {
+        "channel": "127.0.0.1:5299 · lumen-sim-0.3"
+      }
+    },
+    {
+      "id": "composer.outline",
+      "title": "AI 编排：提示词 → 可编辑大纲",
+      "ok": true,
+      "ms": 1878,
+      "detail": {}
+    },
+    {
+      "id": "composer.build",
+      "title": "AI 编排：逐幕成稿写回当前演示",
+      "ok": true,
+      "ms": 2330,
+      "detail": {
+        "slides": 9,
+        "title": "「演示载体的迁移」值得一个明确的结论"
+      }
+    },
+    {
+      "id": "refine.llm",
+      "title": "自然语言微调：规则未命中 → 模型改写 + diff 预览",
+      "ok": true,
+      "ms": 915,
+      "detail": {
+        "preview": "将变更：新增 3 · 修改 0 · 删除 3"
+      }
+    },
+    {
+      "id": "refine.rules",
+      "title": "自然语言微调：规则通道（时间轴）离线重排 + 应用",
+      "ok": true,
+      "ms": 65,
+      "detail": {}
+    },
+    {
+      "id": "refine.art",
+      "title": "自然语言微调：加配图 / 加 3D 走单点生成",
+      "ok": true,
+      "ms": 4944,
+      "detail": {
+        "results": [
+          "将变更：新增 8 · 修改 0 · 删除 15",
+          "将变更：新增 8 · 修改 0 · 删除 8"
+        ]
+      }
+    },
+    {
+      "id": "studio.svg",
+      "title": "SVG 工作室：一句话 → 可净化 SVG → 替换当前块",
+      "ok": true,
+      "ms": 6742,
+      "detail": {
+        "source": "generateSvgArt"
+      }
+    },
+    {
+      "id": "studio.three",
+      "title": "3D 工作室：一句话 → 受限场景描述符 → 替换当前块",
+      "ok": true,
+      "ms": 3579,
+      "detail": {
+        "source": "generateThreeScene"
+      }
+    },
+    {
+      "id": "robust.badjson",
+      "title": "鲁棒性：截断 JSON → 修复/重试后仍出大纲",
+      "ok": true,
+      "ms": 3833,
+      "detail": {
+        "cards": 9
+      }
+    },
+    {
+      "id": "robust.429",
+      "title": "鲁棒性：429 → Retry-After 退避重试后成功",
+      "ok": true,
+      "ms": 3848,
+      "detail": {
+        "cards": 9
+      }
+    },
+    {
+      "id": "robust.streambreak",
+      "title": "鲁棒性：SSE 断流 → 同 body 非流式回退",
+      "ok": true,
+      "ms": 2057,
+      "detail": {
+        "cards": 9
+      }
+    },
+    {
+      "id": "robust.restore",
+      "title": "收尾：把模型名恢复为模拟主模型",
+      "ok": true,
+      "ms": 1403,
+      "detail": {}
+    },
+    {
+      "id": "console.clean",
+      "title": "浏览器干净度：无预期外 console error / page error / 失败请求",
+      "ok": true,
+      "ms": 0,
+      "detail": {
+        "console": {
+          "raw": 3,
+          "expected": 2
+        },
+        "requests": {
+          "raw": 1,
+          "expected": 1
+        }
+      }
+    }
+  ],
+  "assertions": [
+    {
+      "ok": true,
+      "message": "配置后起念屏应显示非离线通道"
+    },
+    {
+      "ok": true,
+      "message": "生成通道应为已配置的 OpenAI 兼容端点（非离线 Mock）"
+    },
+    {
+      "ok": true,
+      "message": "大纲卡数应 ≥3，实际 9"
+    },
+    {
+      "ok": true,
+      "message": "开演席应收到 9 幕，实际 9"
+    },
+    {
+      "ok": true,
+      "message": "本地应有一套已落库的演示"
+    },
+    {
+      "ok": true,
+      "message": "落库幕数应为 9，实际 9"
+    },
+    {
+      "ok": true,
+      "message": "九幕里应有 SVG 块"
+    },
+    {
+      "ok": true,
+      "message": "九幕里应有 3D 块"
+    },
+    {
+      "ok": true,
+      "message": "AI 块应带 openai 溯源，实际 openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai,openai"
+    },
+    {
+      "ok": true,
+      "message": "通道徽标应显示为已连接的端点"
+    },
+    {
+      "ok": true,
+      "message": "SVG 生成不应报错"
+    },
+    {
+      "ok": true,
+      "message": "3D 生成不应报错"
+    },
+    {
+      "ok": true,
+      "message": "生成通道应为已配置的 OpenAI 兼容端点（非离线 Mock）"
+    },
+    {
+      "ok": true,
+      "message": "鲁棒性场景应仍产出大纲，实际 9 张卡"
+    },
+    {
+      "ok": true,
+      "message": "生成通道应为已配置的 OpenAI 兼容端点（非离线 Mock）"
+    },
+    {
+      "ok": true,
+      "message": "鲁棒性场景应仍产出大纲，实际 9 张卡"
+    },
+    {
+      "ok": true,
+      "message": "生成通道应为已配置的 OpenAI 兼容端点（非离线 Mock）"
+    },
+    {
+      "ok": true,
+      "message": "鲁棒性场景应仍产出大纲，实际 9 张卡"
+    },
+    {
+      "ok": true,
+      "message": "不应有 page error，实际 0"
+    },
+    {
+      "ok": true,
+      "message": "不应有预期外 console error，实际 0："
+    },
+    {
+      "ok": true,
+      "message": "不应有预期外失败请求，实际 0"
+    }
+  ],
+  "llmTasks": {
+    "outline": 8,
+    "slide": 18,
+    "three": 4,
+    "svg": 3,
+    "refine": 1
+  },
+  "screenshots": [
+    "screenshots/01-settings-connected.png",
+    "screenshots/02-forge-seed.png",
+    "screenshots/03-forge-deal.png",
+    "screenshots/04-forge-deal-brief.png",
+    "screenshots/05-forge-cast-mid.png",
+    "screenshots/06-forge-premiere.png",
+    "screenshots/07-play-slide-01.png",
+    "screenshots/08-play-slide-02.png",
+    "screenshots/09-play-slide-03.png",
+    "screenshots/10-editor-generated.png",
+    "screenshots/11-ai-panel.png",
+    "screenshots/12-composer-outline.png",
+    "screenshots/13-composer-done.png",
+    "screenshots/14-refine-plan.png",
+    "screenshots/15-refine-applied.png",
+    "screenshots/16-refine-art.png",
+    "screenshots/17-studio-svg.png",
+    "screenshots/18-studio-three.png",
+    "screenshots/19-robust-badjson.png",
+    "screenshots/20-robust-429.png",
+    "screenshots/21-robust-streambreak.png"
+  ],
+  "errors": {
+    "console": [
+      "Failed to load resource: the server responded with a status of 429 (Too Many Requests)",
+      "Failed to load resource: net::ERR_INCOMPLETE_CHUNKED_ENCODING"
+    ],
+    "page": [],
+    "failedRequests": [
+      {
+        "url": "http://127.0.0.1:5299/v1/chat/completions",
+        "reason": "net::ERR_INCOMPLETE_CHUNKED_ENCODING"
+      }
+    ],
+    "expectedConsole": [
+      "Failed to load resource: the server responded with a status of 429 (Too Many Requests)",
+      "Failed to load resource: net::ERR_INCOMPLETE_CHUNKED_ENCODING"
+    ],
+    "unexpectedConsole": [],
+    "expectedFailedRequests": [
+      {
+        "url": "http://127.0.0.1:5299/v1/chat/completions",
+        "reason": "net::ERR_INCOMPLETE_CHUNKED_ENCODING"
+      }
+    ],
+    "unexpectedFailedRequests": []
+  },
+  "scenario": {
+    "deck": {
+      "id": "deck_94606f2e3589",
+      "title": "复盘不该是一份文档，而是一个现场",
+      "themeId": "noir",
+      "slides": 9,
+      "types": [
+        "text",
+        "text",
+        "shape",
+        "text",
+        "text",
+        "three",
+        "text",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "text",
+        "svg",
+        "text",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "shape",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text"
+      ],
+      "providers": [
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai",
+        "openai"
+      ],
+      "headlines": [
+        "LUMEN · 幕光 · AI 原生演示",
+        "复盘会结束的那一刻，文档就开始过期。",
+        "复盘被浪费的三个地方",
+        "把结论放回它发生的地方",
+        "PPT 与 HTML，不是替代关系",
+        "如果结论要三个人转述才能听懂，它就不是结论。",
+        "从文档到页面，只要四步",
+        "换载体之后多出的四件事",
+        "下一次复盘，从一个链接开始"
+      ]
+    },
+    "composer": {
+      "slides": 9,
+      "title": "「演示载体的迁移」值得一个明确的结论"
+    }
+  },
+  "llmSummary": {
+    "requests": 34,
+    "tasks": {
+      "outline": 8,
+      "slide": 18,
+      "three": 4,
+      "svg": 3,
+      "refine": 1
+    },
+    "byModel": {
+      "lumen-sim-0.3": 28,
+      "lumen-sim-badjson": 1,
+      "lumen-sim-429": 3,
+      "lumen-sim-streambreak": 2
+    }
+  },
+  "durationMs": 45532,
+  "failed": 0
+}

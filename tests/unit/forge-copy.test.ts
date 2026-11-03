@@ -88,6 +88,7 @@ const KNOWN_FAMILIES = [
   'entry',
   'a11y.',
   'live.',
+  'steps.',
   'seed.',
   'deal.',
   'card.',

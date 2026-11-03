@@ -15,6 +15,7 @@ import {
   Plus,
   Redo2,
   Settings,
+  Sparkles,
   Sun,
   Undo2,
 } from 'lucide-react'
@@ -204,6 +205,12 @@ export function TopBar() {
         >
           ✦ {t('forge.entry')}
         </button>
+        {/* v0.3.0：把「精密模式」的 AI 编排从 ⌘K 里捞回顶栏 —— 右侧栏本来就是它的家。 */}
+        <IconButton
+          icon={<Sparkles size={15} />}
+          label={t('ai.panel.title')}
+          onClick={() => setRightMode(rightMode === 'composer' ? 'inspector' : 'composer')}
+        />
         <button type="button" className="lm-btn lm-btn--ghost" onClick={() => openDialog('export')}>
           <Download size={14} />
           {t('common.action.export')}

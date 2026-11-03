@@ -68,6 +68,7 @@ export function RefineBox() {
         onValueChange={setInstruction}
         placeholder={t('ai.panel.improvePlaceholder')}
         disabled={!slide || busy}
+        data-refine-input="1"
         onKeyDown={(event) => {
           if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
             event.preventDefault()
@@ -82,6 +83,7 @@ export function RefineBox() {
         <Button
           size="sm"
           variant="primary"
+          data-refine-run="1"
           onClick={() => void submit()}
           disabled={!slide || busy || instruction.trim() === ''}
         >
@@ -94,7 +96,7 @@ export function RefineBox() {
       {error ? <p className="ai-note" style={{ color: 'var(--ui-danger)' }}>{error}</p> : null}
 
       {plan ? (
-        <div className="ai-diff">
+        <div className="ai-diff" data-refine-plan="1">
           <p className="ai-diff__line">
             {t('ai.panel.refinePreview', {
               added: plan.diff.added.length,
@@ -120,7 +122,7 @@ export function RefineBox() {
             ))}
           </div>
           <div className="ai-diff__actions">
-            <Button size="sm" variant="primary" onClick={confirm}>
+            <Button size="sm" variant="primary" data-refine-confirm="1" onClick={confirm}>
               {t('ai.panel.refineConfirm')}
             </Button>
             <Button size="sm" variant="ghost" onClick={() => setPlan(null)}>

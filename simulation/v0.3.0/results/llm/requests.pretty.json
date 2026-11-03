@@ -1,0 +1,835 @@
+[
+  {
+    "ts": "2026-11-03T00:44:03.301Z",
+    "id": "chatcmpl-sim-1-mvzyt2jb",
+    "model": "lumen-sim-0.3",
+    "task": "outline",
+    "stream": true,
+    "status": 200,
+    "ms": 1358,
+    "promptChars": 1882,
+    "completionChars": 1727,
+    "responseText": "{\"title\":\"复盘不该是一份文档，而是一个现场\",\"subtitle\":\"给高管 · Q3 季度复盘 · 10 分钟\",\"lang\":\"zh\",\"slides\":[{\"recipe\":\"cover\",\"headline\":\"复盘要能点开，不只是翻页\",\"points\":[],\"visual\":{\"kind\":\"three\",\"preset\":\"orbit\"},\"notes\":\"开场别念标题，先问：上次复盘的结论，现在还存在吗？\",\"lead\":\"同样的内容，换一个载体，结论才留得下来。\"},{\"recipe\":\"statement\",\"headline\":\"复盘会结束的那一刻，文档就开始过期。\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"读完停两秒再翻页，让这句话先落地。\",\"lead\":\"结论留在第 14 页，下一次决策没人会翻回去。\"},{\"recipe\":\"grid3\",\"headline\":\"复盘被浪费的三个地方\",\"points\":[\"**找结论**：翻到第 14 页才看到建议。\",\"**对不上**：同一指标出现两个版本。\",\"**传不动**：转发一次，上下文丢一半。\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"三张卡片对应三个提问者：老板、数据同学、下一位负责人。\"},{\"recipe\":\"split\",\"headline\":\"把结论放回它发生的地方\",\"points\":[\"**现场**：点开当天的数据快照。\",\"**证据**：一段录音的时间戳。\",\"**下一步**：右边写好负责人和日期。\"],\"visual\":{\"kind\":\"svg\",\"brief\":\"一条时间线从文档流向外链页面，节点逐一点亮\"},\"notes\":\"从左边讲到右边，最后停在「下一步」那条。\",\"lead\":\"每一句判断下面，都挂着能点开的证据。\"},{\"recipe\":\"compare\",\"headline\":\"PPT 与 HTML，不是替代关系\",\"points\":[\"PPT｜交付一次性的讲述\",\"PPT｜版式固定，改一处要重发\",\"HTML｜交付可检索的现场\",\"HTML｜改一处，链接不变也更新\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"先讲左边不丢人，再讲右边为什么值得多花两天。\",\"lead\":\"一个负责被讲述，一个负责被使用。\"},{\"recipe\":\"quote\",\"headline\":\"如果结论要三个人转述才能听懂，它就不是结论。\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"引用这一句时放慢语速，别解释，让现场安静一下。\",\"lead\":\"Q3 复盘现场 · 产品负责人\"},{\"recipe\":\"process\",\"headline\":\"从文档到页面，只要四步\",\"points\":[\"01｜半天｜先写 5 条能被反驳的判断\",\"02｜1 天｜每幕只留一个证据入口\",\"03｜1 天｜图表从同一份指标源生成\",\"04｜2 小时｜旧链接重定向到新页面\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"强调第三步：数据同一份源，才不会对不上。\"},{\"recipe\":\"grid4\",\"headline\":\"换载体之后多出的四件事\",\"points\":[\"**可检索**：结论能被下次会议直接引用。\",\"**可更新**：季度内持续修订，不重发。\",\"**可交互**：让听众自己点到证据。\",\"**可复用**：模板沉淀成团队资产。\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"这页快速过，每张卡片一句话，不展开。\"},{\"recipe\":\"closing\",\"headline\":\"下一次复盘，从一个链接开始\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"收尾给一个具体日期，把行动钉在日历上。\",\"lead\":\"Q4 的第一次复盘，直接用页面交付。\"}]}",
+    "request": {
+      "system": "[TASK:outline]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把一句话需求变成一套可编辑的大纲（3–20 幕）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"title\": \"演示标题，≤ 24 字，必须是一个观点而不是名词堆砌\",\n  \"subtitle\": \"一行副标题，说明听众与场合\",\n  \"lang\": \"zh | en\",\n  \"slides\": [\n    {\n      \"recipe\": \"见下方配方表\",\n      \"headline\": \"这一幕的标题，≤ 24 字，有观点\",\n      \"lead\": \"一句引导语，≤ 40 字，可选\",\n      \"points\": [\"3–5 条要点，每条 ≤ 40 字\"],\n      \"visual\": { \"kind\": \"svg\", \"brief\": \"画面描述，≤ 60 字\" }\n                | { \"kind\": \"three\", \"preset\": \"orbit|showcase|wave-field|particle-cloud|torus|stack|globe\" }\n                | { \"kind\": \"none\" },\n      \"notes\": \"讲者备注：怎么讲这一页，≤ 60 字\"\n    }\n  ]\n}\n\n结构要求：\n- 第一幕必须是 cover，最后一幕必须是 closing；\n- 中间按\"问题 → 证据 → 方案 → 取舍 → 行动\"的顺序推进，不要平铺功能清单；\n- 每幕 3–5 条要点；data / timeline / process / compare 的要点必须遵守配方表里的分隔符；\n- 全篇最多 1 个 svg 幕与 1 个 three 幕；没有画面时 visual.kind = \"none\"；\n- notes 是给讲者的动作提示，不是内容的复述。\n\nrecipe 只能取以下值（按场景选择，不要连续三幕用同一个）：\n- cover 封面：观点式标题 + 一句引导，只出现一次且必须第一幕\n- statement 主张：一句大字 + 一行注解，用于转折\n- split 分栏：左边 2–3 条要点，右边一张插图（visual 用 svg）\n- grid3 / grid4：3 / 4 个并列要点，每个要点写成「**小标题**：一句话」\n- timeline 时间线：要点写成「时间｜标题｜说明」，2–5 个节点\n- compare 对比：要点写成「左组｜一句话」与「右组｜一句话」，左右各 2–3 条\n- quote 引用：headline 是一句可被复述的话，lead 是出处\n- data 数据页：要点写成「标签=数值」（数值可带 %），2–5 项\n- process 流程：要点写成「步骤｜时长｜说明」，3–4 步\n- gallery 图集：3 条图注，用于展示同一叙事的不同画面\n- closing 收尾：一个明确的下一步，必须最后一幕",
+      "user": "{\n  \"prompt\": \"为什么下一季度的复盘，要从 PPT 换成 HTML 演示\",\n  \"lang\": \"zh\",\n  \"audience\": \"exec\",\n  \"length\": \"normal\",\n  \"slideCount\": 9,\n  \"durationMin\": 10,\n  \"includeSvg\": true,\n  \"include3d\": true,\n  \"themeId\": \"aurora\"\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 87,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 628,
+      "completion_tokens": 576,
+      "total_tokens": 1204
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:04.102Z",
+    "id": "chatcmpl-sim-2-mvzyt433",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 151,
+    "promptChars": 1168,
+    "completionChars": 155,
+    "responseText": "{\"headline\":\"复盘要能点开，不只是翻页\",\"lead\":\"同样的内容，换一个载体，结论才留得下来。\",\"points\":[\"**主题**：复盘不该是一份文档，而是一个现场\",\"**听众**：与会同事\",\"**目标**：散会后能复述一句结论\"],\"notes\":\"先停三秒，等听众看完画面再开口。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"复盘不该是一份文档，而是一个现场\",\n  \"lang\": \"zh\",\n  \"index\": 0,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"cover\",\n    \"headline\": \"复盘要能点开，不只是翻页\",\n    \"lead\": \"同样的内容，换一个载体，结论才留得下来。\",\n    \"points\": [],\n    \"visual\": {\n      \"kind\": \"three\",\n      \"preset\": \"orbit\"\n    },\n    \"notes\": \"开场别念标题，先问：上次复盘的结论，现在还存在吗？\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 8,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 390,
+      "completion_tokens": 52,
+      "total_tokens": 442
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:04.103Z",
+    "id": "chatcmpl-sim-3-mvzyt435",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 150,
+    "promptChars": 1147,
+    "completionChars": 159,
+    "responseText": "{\"headline\":\"复盘会结束的那一刻，文档就开始过期。\",\"lead\":\"结论留在第 14 页，下一次决策没人会翻回去。\",\"points\":[\"**依据**：来自本轮的三个具体事实\",\"**边界**：这一页只证明一件事\",\"**落点**：把判断交给下一幕\"],\"notes\":\"放慢语速，让这句话先落地。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"复盘不该是一份文档，而是一个现场\",\n  \"lang\": \"zh\",\n  \"index\": 1,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"statement\",\n    \"headline\": \"复盘会结束的那一刻，文档就开始过期。\",\n    \"lead\": \"结论留在第 14 页，下一次决策没人会翻回去。\",\n    \"points\": [],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"读完停两秒再翻页，让这句话先落地。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 8,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 383,
+      "completion_tokens": 53,
+      "total_tokens": 436
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:04.316Z",
+    "id": "chatcmpl-sim-5-mvzyt47v",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 193,
+    "promptChars": 1258,
+    "completionChars": 220,
+    "responseText": "{\"headline\":\"复盘被浪费的三个地方\",\"lead\":\"三条判断，每一条都能在下周被验证。\",\"points\":[\"**找结论**：翻到第 14 页才看到建议。\",\"**补充**：用三个真实数字说明：一次改版要花多少小时\",\"**对不上**：同一指标出现两个版本。\",\"**传不动**：转发一次，上下文丢一半。\"],\"notes\":\"三张卡片各讲 30 秒，最后一句落到结论上。｜补充：用三个真实数字说明：一次改版要花多少小时\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"复盘不该是一份文档，而是一个现场\",\n  \"lang\": \"zh\",\n  \"index\": 2,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"用三个真实数字说明：一次改版要花多少小时\",\n  \"slide\": {\n    \"recipe\": \"grid3\",\n    \"headline\": \"复盘被浪费的三个地方\",\n    \"points\": [\n      \"**找结论**：翻到第 14 页才看到建议。\",\n      \"**对不上**：同一指标出现两个版本。\",\n      \"**传不动**：转发一次，上下文丢一半。\"\n    ],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"三张卡片对应三个提问者：老板、数据同学、下一位负责人。\",\n    \"brief\": \"用三个真实数字说明：一次改版要花多少小时\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 11,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 420,
+      "completion_tokens": 74,
+      "total_tokens": 494
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:04.469Z",
+    "id": "chatcmpl-sim-6-mvzyt4dk",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 141,
+    "promptChars": 1259,
+    "completionChars": 149,
+    "responseText": "{\"headline\":\"把结论放回它发生的地方\",\"lead\":\"每一句判断下面，都挂着能点开的证据。\",\"points\":[\"**现场**：点开当天的数据快照。\",\"**证据**：一段录音的时间戳。\",\"**下一步**：右边写好负责人和日期。\"],\"notes\":\"先讲三条里最扎心的那条。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"复盘不该是一份文档，而是一个现场\",\n  \"lang\": \"zh\",\n  \"index\": 3,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"split\",\n    \"headline\": \"把结论放回它发生的地方\",\n    \"lead\": \"每一句判断下面，都挂着能点开的证据。\",\n    \"points\": [\n      \"**现场**：点开当天的数据快照。\",\n      \"**证据**：一段录音的时间戳。\",\n      \"**下一步**：右边写好负责人和日期。\"\n    ],\n    \"visual\": {\n      \"kind\": \"svg\",\n      \"brief\": \"一条时间线从文档流向外链页面，节点逐一点亮\"\n    },\n    \"notes\": \"从左边讲到右边，最后停在「下一步」那条。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 8,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 420,
+      "completion_tokens": 50,
+      "total_tokens": 470
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:04.733Z",
+    "id": "chatcmpl-sim-4-mvzyt47p",
+    "model": "lumen-sim-0.3",
+    "task": "three",
+    "stream": true,
+    "status": 200,
+    "ms": 616,
+    "promptChars": 1511,
+    "completionChars": 775,
+    "responseText": "{\"descriptor\":{\"preset\":\"wave-field\",\"palette\":\"duotone\",\"light\":\"soft\",\"bg\":\"transparent\",\"camera\":{\"distance\":6.9,\"elevation\":0.2,\"fov\":47},\"motion\":{\"kind\":\"float\",\"speed\":0.3},\"objects\":[{\"shape\":\"box\",\"material\":\"standard\",\"tint\":\"accent\",\"scale\":1.4,\"pos\":[0,0,0],\"rot\":[0.3,0.6,0],\"metalness\":0.6,\"roughness\":0.3},{\"shape\":\"sphere\",\"material\":\"physical\",\"tint\":\"accent2\",\"scale\":0.3,\"pos\":[2.1,0.3,0.1],\"rot\":[0.3,0.6,0],\"metalness\":0.5,\"roughness\":0.4},{\"shape\":\"octa\",\"material\":\"standard\",\"tint\":\"muted\",\"scale\":0.4,\"pos\":[-1.2,-0.4,1],\"rot\":[0.6,0.1,0],\"metalness\":0.5,\"roughness\":0.5},{\"shape\":\"sphere\",\"material\":\"standard\",\"tint\":\"accent2\",\"scale\":0.5,\"pos\":[-0.5,0.4,-1.4],\"rot\":[0.4,0.1,0],\"metalness\":0.5,\"roughness\":0.3}],\"grain\":0.1,\"orbitControls\":false}}",
+    "request": {
+      "system": "[TASK:three]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把一句描述变成 three.js 的受限场景描述符（不是代码）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"descriptor\": {\n    \"preset\": \"orbit | showcase | wave-field | particle-cloud | torus | stack | globe\",\n    \"palette\": \"accent | mono | duotone\",\n    \"light\": \"studio | sunset | neon | soft\",\n    \"bg\": \"transparent | theme | void\",\n    \"camera\": { \"distance\": 4–12, \"elevation\": -0.4–0.6, \"fov\": 30–60 },\n    \"motion\": { \"kind\": \"rotate | float | pulse | none\", \"speed\": 0–1.2 },\n    \"objects\": [\n      {\n        \"shape\": \"box | sphere | torus | torusKnot | cone | cylinder | octa | plane | icosa\",\n        \"material\": \"standard | physical | toon | wireframe\",\n        \"tint\": \"accent | accent2 | fg | muted | surface\",\n        \"scale\": 0.1–2.2,\n        \"pos\": [x, y, z],\n        \"rot\": [x, y, z],\n        \"metalness\": 0–1,\n        \"roughness\": 0–1\n      }\n    ],\n    \"grain\": 0–0.3,\n    \"orbitControls\": false\n  }\n}\n\n预算与构图：\n- objects 最多 6 个（particle-cloud 可以为空数组，由预设生成粒子）；\n- 主体 1 个（scale 1.0–2.0，位于原点附近），辅助 2–4 个（scale 0.2–0.6，围绕主体）；\n- 坐标绝对值 ≤ 3，避免把主体切出画面；\n- 整个演示建议不超过 2 个 3D 幕，所以描述要克制、干净。",
+      "user": "{\n  \"prompt\": \"复盘要能点开，不只是翻页\"\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 39,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 504,
+      "completion_tokens": 259,
+      "total_tokens": 763
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:04.900Z",
+    "id": "chatcmpl-sim-8-mvzyt4p2",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 158,
+    "promptChars": 1242,
+    "completionChars": 166,
+    "responseText": "{\"headline\":\"PPT 与 HTML，不是替代关系\",\"lead\":\"一个负责被讲述，一个负责被使用。\",\"points\":[\"PPT｜交付一次性的讲述\",\"PPT｜版式固定，改一处要重发\",\"HTML｜交付可检索的现场\",\"HTML｜改一处，链接不变也更新\"],\"notes\":\"先讲左边不丢人，再讲右边为什么更好。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"复盘不该是一份文档，而是一个现场\",\n  \"lang\": \"zh\",\n  \"index\": 4,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"compare\",\n    \"headline\": \"PPT 与 HTML，不是替代关系\",\n    \"lead\": \"一个负责被讲述，一个负责被使用。\",\n    \"points\": [\n      \"PPT｜交付一次性的讲述\",\n      \"PPT｜版式固定，改一处要重发\",\n      \"HTML｜交付可检索的现场\",\n      \"HTML｜改一处，链接不变也更新\"\n    ],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"先讲左边不丢人，再讲右边为什么值得多花两天。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 9,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 414,
+      "completion_tokens": 56,
+      "total_tokens": 470
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:05.055Z",
+    "id": "chatcmpl-sim-9-mvzyt4tq",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 145,
+    "promptChars": 1145,
+    "completionChars": 158,
+    "responseText": "{\"headline\":\"如果结论要三个人转述才能听懂，它就不是结论。\",\"lead\":\"Q3 复盘现场 · 产品负责人\",\"points\":[\"**主题**：复盘不该是一份文档，而是一个现场\",\"**用法**：读完停两秒\",\"**别加话**：让这句话自己站住\"],\"notes\":\"引用时放慢语速，不要补解释。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"复盘不该是一份文档，而是一个现场\",\n  \"lang\": \"zh\",\n  \"index\": 5,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"quote\",\n    \"headline\": \"如果结论要三个人转述才能听懂，它就不是结论。\",\n    \"lead\": \"Q3 复盘现场 · 产品负责人\",\n    \"points\": [],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"引用这一句时放慢语速，别解释，让现场安静一下。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 8,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 382,
+      "completion_tokens": 53,
+      "total_tokens": 435
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:05.240Z",
+    "id": "chatcmpl-sim-a-mvzyt4y4",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 172,
+    "promptChars": 1218,
+    "completionChars": 190,
+    "responseText": "{\"headline\":\"从文档到页面，只要四步\",\"lead\":\"每一步都要有可验收的产出。\",\"points\":[\"01｜半天｜先写 5 条能被反驳的判断\",\"02｜1 天｜每幕只留一个证据入口\",\"03｜1 天｜图表从同一份指标源生成\",\"04｜2 小时｜旧链接重定向到新页面\",\"01｜1 天｜先写一句能被反驳的结论\"],\"notes\":\"每一步都问一句：产出是什么。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"复盘不该是一份文档，而是一个现场\",\n  \"lang\": \"zh\",\n  \"index\": 6,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"process\",\n    \"headline\": \"从文档到页面，只要四步\",\n    \"points\": [\n      \"01｜半天｜先写 5 条能被反驳的判断\",\n      \"02｜1 天｜每幕只留一个证据入口\",\n      \"03｜1 天｜图表从同一份指标源生成\",\n      \"04｜2 小时｜旧链接重定向到新页面\"\n    ],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"强调第三步：数据同一份源，才不会对不上。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 10,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 406,
+      "completion_tokens": 64,
+      "total_tokens": 470
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:05.407Z",
+    "id": "chatcmpl-sim-b-mvzyt53b",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 152,
+    "promptChars": 1219,
+    "completionChars": 179,
+    "responseText": "{\"headline\":\"换载体之后多出的四件事\",\"lead\":\"四条判断，缺一条都别急着往下走。\",\"points\":[\"**可检索**：结论能被下次会议直接引用。\",\"**可更新**：季度内持续修订，不重发。\",\"**可交互**：让听众自己点到证据。\",\"**可复用**：模板沉淀成团队资产。\"],\"notes\":\"四条按顺序讲，最后一条留足时间。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"复盘不该是一份文档，而是一个现场\",\n  \"lang\": \"zh\",\n  \"index\": 7,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"grid4\",\n    \"headline\": \"换载体之后多出的四件事\",\n    \"points\": [\n      \"**可检索**：结论能被下次会议直接引用。\",\n      \"**可更新**：季度内持续修订，不重发。\",\n      \"**可交互**：让听众自己点到证据。\",\n      \"**可复用**：模板沉淀成团队资产。\"\n    ],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"这页快速过，每张卡片一句话，不展开。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 9,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 407,
+      "completion_tokens": 60,
+      "total_tokens": 467
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:05.561Z",
+    "id": "chatcmpl-sim-c-mvzyt580",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 137,
+    "promptChars": 1137,
+    "completionChars": 155,
+    "responseText": "{\"headline\":\"下一次复盘，从一个链接开始\",\"lead\":\"Q4 的第一次复盘，直接用页面交付。\",\"points\":[\"**下一步**：把第一个动作写进日历\",\"**负责人**：现场认领，不指派\",\"**检查点**：一周后再看一次\"],\"notes\":\"收尾给一个具体日期，把行动钉在日历上。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"复盘不该是一份文档，而是一个现场\",\n  \"lang\": \"zh\",\n  \"index\": 8,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"closing\",\n    \"headline\": \"下一次复盘，从一个链接开始\",\n    \"lead\": \"Q4 的第一次复盘，直接用页面交付。\",\n    \"points\": [],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"收尾给一个具体日期，把行动钉在日历上。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 8,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 379,
+      "completion_tokens": 52,
+      "total_tokens": 431
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:07.099Z",
+    "id": "chatcmpl-sim-7-mvzyt4hl",
+    "model": "lumen-sim-0.3",
+    "task": "svg",
+    "stream": true,
+    "status": 200,
+    "ms": 2626,
+    "promptChars": 1234,
+    "completionChars": 3364,
+    "responseText": "{\"svg\":\"<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" viewBox=\\\"0 0 820 560\\\" fill=\\\"none\\\">\\n  <defs>\\n    <radialGradient id=\\\"sim-glow-wvb50o\\\" cx=\\\"0.5\\\" cy=\\\"0.5\\\" r=\\\"0.5\\\">\\n      <stop offset=\\\"0\\\" stop-color=\\\"var(--d-accent)\\\" stop-opacity=\\\"0.26\\\"/>\\n      <stop offset=\\\"1\\\" stop-color=\\\"var(--d-accent)\\\" stop-opacity=\\\"0\\\"/>\\n    </radialGradient>\\n    <linearGradient id=\\\"sim-stroke-wvb50o\\\" x1=\\\"0\\\" y1=\\\"0\\\" x2=\\\"1\\\" y2=\\\"1\\\">\\n      <stop offset=\\\"0\\\" stop-color=\\\"var(--d-accent)\\\" stop-opacity=\\\"0.9\\\"/>\\n      <stop offset=\\\"1\\\" stop-color=\\\"var(--d-accent2)\\\" stop-opacity=\\\"0.25\\\"/>\\n    </linearGradient>\\n    <linearGradient id=\\\"sim-wash-wvb50o\\\" x1=\\\"0\\\" y1=\\\"0\\\" x2=\\\"1\\\" y2=\\\"1\\\">\\n      <stop offset=\\\"0\\\" stop-color=\\\"var(--d-surface)\\\" stop-opacity=\\\"0.9\\\"/>\\n      <stop offset=\\\"1\\\" stop-color=\\\"var(--d-accent2)\\\" stop-opacity=\\\"0.06\\\"/>\\n    </linearGradient>\\n  </defs>\\n  <rect x=\\\"108\\\" y=\\\"86\\\" width=\\\"604\\\" height=\\\"386\\\" rx=\\\"18\\\" fill=\\\"url(#sim-wash-wvb50o)\\\" opacity=\\\"0.9\\\"/>\\n  <path d=\\\"M112 214C231.6 138.4 320 300 428 268S620 196 708 236\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.6\\\" stroke-linecap=\\\"round\\\" opacity=\\\"0.7\\\"/>\\n  <path d=\\\"M112 292C224.4 348 344 214 452 264S636 336 708 300\\\" stroke=\\\"url(#sim-stroke-wvb50o)\\\" stroke-width=\\\"2.8\\\" stroke-linecap=\\\"round\\\"/>\\n  <path d=\\\"M112 368C226 314 341.6 404 438 372S620 322 708 356\\\" stroke=\\\"var(--d-accent2)\\\" stroke-width=\\\"1.8\\\" stroke-linecap=\\\"round\\\" opacity=\\\"0.65\\\" stroke-dasharray=\\\"4 10\\\"/>\\n  <line x1=\\\"108\\\" y1=\\\"466\\\" x2=\\\"712\\\" y2=\\\"466\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.6\\\" opacity=\\\"0.8\\\"/>\\n  <line x1=\\\"112\\\" y1=\\\"466\\\" x2=\\\"112\\\" y2=\\\"484\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.55\\\"/>\\n  <line x1=\\\"261\\\" y1=\\\"466\\\" x2=\\\"261\\\" y2=\\\"476\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.55\\\"/>\\n  <line x1=\\\"410\\\" y1=\\\"466\\\" x2=\\\"410\\\" y2=\\\"484\\\" stroke=\\\"var(--d-accent)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.9\\\"/>\\n  <line x1=\\\"559\\\" y1=\\\"466\\\" x2=\\\"559\\\" y2=\\\"476\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.55\\\"/>\\n  <line x1=\\\"708\\\" y1=\\\"466\\\" x2=\\\"708\\\" y2=\\\"484\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.55\\\"/>\\n  <line x1=\\\"470\\\" y1=\\\"272\\\" x2=\\\"470\\\" y2=\\\"466\\\" stroke=\\\"var(--d-muted)\\\" stroke-width=\\\"1.4\\\" stroke-dasharray=\\\"4 9\\\" opacity=\\\"0.6\\\"/>\\n  <circle cx=\\\"470\\\" cy=\\\"272\\\" r=\\\"58\\\" stroke=\\\"var(--d-accent2)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.55\\\"/>\\n  <circle cx=\\\"470\\\" cy=\\\"272\\\" r=\\\"36\\\" stroke=\\\"var(--d-accent)\\\" stroke-width=\\\"1.8\\\" opacity=\\\"0.9\\\"/>\\n  <circle cx=\\\"470\\\" cy=\\\"272\\\" r=\\\"10\\\" fill=\\\"var(--d-accent)\\\"/>\\n  <circle cx=\\\"194.9\\\" cy=\\\"272.6\\\" r=\\\"5.8\\\" fill=\\\"var(--d-accent2)\\\" opacity=\\\"0.5\\\"/>\\n  <circle cx=\\\"346.8\\\" cy=\\\"334.2\\\" r=\\\"4.9\\\" fill=\\\"var(--d-accent)\\\" opacity=\\\"0.4\\\"/>\\n  <circle cx=\\\"499.9\\\" cy=\\\"338.8\\\" r=\\\"4\\\" fill=\\\"var(--d-accent2)\\\" opacity=\\\"0.6\\\"/>\\n  <circle cx=\\\"646.2\\\" cy=\\\"335.7\\\" r=\\\"5.1\\\" fill=\\\"var(--d-accent)\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"108\\\" y1=\\\"112\\\" x2=\\\"208\\\" y2=\\\"112\\\" stroke=\\\"var(--d-accent2)\\\" stroke-width=\\\"1.6\\\" stroke-linecap=\\\"round\\\" opacity=\\\"0.8\\\"/>\\n  <line x1=\\\"108\\\" y1=\\\"126\\\" x2=\\\"170\\\" y2=\\\"126\\\" stroke=\\\"var(--d-muted)\\\" stroke-width=\\\"1.4\\\" stroke-linecap=\\\"round\\\" opacity=\\\"0.6\\\"/>\\n</svg>\",\"viewBox\":[0,0,820,560],\"caption\":\"一条时间线从文档流向外链页面，节点逐一点亮\"}",
+    "request": {
+      "system": "[TASK:svg]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：为演示画一张矢量插图（SVG），它会被直接嵌进 1600×900 的舞台。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"svg\": \"<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" viewBox=\\\"0 0 820 560\\\" fill=\\\"none\\\">…</svg>\",\n  \"viewBox\": [0, 0, 820, 560],\n  \"caption\": \"一句图注，≤ 30 字\"\n}\n\n画法约束：\n- 只允许这些标签：svg / g / defs / linearGradient / radialGradient / stop / rect / circle / ellipse /\n  line / path / polyline / polygon / clipPath / mask / marker / use / title / desc；\n- 只允许这些颜色：var(--d-accent)、var(--d-accent2)、var(--d-line)、var(--d-muted)、var(--d-fg)、\n  var(--d-surface)、none、currentColor；禁止 #hex、rgb()、hsl()；\n- 不写 style 属性、不写 <text>（文字交给 text 块）、不写滤镜堆叠；\n- 构图：一个明确的视觉中心 + 2–4 层辅助元素，留白 ≥ 画布宽度的 15%；\n- 线宽 1.4–3，透明度用 opacity 属性（0–1）。",
+      "user": "{\n  \"prompt\": \"一条时间线从文档流向外链页面，节点逐一点亮\",\n  \"style\": \"\",\n  \"viewBox\": [\n    0,\n    0,\n    820,\n    560\n  ],\n  \"palette\": \"theme-tokens\"\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 169,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 412,
+      "completion_tokens": 1122,
+      "total_tokens": 1534
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:12.547Z",
+    "id": "chatcmpl-sim-d-mvzyt9qg",
+    "model": "lumen-sim-0.3",
+    "task": "outline",
+    "stream": true,
+    "status": 200,
+    "ms": 1275,
+    "promptChars": 1873,
+    "completionChars": 1638,
+    "responseText": "{\"title\":\"「演示载体的迁移」值得一个明确的结论\",\"subtitle\":\"给与会同事 · 主题分享 · 10 分钟\",\"lang\":\"zh\",\"slides\":[{\"recipe\":\"cover\",\"headline\":\"「演示载体的迁移」值得一个明确的结论\",\"points\":[],\"visual\":{\"kind\":\"three\",\"preset\":\"orbit\"},\"notes\":\"开场别念标题，先抛一个反问，再让画面自己说话。\",\"lead\":\"围绕「演示载体的迁移」，只讲一个结论。\"},{\"recipe\":\"statement\",\"headline\":\"演示不是把信息搬上台，而是把结论交出去。\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"读完停两秒再翻页，让这句话先落地。\",\"lead\":\"信息量不等于说服力。\"},{\"recipe\":\"data\",\"headline\":\"用三个数字交代现状\",\"points\":[\"投入=100%\",\"产出=38%\",\"返工=22%\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"先指最大的数，再解释它意味着什么。\",\"lead\":\"示意数据：用于说明量级差异，非严谨统计。\"},{\"recipe\":\"timeline\",\"headline\":\"这件事的四个节点\",\"points\":[\"T-2 周｜对齐目标｜先统一一句话结论\",\"T-0｜做出样板｜只跑通最短的一条路径\",\"T+3 天｜收反馈｜只问三个具体问题\",\"T+2 周｜定下一步｜写进默认流程\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"沿时间线从左到右，每个节点停 20 秒。\"},{\"recipe\":\"compare\",\"headline\":\"两种做法，只能选一个\",\"points\":[\"现在｜靠人盯，靠记性\",\"现在｜问题到复盘时才暴露\",\"之后｜靠结构，靠默认流程\",\"之后｜问题在生成时就暴露\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"先讲左边不丢人，再讲右边为什么值得换。\",\"lead\":\"把选择说清楚，比把选项列全更重要。\"},{\"recipe\":\"grid4\",\"headline\":\"四个必须对齐的判断\",\"points\":[\"**用户**：谁真的会因此改变动作。\",\"**价值**：省下的是时间还是返工。\",\"**代价**：愿意为此放弃什么。\",\"**验证**：一周内能看哪个数。\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"这页快速过，每张卡片一句话，不展开。\"},{\"recipe\":\"process\",\"headline\":\"四步推进，每一步可验收\",\"points\":[\"01｜1 天｜先写一句能被反驳的结论\",\"02｜2 天｜把最强的一幕做成样板\",\"03｜半天｜找三个人来挑毛病\",\"04｜1 小时｜定下第一个动作和日期\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"强调第一步：结论立不住，后面都是白工。\"},{\"recipe\":\"gallery\",\"headline\":\"三种画面，讲同一件事\",\"points\":[\"开场：一个具体的人和一个具体的问题\",\"中段：把结构摊开，指出关键的一层\",\"收尾：一个能立刻做的动作\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"三张图快速过，别逐张解释细节。\"},{\"recipe\":\"closing\",\"headline\":\"下一步，只做一件明天就能开始的事\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"收尾给一个具体日期，把行动钉在日历上。\",\"lead\":\"把第一个动作写下来，并给它一个日期。\"}]}",
+    "request": {
+      "system": "[TASK:outline]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把一句话需求变成一套可编辑的大纲（3–20 幕）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"title\": \"演示标题，≤ 24 字，必须是一个观点而不是名词堆砌\",\n  \"subtitle\": \"一行副标题，说明听众与场合\",\n  \"lang\": \"zh | en\",\n  \"slides\": [\n    {\n      \"recipe\": \"见下方配方表\",\n      \"headline\": \"这一幕的标题，≤ 24 字，有观点\",\n      \"lead\": \"一句引导语，≤ 40 字，可选\",\n      \"points\": [\"3–5 条要点，每条 ≤ 40 字\"],\n      \"visual\": { \"kind\": \"svg\", \"brief\": \"画面描述，≤ 60 字\" }\n                | { \"kind\": \"three\", \"preset\": \"orbit|showcase|wave-field|particle-cloud|torus|stack|globe\" }\n                | { \"kind\": \"none\" },\n      \"notes\": \"讲者备注：怎么讲这一页，≤ 60 字\"\n    }\n  ]\n}\n\n结构要求：\n- 第一幕必须是 cover，最后一幕必须是 closing；\n- 中间按\"问题 → 证据 → 方案 → 取舍 → 行动\"的顺序推进，不要平铺功能清单；\n- 每幕 3–5 条要点；data / timeline / process / compare 的要点必须遵守配方表里的分隔符；\n- 全篇最多 1 个 svg 幕与 1 个 three 幕；没有画面时 visual.kind = \"none\"；\n- notes 是给讲者的动作提示，不是内容的复述。\n\nrecipe 只能取以下值（按场景选择，不要连续三幕用同一个）：\n- cover 封面：观点式标题 + 一句引导，只出现一次且必须第一幕\n- statement 主张：一句大字 + 一行注解，用于转折\n- split 分栏：左边 2–3 条要点，右边一张插图（visual 用 svg）\n- grid3 / grid4：3 / 4 个并列要点，每个要点写成「**小标题**：一句话」\n- timeline 时间线：要点写成「时间｜标题｜说明」，2–5 个节点\n- compare 对比：要点写成「左组｜一句话」与「右组｜一句话」，左右各 2–3 条\n- quote 引用：headline 是一句可被复述的话，lead 是出处\n- data 数据页：要点写成「标签=数值」（数值可带 %），2–5 项\n- process 流程：要点写成「步骤｜时长｜说明」，3–4 步\n- gallery 图集：3 条图注，用于展示同一叙事的不同画面\n- closing 收尾：一个明确的下一步，必须最后一幕",
+      "user": "{\n  \"prompt\": \"把「演示载体的迁移」讲给非技术的管理层，10 分钟\",\n  \"lang\": \"zh\",\n  \"audience\": \"\",\n  \"length\": \"normal\",\n  \"slideCount\": 9,\n  \"durationMin\": 10,\n  \"includeSvg\": true,\n  \"include3d\": true,\n  \"themeId\": \"noir\"\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 82,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 625,
+      "completion_tokens": 546,
+      "total_tokens": 1171
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:13.284Z",
+    "id": "chatcmpl-sim-f-mvzytb6e",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 142,
+    "promptChars": 1138,
+    "completionChars": 148,
+    "responseText": "{\"headline\":\"演示不是把信息搬上台，而是把结论交出去。\",\"lead\":\"信息量不等于说服力。\",\"points\":[\"**依据**：来自本轮的三个具体事实\",\"**边界**：这一页只证明一件事\",\"**落点**：把判断交给下一幕\"],\"notes\":\"放慢语速，让这句话先落地。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"「演示载体的迁移」值得一个明确的结论\",\n  \"lang\": \"zh\",\n  \"index\": 1,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"statement\",\n    \"headline\": \"演示不是把信息搬上台，而是把结论交出去。\",\n    \"lead\": \"信息量不等于说服力。\",\n    \"points\": [],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"读完停两秒再翻页，让这句话先落地。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 8,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 380,
+      "completion_tokens": 50,
+      "total_tokens": 430
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:13.299Z",
+    "id": "chatcmpl-sim-e-mvzytb6d",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 158,
+    "promptChars": 1173,
+    "completionChars": 163,
+    "responseText": "{\"headline\":\"「演示载体的迁移」值得一个明确的结论\",\"lead\":\"围绕「演示载体的迁移」，只讲一个结论。\",\"points\":[\"**主题**：「演示载体的迁移」值得一个明确…\",\"**听众**：与会同事\",\"**目标**：散会后能复述一句结论\"],\"notes\":\"开场别念标题，先抛一个反问，再看画面。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"「演示载体的迁移」值得一个明确的结论\",\n  \"lang\": \"zh\",\n  \"index\": 0,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"cover\",\n    \"headline\": \"「演示载体的迁移」值得一个明确的结论\",\n    \"lead\": \"围绕「演示载体的迁移」，只讲一个结论。\",\n    \"points\": [],\n    \"visual\": {\n      \"kind\": \"three\",\n      \"preset\": \"orbit\"\n    },\n    \"notes\": \"开场别念标题，先抛一个反问，再让画面自己说话。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 9,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 391,
+      "completion_tokens": 55,
+      "total_tokens": 446
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:13.422Z",
+    "id": "chatcmpl-sim-g-mvzytbaj",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 131,
+    "promptChars": 1185,
+    "completionChars": 121,
+    "responseText": "{\"headline\":\"用三个数字交代现状\",\"lead\":\"示意数据：用于说明量级差异，非严谨统计。\",\"points\":[\"投入=100%\",\"产出=38%\",\"返工=22%\"],\"notes\":\"先指最大的数，再解释它意味着什么。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"「演示载体的迁移」值得一个明确的结论\",\n  \"lang\": \"zh\",\n  \"index\": 2,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"data\",\n    \"headline\": \"用三个数字交代现状\",\n    \"lead\": \"示意数据：用于说明量级差异，非严谨统计。\",\n    \"points\": [\n      \"投入=100%\",\n      \"产出=38%\",\n      \"返工=22%\"\n    ],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"先指最大的数，再解释它意味着什么。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 7,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 395,
+      "completion_tokens": 41,
+      "total_tokens": 436
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:13.606Z",
+    "id": "chatcmpl-sim-i-mvzytbee",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 176,
+    "promptChars": 1219,
+    "completionChars": 198,
+    "responseText": "{\"headline\":\"这件事的四个节点\",\"lead\":\"按时间走一遍，让每个节点都有名字。\",\"points\":[\"T-2 周｜对齐目标｜先统一一句话结论\",\"T-0｜做出样板｜只跑通最短的一条路径\",\"T+3 天｜收反馈｜只问三个具体问题\",\"T+2 周｜定下一步｜写进默认流程\",\"T-0｜做出样板｜跑通最短的一条路径\"],\"notes\":\"沿时间线从左到右，每个节点停 20 秒。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"「演示载体的迁移」值得一个明确的结论\",\n  \"lang\": \"zh\",\n  \"index\": 3,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"timeline\",\n    \"headline\": \"这件事的四个节点\",\n    \"points\": [\n      \"T-2 周｜对齐目标｜先统一一句话结论\",\n      \"T-0｜做出样板｜只跑通最短的一条路径\",\n      \"T+3 天｜收反馈｜只问三个具体问题\",\n      \"T+2 周｜定下一步｜写进默认流程\"\n    ],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"沿时间线从左到右，每个节点停 20 秒。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 10,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 407,
+      "completion_tokens": 66,
+      "total_tokens": 473
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:13.760Z",
+    "id": "chatcmpl-sim-j-mvzytbjk",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 144,
+    "promptChars": 1225,
+    "completionChars": 148,
+    "responseText": "{\"headline\":\"两种做法，只能选一个\",\"lead\":\"把选择说清楚，比把选项列全更重要。\",\"points\":[\"现在｜靠人盯，靠记性\",\"现在｜问题到复盘时才暴露\",\"之后｜靠结构，靠默认流程\",\"之后｜问题在生成时就暴露\"],\"notes\":\"左右各讲两条，最后落在「之后」。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"「演示载体的迁移」值得一个明确的结论\",\n  \"lang\": \"zh\",\n  \"index\": 4,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"compare\",\n    \"headline\": \"两种做法，只能选一个\",\n    \"lead\": \"把选择说清楚，比把选项列全更重要。\",\n    \"points\": [\n      \"现在｜靠人盯，靠记性\",\n      \"现在｜问题到复盘时才暴露\",\n      \"之后｜靠结构，靠默认流程\",\n      \"之后｜问题在生成时就暴露\"\n    ],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"先讲左边不丢人，再讲右边为什么值得换。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 8,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 409,
+      "completion_tokens": 50,
+      "total_tokens": 459
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:13.806Z",
+    "id": "chatcmpl-sim-h-mvzytbau",
+    "model": "lumen-sim-0.3",
+    "task": "three",
+    "stream": true,
+    "status": 200,
+    "ms": 504,
+    "promptChars": 1517,
+    "completionChars": 631,
+    "responseText": "{\"descriptor\":{\"preset\":\"globe\",\"palette\":\"accent\",\"light\":\"studio\",\"bg\":\"transparent\",\"camera\":{\"distance\":6.3,\"elevation\":0.2,\"fov\":43},\"motion\":{\"kind\":\"rotate\",\"speed\":0.4},\"objects\":[{\"shape\":\"sphere\",\"material\":\"standard\",\"tint\":\"accent\",\"scale\":1.7,\"pos\":[0,0,0],\"rot\":[0.4,0.4,0],\"metalness\":0.6,\"roughness\":0.3},{\"shape\":\"box\",\"material\":\"physical\",\"tint\":\"accent2\",\"scale\":0.3,\"pos\":[2,-0.3,0.4],\"rot\":[0.4,0,0],\"metalness\":0.6,\"roughness\":0.4},{\"shape\":\"cylinder\",\"material\":\"standard\",\"tint\":\"muted\",\"scale\":0.2,\"pos\":[-1.7,0,-0.6],\"rot\":[0.2,0.5,0],\"metalness\":0.6,\"roughness\":0.4}],\"grain\":0.1,\"orbitControls\":false}}",
+    "request": {
+      "system": "[TASK:three]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把一句描述变成 three.js 的受限场景描述符（不是代码）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"descriptor\": {\n    \"preset\": \"orbit | showcase | wave-field | particle-cloud | torus | stack | globe\",\n    \"palette\": \"accent | mono | duotone\",\n    \"light\": \"studio | sunset | neon | soft\",\n    \"bg\": \"transparent | theme | void\",\n    \"camera\": { \"distance\": 4–12, \"elevation\": -0.4–0.6, \"fov\": 30–60 },\n    \"motion\": { \"kind\": \"rotate | float | pulse | none\", \"speed\": 0–1.2 },\n    \"objects\": [\n      {\n        \"shape\": \"box | sphere | torus | torusKnot | cone | cylinder | octa | plane | icosa\",\n        \"material\": \"standard | physical | toon | wireframe\",\n        \"tint\": \"accent | accent2 | fg | muted | surface\",\n        \"scale\": 0.1–2.2,\n        \"pos\": [x, y, z],\n        \"rot\": [x, y, z],\n        \"metalness\": 0–1,\n        \"roughness\": 0–1\n      }\n    ],\n    \"grain\": 0–0.3,\n    \"orbitControls\": false\n  }\n}\n\n预算与构图：\n- objects 最多 6 个（particle-cloud 可以为空数组，由预设生成粒子）；\n- 主体 1 个（scale 1.0–2.0，位于原点附近），辅助 2–4 个（scale 0.2–0.6，围绕主体）；\n- 坐标绝对值 ≤ 3，避免把主体切出画面；\n- 整个演示建议不超过 2 个 3D 幕，所以描述要克制、干净。",
+      "user": "{\n  \"prompt\": \"「演示载体的迁移」值得一个明确的结论\"\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 32,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 506,
+      "completion_tokens": 211,
+      "total_tokens": 717
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:13.930Z",
+    "id": "chatcmpl-sim-k-mvzytbnv",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 159,
+    "promptChars": 1210,
+    "completionChars": 168,
+    "responseText": "{\"headline\":\"四个必须对齐的判断\",\"lead\":\"四条判断，缺一条都别急着往下走。\",\"points\":[\"**用户**：谁真的会因此改变动作。\",\"**价值**：省下的是时间还是返工。\",\"**代价**：愿意为此放弃什么。\",\"**验证**：一周内能看哪个数。\"],\"notes\":\"四条按顺序讲，最后一条留足时间。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"「演示载体的迁移」值得一个明确的结论\",\n  \"lang\": \"zh\",\n  \"index\": 5,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"grid4\",\n    \"headline\": \"四个必须对齐的判断\",\n    \"points\": [\n      \"**用户**：谁真的会因此改变动作。\",\n      \"**价值**：省下的是时间还是返工。\",\n      \"**代价**：愿意为此放弃什么。\",\n      \"**验证**：一周内能看哪个数。\"\n    ],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"这页快速过，每张卡片一句话，不展开。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 9,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 404,
+      "completion_tokens": 56,
+      "total_tokens": 460
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:13.977Z",
+    "id": "chatcmpl-sim-l-mvzytbp2",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 163,
+    "promptChars": 1214,
+    "completionChars": 164,
+    "responseText": "{\"headline\":\"四步推进，每一步可验收\",\"lead\":\"每一步都要有可验收的产出。\",\"points\":[\"01｜1 天｜先写一句能被反驳的结论\",\"02｜2 天｜把最强的一幕做成样板\",\"03｜半天｜找三个人来挑毛病\",\"04｜1 小时｜定下第一个动作和日期\"],\"notes\":\"每一步都问一句：产出是什么。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"「演示载体的迁移」值得一个明确的结论\",\n  \"lang\": \"zh\",\n  \"index\": 6,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"process\",\n    \"headline\": \"四步推进，每一步可验收\",\n    \"points\": [\n      \"01｜1 天｜先写一句能被反驳的结论\",\n      \"02｜2 天｜把最强的一幕做成样板\",\n      \"03｜半天｜找三个人来挑毛病\",\n      \"04｜1 小时｜定下第一个动作和日期\"\n    ],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"强调第一步：结论立不住，后面都是白工。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 9,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 405,
+      "completion_tokens": 55,
+      "total_tokens": 460
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:14.069Z",
+    "id": "chatcmpl-sim-m-mvzytbsk",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 129,
+    "promptChars": 1177,
+    "completionChars": 137,
+    "responseText": "{\"headline\":\"三种画面，讲同一件事\",\"lead\":\"三张画面，讲同一件事。\",\"points\":[\"开场：一个具体的人和一个具体的问题\",\"中段：把结构摊开，指出关键的一层\",\"收尾：一个能立刻做的动作\"],\"notes\":\"三张图快速过，别逐张解释细节。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"「演示载体的迁移」值得一个明确的结论\",\n  \"lang\": \"zh\",\n  \"index\": 7,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"gallery\",\n    \"headline\": \"三种画面，讲同一件事\",\n    \"points\": [\n      \"开场：一个具体的人和一个具体的问题\",\n      \"中段：把结构摊开，指出关键的一层\",\n      \"收尾：一个能立刻做的动作\"\n    ],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"三张图快速过，别逐张解释细节。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 7,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 393,
+      "completion_tokens": 46,
+      "total_tokens": 439
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:14.130Z",
+    "id": "chatcmpl-sim-n-mvzytbtt",
+    "model": "lumen-sim-0.3",
+    "task": "slide",
+    "stream": true,
+    "status": 200,
+    "ms": 145,
+    "promptChars": 1142,
+    "completionChars": 158,
+    "responseText": "{\"headline\":\"下一步，只做一件明天就能开始的事\",\"lead\":\"把第一个动作写下来，并给它一个日期。\",\"points\":[\"**下一步**：把第一个动作写进日历\",\"**负责人**：现场认领，不指派\",\"**检查点**：一周后再看一次\"],\"notes\":\"收尾给一个具体日期，把行动钉在日历上。\"}",
+    "request": {
+      "system": "[TASK:slide]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把大纲里的一幕展开成可直接排版的文案（不排版，只给内容）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字，有观点；如原大纲已足够好就保留\",\n  \"lead\": \"一句引导语，≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字，具体、可验证、不写形容词\"],\n  \"notes\": \"讲者备注，≤ 60 字，写「怎么讲」而不是「讲什么」\"\n}\n\n要求：\n- 每条要点都要有信息增量：一个事实、一个数字、一个动作，或一个反例；\n- 要点遵守该幕 recipe 的分隔符（data 用「标签=数值」，timeline 用「时间｜标题｜说明」，\n  process 用「步骤｜时长｜说明」，compare 用「组名｜一句话」）；\n- 不要重复 headline 的措辞，也不要把备注写进要点。",
+      "user": "{\n  \"deckTitle\": \"「演示载体的迁移」值得一个明确的结论\",\n  \"lang\": \"zh\",\n  \"index\": 8,\n  \"total\": 9,\n  \"audience\": \"\",\n  \"brief\": \"\",\n  \"slide\": {\n    \"recipe\": \"closing\",\n    \"headline\": \"下一步，只做一件明天就能开始的事\",\n    \"lead\": \"把第一个动作写下来，并给它一个日期。\",\n    \"points\": [],\n    \"visual\": {\n      \"kind\": \"none\"\n    },\n    \"notes\": \"收尾给一个具体日期，把行动钉在日历上。\"\n  }\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 8,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 381,
+      "completion_tokens": 53,
+      "total_tokens": 434
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:15.961Z",
+    "id": "chatcmpl-sim-o-mvzytd98",
+    "model": "lumen-sim-0.3",
+    "task": "refine",
+    "stream": true,
+    "status": 200,
+    "ms": 125,
+    "promptChars": 855,
+    "completionChars": 124,
+    "responseText": "{\"headline\":\"演示不是把信息搬上台，而是把结论交出去。\",\"lead\":\"信息量不等于说服力。\",\"points\":[\"**依据**：来自本轮的三个具体事实\",\"**边界**：这一页只证明一件事\",\"**落点**：把判断交给下一幕\"]}",
+    "request": {
+      "system": "[TASK:refine]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：按一条自然语言指令重写\"当前幕\"的文案（不排版）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"headline\": \"≤ 24 字\",\n  \"lead\": \"≤ 40 字，可选\",\n  \"points\": [\"3–5 条要点，每条 ≤ 40 字\"]\n}\n\n要求：\n- 保留这一页的核心信息，只改变表达与密度；\n- 指令说\"更安静\"就减少并列项、去掉感叹句；\n- 指令说\"缩短\"就把每条压到 20 字以内；\n- 指令说\"改成时间轴/流程\"就把要点改写成「时间｜标题｜说明」或「步骤｜时长｜说明」。",
+      "user": "{\n  \"instruction\": \"像在董事会现场讲话那样，把这一页写得更具体、更有画面感\",\n  \"lang\": \"zh\",\n  \"recipe\": \"statement\",\n  \"headline\": \"演示不是把信息搬上台，而是把结论交出去。\",\n  \"lead\": \"信息量不等于说服力。\",\n  \"points\": []\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 7,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 285,
+      "completion_tokens": 42,
+      "total_tokens": 327
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:19.205Z",
+    "id": "chatcmpl-sim-p-mvzytdql",
+    "model": "lumen-sim-0.3",
+    "task": "svg",
+    "stream": true,
+    "status": 200,
+    "ms": 2744,
+    "promptChars": 1215,
+    "completionChars": 3534,
+    "responseText": "{\"svg\":\"<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" viewBox=\\\"0 0 820 560\\\" fill=\\\"none\\\">\\n  <defs>\\n    <radialGradient id=\\\"sim-glow-1idt49\\\" cx=\\\"0.5\\\" cy=\\\"0.5\\\" r=\\\"0.5\\\">\\n      <stop offset=\\\"0\\\" stop-color=\\\"var(--d-accent)\\\" stop-opacity=\\\"0.26\\\"/>\\n      <stop offset=\\\"1\\\" stop-color=\\\"var(--d-accent)\\\" stop-opacity=\\\"0\\\"/>\\n    </radialGradient>\\n    <linearGradient id=\\\"sim-stroke-1idt49\\\" x1=\\\"0\\\" y1=\\\"0\\\" x2=\\\"1\\\" y2=\\\"1\\\">\\n      <stop offset=\\\"0\\\" stop-color=\\\"var(--d-accent)\\\" stop-opacity=\\\"0.9\\\"/>\\n      <stop offset=\\\"1\\\" stop-color=\\\"var(--d-accent2)\\\" stop-opacity=\\\"0.25\\\"/>\\n    </linearGradient>\\n    <linearGradient id=\\\"sim-wash-1idt49\\\" x1=\\\"0\\\" y1=\\\"0\\\" x2=\\\"1\\\" y2=\\\"1\\\">\\n      <stop offset=\\\"0\\\" stop-color=\\\"var(--d-surface)\\\" stop-opacity=\\\"0.9\\\"/>\\n      <stop offset=\\\"1\\\" stop-color=\\\"var(--d-accent2)\\\" stop-opacity=\\\"0.06\\\"/>\\n    </linearGradient>\\n  </defs>\\n  <circle cx=\\\"500.6\\\" cy=\\\"146\\\" r=\\\"132\\\" fill=\\\"url(#sim-glow-1idt49)\\\"/>\\n  <ellipse cx=\\\"410\\\" cy=\\\"466\\\" rx=\\\"246\\\" ry=\\\"40\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.65\\\"/>\\n  <rect x=\\\"214\\\" y=\\\"402\\\" width=\\\"336\\\" height=\\\"52\\\" rx=\\\"10\\\" stroke=\\\"var(--d-muted)\\\" stroke-width=\\\"1.5\\\" fill=\\\"none\\\" opacity=\\\"0.7\\\"/>\\n  <rect x=\\\"250\\\" y=\\\"328\\\" width=\\\"320\\\" height=\\\"52\\\" rx=\\\"10\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.5\\\" fill=\\\"none\\\" opacity=\\\"0.8\\\"/>\\n  <rect x=\\\"286\\\" y=\\\"254\\\" width=\\\"304\\\" height=\\\"52\\\" rx=\\\"10\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.5\\\" fill=\\\"none\\\" opacity=\\\"0.9\\\"/>\\n  <rect x=\\\"322\\\" y=\\\"180\\\" width=\\\"288\\\" height=\\\"52\\\" rx=\\\"10\\\" stroke=\\\"var(--d-accent)\\\" stroke-width=\\\"2.2\\\" fill=\\\"url(#sim-wash-1idt49)\\\" opacity=\\\"0.9\\\"/>\\n  <line x1=\\\"176\\\" y1=\\\"428\\\" x2=\\\"204\\\" y2=\\\"428\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"176\\\" y1=\\\"354\\\" x2=\\\"240\\\" y2=\\\"354\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"176\\\" y1=\\\"280\\\" x2=\\\"276\\\" y2=\\\"280\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"176\\\" y1=\\\"206\\\" x2=\\\"312\\\" y2=\\\"206\\\" stroke=\\\"var(--d-accent2)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.8\\\"/>\\n  <line x1=\\\"322\\\" y1=\\\"180\\\" x2=\\\"610\\\" y2=\\\"180\\\" stroke=\\\"var(--d-accent)\\\" stroke-width=\\\"2.6\\\" stroke-linecap=\\\"round\\\"/>\\n  <line x1=\\\"580\\\" y1=\\\"180\\\" x2=\\\"580\\\" y2=\\\"150\\\" stroke=\\\"var(--d-accent2)\\\" stroke-width=\\\"1.6\\\" opacity=\\\"0.8\\\"/>\\n  <circle cx=\\\"500.6\\\" cy=\\\"146\\\" r=\\\"26\\\" stroke=\\\"var(--d-accent2)\\\" stroke-width=\\\"1.8\\\" opacity=\\\"0.9\\\"/>\\n  <circle cx=\\\"500.6\\\" cy=\\\"146\\\" r=\\\"9\\\" fill=\\\"var(--d-accent)\\\"/>\\n  <path d=\\\"M626 430C672 360 666 246 622 168\\\" stroke=\\\"url(#sim-stroke-1idt49)\\\" stroke-width=\\\"2.4\\\" stroke-linecap=\\\"round\\\"/>\\n  <path d=\\\"M610 186l12-20 14 18\\\" stroke=\\\"var(--d-accent)\\\" stroke-width=\\\"2.2\\\" stroke-linecap=\\\"round\\\" stroke-linejoin=\\\"round\\\"/>\\n  <line x1=\\\"608\\\" y1=\\\"300\\\" x2=\\\"592\\\" y2=\\\"300\\\" stroke=\\\"var(--d-muted)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"608\\\" y1=\\\"346\\\" x2=\\\"600\\\" y2=\\\"346\\\" stroke=\\\"var(--d-accent2)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.9\\\"/>\\n  <line x1=\\\"608\\\" y1=\\\"392\\\" x2=\\\"592\\\" y2=\\\"392\\\" stroke=\\\"var(--d-muted)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"608\\\" y1=\\\"438\\\" x2=\\\"600\\\" y2=\\\"438\\\" stroke=\\\"var(--d-muted)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"170\\\" y1=\\\"158\\\" x2=\\\"170\\\" y2=\\\"452\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" stroke-dasharray=\\\"6 8\\\" opacity=\\\"0.7\\\"/>\\n</svg>\",\"viewBox\":[0,0,820,560],\"caption\":\"01\"}",
+    "request": {
+      "system": "[TASK:svg]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：为演示画一张矢量插图（SVG），它会被直接嵌进 1600×900 的舞台。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"svg\": \"<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" viewBox=\\\"0 0 820 560\\\" fill=\\\"none\\\">…</svg>\",\n  \"viewBox\": [0, 0, 820, 560],\n  \"caption\": \"一句图注，≤ 30 字\"\n}\n\n画法约束：\n- 只允许这些标签：svg / g / defs / linearGradient / radialGradient / stop / rect / circle / ellipse /\n  line / path / polyline / polygon / clipPath / mask / marker / use / title / desc；\n- 只允许这些颜色：var(--d-accent)、var(--d-accent2)、var(--d-line)、var(--d-muted)、var(--d-fg)、\n  var(--d-surface)、none、currentColor；禁止 #hex、rgb()、hsl()；\n- 不写 style 属性、不写 <text>（文字交给 text 块）、不写滤镜堆叠；\n- 构图：一个明确的视觉中心 + 2–4 层辅助元素，留白 ≥ 画布宽度的 15%；\n- 线宽 1.4–3，透明度用 opacity 属性（0–1）。",
+      "user": "{\n  \"prompt\": \"01\",\n  \"style\": \"\",\n  \"viewBox\": [\n    0,\n    0,\n    820,\n    560\n  ],\n  \"palette\": \"theme-tokens\"\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 177,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 405,
+      "completion_tokens": 1178,
+      "total_tokens": 1583
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:20.424Z",
+    "id": "chatcmpl-sim-q-mvzytgbl",
+    "model": "lumen-sim-0.3",
+    "task": "three",
+    "stream": true,
+    "status": 200,
+    "ms": 615,
+    "promptChars": 1501,
+    "completionChars": 765,
+    "responseText": "{\"descriptor\":{\"preset\":\"showcase\",\"palette\":\"accent\",\"light\":\"studio\",\"bg\":\"transparent\",\"camera\":{\"distance\":7.2,\"elevation\":0.3,\"fov\":42},\"motion\":{\"kind\":\"rotate\",\"speed\":0.4},\"objects\":[{\"shape\":\"icosa\",\"material\":\"physical\",\"tint\":\"accent\",\"scale\":1.7,\"pos\":[0,0,0],\"rot\":[0.4,0.4,0],\"metalness\":0.7,\"roughness\":0.2},{\"shape\":\"sphere\",\"material\":\"physical\",\"tint\":\"accent2\",\"scale\":0.3,\"pos\":[2,0,0],\"rot\":[0.1,0,0],\"metalness\":0.7,\"roughness\":0.3},{\"shape\":\"box\",\"material\":\"standard\",\"tint\":\"muted\",\"scale\":0.4,\"pos\":[-1.1,0.4,1],\"rot\":[0.5,0.3,0],\"metalness\":0.7,\"roughness\":0.5},{\"shape\":\"sphere\",\"material\":\"standard\",\"tint\":\"accent2\",\"scale\":0.5,\"pos\":[-0.4,0.5,-1.6],\"rot\":[0.1,0.1,0],\"metalness\":0.7,\"roughness\":0.3}],\"grain\":0,\"orbitControls\":false}}",
+    "request": {
+      "system": "[TASK:three]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把一句描述变成 three.js 的受限场景描述符（不是代码）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"descriptor\": {\n    \"preset\": \"orbit | showcase | wave-field | particle-cloud | torus | stack | globe\",\n    \"palette\": \"accent | mono | duotone\",\n    \"light\": \"studio | sunset | neon | soft\",\n    \"bg\": \"transparent | theme | void\",\n    \"camera\": { \"distance\": 4–12, \"elevation\": -0.4–0.6, \"fov\": 30–60 },\n    \"motion\": { \"kind\": \"rotate | float | pulse | none\", \"speed\": 0–1.2 },\n    \"objects\": [\n      {\n        \"shape\": \"box | sphere | torus | torusKnot | cone | cylinder | octa | plane | icosa\",\n        \"material\": \"standard | physical | toon | wireframe\",\n        \"tint\": \"accent | accent2 | fg | muted | surface\",\n        \"scale\": 0.1–2.2,\n        \"pos\": [x, y, z],\n        \"rot\": [x, y, z],\n        \"metalness\": 0–1,\n        \"roughness\": 0–1\n      }\n    ],\n    \"grain\": 0–0.3,\n    \"orbitControls\": false\n  }\n}\n\n预算与构图：\n- objects 最多 6 个（particle-cloud 可以为空数组，由预设生成粒子）；\n- 主体 1 个（scale 1.0–2.0，位于原点附近），辅助 2–4 个（scale 0.2–0.6，围绕主体）；\n- 坐标绝对值 ≤ 3，避免把主体切出画面；\n- 整个演示建议不超过 2 个 3D 幕，所以描述要克制、干净。",
+      "user": "{\n  \"prompt\": \"01\"\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 39,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 501,
+      "completion_tokens": 255,
+      "total_tokens": 756
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:27.261Z",
+    "id": "chatcmpl-sim-r-mvzytij9",
+    "model": "lumen-sim-0.3",
+    "task": "svg",
+    "stream": true,
+    "status": 200,
+    "ms": 4584,
+    "promptChars": 1238,
+    "completionChars": 5901,
+    "responseText": "{\"svg\":\"<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" viewBox=\\\"0 0 820 560\\\" fill=\\\"none\\\">\\n  <defs>\\n    <radialGradient id=\\\"sim-glow-1tdqjs\\\" cx=\\\"0.5\\\" cy=\\\"0.5\\\" r=\\\"0.5\\\">\\n      <stop offset=\\\"0\\\" stop-color=\\\"var(--d-accent)\\\" stop-opacity=\\\"0.26\\\"/>\\n      <stop offset=\\\"1\\\" stop-color=\\\"var(--d-accent)\\\" stop-opacity=\\\"0\\\"/>\\n    </radialGradient>\\n    <linearGradient id=\\\"sim-stroke-1tdqjs\\\" x1=\\\"0\\\" y1=\\\"0\\\" x2=\\\"1\\\" y2=\\\"1\\\">\\n      <stop offset=\\\"0\\\" stop-color=\\\"var(--d-accent)\\\" stop-opacity=\\\"0.9\\\"/>\\n      <stop offset=\\\"1\\\" stop-color=\\\"var(--d-accent2)\\\" stop-opacity=\\\"0.25\\\"/>\\n    </linearGradient>\\n    <linearGradient id=\\\"sim-wash-1tdqjs\\\" x1=\\\"0\\\" y1=\\\"0\\\" x2=\\\"1\\\" y2=\\\"1\\\">\\n      <stop offset=\\\"0\\\" stop-color=\\\"var(--d-surface)\\\" stop-opacity=\\\"0.9\\\"/>\\n      <stop offset=\\\"1\\\" stop-color=\\\"var(--d-accent2)\\\" stop-opacity=\\\"0.06\\\"/>\\n    </linearGradient>\\n  </defs>\\n  <circle cx=\\\"410\\\" cy=\\\"276\\\" r=\\\"246\\\" fill=\\\"url(#sim-glow-1tdqjs)\\\"/>\\n  <ellipse cx=\\\"410\\\" cy=\\\"276\\\" rx=\\\"252\\\" ry=\\\"176\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.75\\\"/>\\n  <ellipse cx=\\\"410\\\" cy=\\\"276\\\" rx=\\\"198\\\" ry=\\\"139\\\" stroke=\\\"var(--d-accent)\\\" stroke-width=\\\"1.8\\\" opacity=\\\"0.85\\\" stroke-dasharray=\\\"3 9\\\"/>\\n  <ellipse cx=\\\"410\\\" cy=\\\"276\\\" rx=\\\"142\\\" ry=\\\"99\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.9\\\"/>\\n  <path d=\\\"M158 276a252 176 0 0 1 504 0\\\" stroke=\\\"url(#sim-stroke-1tdqjs)\\\" stroke-width=\\\"2.6\\\" stroke-linecap=\\\"round\\\"/>\\n  <path d=\\\"M268 270a142 99 0 0 1 284 0\\\" stroke=\\\"var(--d-accent2)\\\" stroke-width=\\\"1.6\\\" stroke-linecap=\\\"round\\\" opacity=\\\"0.7\\\"/>\\n  <line x1=\\\"672\\\" y1=\\\"276\\\" x2=\\\"687\\\" y2=\\\"276\\\" stroke=\\\"var(--d-muted)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.85\\\"/>\\n  <line x1=\\\"663.1\\\" y1=\\\"323.5\\\" x2=\\\"670.8\\\" y2=\\\"324.9\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"636.9\\\" y1=\\\"367.7\\\" x2=\\\"643.8\\\" y2=\\\"370.5\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"595.3\\\" y1=\\\"405.7\\\" x2=\\\"600.9\\\" y2=\\\"409.6\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"541\\\" y1=\\\"434.8\\\" x2=\\\"545\\\" y2=\\\"439.7\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"477.8\\\" y1=\\\"453.2\\\" x2=\\\"479.9\\\" y2=\\\"458.6\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"410\\\" y1=\\\"459.4\\\" x2=\\\"410\\\" y2=\\\"469.9\\\" stroke=\\\"var(--d-muted)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.85\\\"/>\\n  <line x1=\\\"342.2\\\" y1=\\\"453.2\\\" x2=\\\"340.1\\\" y2=\\\"458.6\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"279\\\" y1=\\\"434.8\\\" x2=\\\"275\\\" y2=\\\"439.7\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"224.7\\\" y1=\\\"405.7\\\" x2=\\\"219.1\\\" y2=\\\"409.6\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"183.1\\\" y1=\\\"367.7\\\" x2=\\\"176.2\\\" y2=\\\"370.5\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"156.9\\\" y1=\\\"323.5\\\" x2=\\\"149.2\\\" y2=\\\"324.9\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"148\\\" y1=\\\"276\\\" x2=\\\"133\\\" y2=\\\"276\\\" stroke=\\\"var(--d-muted)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.85\\\"/>\\n  <line x1=\\\"156.9\\\" y1=\\\"228.5\\\" x2=\\\"149.2\\\" y2=\\\"227.1\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"183.1\\\" y1=\\\"184.3\\\" x2=\\\"176.2\\\" y2=\\\"181.5\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"224.7\\\" y1=\\\"146.3\\\" x2=\\\"219.1\\\" y2=\\\"142.4\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"279\\\" y1=\\\"117.2\\\" x2=\\\"275\\\" y2=\\\"112.3\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"342.2\\\" y1=\\\"98.8\\\" x2=\\\"340.1\\\" y2=\\\"93.4\\\" stroke=\\\"var(--d-line)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.5\\\"/>\\n  <line x1=\\\"410\\\" y1=\\\"92.6\\\" x2=\\\"410\\\" y2=\\\"82.1\\\" stroke=\\\"var(--d-muted)\\\" stroke-width=\\\"1.4\\\" opacity=\\\"0.85\\\"/>\\n  <line x1=\\\"477.8\\\" y1=\\\"",
+    "request": {
+      "system": "[TASK:svg]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：为演示画一张矢量插图（SVG），它会被直接嵌进 1600×900 的舞台。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"svg\": \"<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" viewBox=\\\"0 0 820 560\\\" fill=\\\"none\\\">…</svg>\",\n  \"viewBox\": [0, 0, 820, 560],\n  \"caption\": \"一句图注，≤ 30 字\"\n}\n\n画法约束：\n- 只允许这些标签：svg / g / defs / linearGradient / radialGradient / stop / rect / circle / ellipse /\n  line / path / polyline / polygon / clipPath / mask / marker / use / title / desc；\n- 只允许这些颜色：var(--d-accent)、var(--d-accent2)、var(--d-line)、var(--d-muted)、var(--d-fg)、\n  var(--d-surface)、none、currentColor；禁止 #hex、rgb()、hsl()；\n- 不写 style 属性、不写 <text>（文字交给 text 块）、不写滤镜堆叠；\n- 构图：一个明确的视觉中心 + 2–4 层辅助元素，留白 ≥ 画布宽度的 15%；\n- 线宽 1.4–3，透明度用 opacity 属性（0–1）。",
+      "user": "{\n  \"prompt\": \"一条被拉长的胶片，末端变成一块发光的屏幕，极简线描\",\n  \"style\": \"\",\n  \"viewBox\": [\n    0,\n    0,\n    820,\n    560\n  ],\n  \"palette\": \"theme-tokens\"\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 296,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 413,
+      "completion_tokens": 1967,
+      "total_tokens": 2380
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:30.016Z",
+    "id": "chatcmpl-sim-s-mvzytnpo",
+    "model": "lumen-sim-0.3",
+    "task": "three",
+    "stream": true,
+    "status": 200,
+    "ms": 628,
+    "promptChars": 1522,
+    "completionChars": 771,
+    "responseText": "{\"descriptor\":{\"preset\":\"orbit\",\"palette\":\"accent\",\"light\":\"studio\",\"bg\":\"transparent\",\"camera\":{\"distance\":6.6,\"elevation\":0.2,\"fov\":42},\"motion\":{\"kind\":\"rotate\",\"speed\":0.3},\"objects\":[{\"shape\":\"torus\",\"material\":\"standard\",\"tint\":\"accent\",\"scale\":1.7,\"pos\":[0,0,0],\"rot\":[0.4,0.5,0],\"metalness\":0.7,\"roughness\":0.2},{\"shape\":\"octa\",\"material\":\"physical\",\"tint\":\"accent2\",\"scale\":0.5,\"pos\":[2.1,-0.3,0.9],\"rot\":[0.4,0.6,0],\"metalness\":0.6,\"roughness\":0.5},{\"shape\":\"cone\",\"material\":\"standard\",\"tint\":\"muted\",\"scale\":0.3,\"pos\":[-1.4,0.4,1],\"rot\":[0.2,0.6,0],\"metalness\":0.6,\"roughness\":0.6},{\"shape\":\"cylinder\",\"material\":\"standard\",\"tint\":\"accent2\",\"scale\":0.3,\"pos\":[-1,-0.5,-1.9],\"rot\":[0.1,0.4,0],\"metalness\":0.6,\"roughness\":0.3}],\"grain\":0,\"orbitControls\":false}}",
+    "request": {
+      "system": "[TASK:three]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把一句描述变成 three.js 的受限场景描述符（不是代码）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"descriptor\": {\n    \"preset\": \"orbit | showcase | wave-field | particle-cloud | torus | stack | globe\",\n    \"palette\": \"accent | mono | duotone\",\n    \"light\": \"studio | sunset | neon | soft\",\n    \"bg\": \"transparent | theme | void\",\n    \"camera\": { \"distance\": 4–12, \"elevation\": -0.4–0.6, \"fov\": 30–60 },\n    \"motion\": { \"kind\": \"rotate | float | pulse | none\", \"speed\": 0–1.2 },\n    \"objects\": [\n      {\n        \"shape\": \"box | sphere | torus | torusKnot | cone | cylinder | octa | plane | icosa\",\n        \"material\": \"standard | physical | toon | wireframe\",\n        \"tint\": \"accent | accent2 | fg | muted | surface\",\n        \"scale\": 0.1–2.2,\n        \"pos\": [x, y, z],\n        \"rot\": [x, y, z],\n        \"metalness\": 0–1,\n        \"roughness\": 0–1\n      }\n    ],\n    \"grain\": 0–0.3,\n    \"orbitControls\": false\n  }\n}\n\n预算与构图：\n- objects 最多 6 个（particle-cloud 可以为空数组，由预设生成粒子）；\n- 主体 1 个（scale 1.0–2.0，位于原点附近），辅助 2–4 个（scale 0.2–0.6，围绕主体）；\n- 坐标绝对值 ≤ 3，避免把主体切出画面；\n- 整个演示建议不超过 2 个 3D 幕，所以描述要克制、干净。",
+      "user": "{\n  \"prompt\": \"三颗发光的球体缓慢自转，深色背景，克制的金色光\"\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 39,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 508,
+      "completion_tokens": 257,
+      "total_tokens": 765
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:34.893Z",
+    "id": "chatcmpl-sim-t-mvzytqx7",
+    "model": "lumen-sim-badjson",
+    "task": "outline",
+    "stream": true,
+    "status": 200,
+    "ms": 1346,
+    "promptChars": 1874,
+    "completionChars": 1716,
+    "responseText": "{\"title\":\"复盘不该是一份文档，而是一个现场\",\"subtitle\":\"给产品与工程团队 · Q3 季度复盘 · 10 分钟\",\"lang\":\"zh\",\"slides\":[{\"recipe\":\"cover\",\"headline\":\"复盘要能点开，不只是翻页\",\"points\":[],\"visual\":{\"kind\":\"three\",\"preset\":\"orbit\"},\"notes\":\"开场别念标题，先问：上次复盘的结论，现在还存在吗？\",\"lead\":\"同样的内容，换一个载体，结论才留得下来。\"},{\"recipe\":\"statement\",\"headline\":\"复盘会结束的那一刻，文档就开始过期。\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"读完停两秒再翻页，让这句话先落地。\",\"lead\":\"结论留在第 14 页，下一次决策没人会翻回去。\"},{\"recipe\":\"grid3\",\"headline\":\"复盘被浪费的三个地方\",\"points\":[\"**找结论**：翻到第 14 页才看到建议。\",\"**对不上**：同一指标出现两个版本。\",\"**传不动**：转发一次，上下文丢一半。\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"三张卡片对应三个提问者：老板、数据同学、下一位负责人。\"},{\"recipe\":\"split\",\"headline\":\"把结论放回它发生的地方\",\"points\":[\"**现场**：点开当天的数据快照。\",\"**证据**：一段录音的时间戳。\",\"**下一步**：右边写好负责人和日期。\"],\"visual\":{\"kind\":\"svg\",\"brief\":\"一条时间线从文档流向外链页面，节点逐一点亮\"},\"notes\":\"从左边讲到右边，最后停在「下一步」那条。\",\"lead\":\"每一句判断下面，都挂着能点开的证据。\"},{\"recipe\":\"compare\",\"headline\":\"PPT 与 HTML，不是替代关系\",\"points\":[\"PPT｜交付一次性的讲述\",\"PPT｜版式固定，改一处要重发\",\"HTML｜交付可检索的现场\",\"HTML｜改一处，链接不变也更新\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"先讲左边不丢人，再讲右边为什么值得多花两天。\",\"lead\":\"一个负责被讲述，一个负责被使用。\"},{\"recipe\":\"quote\",\"headline\":\"如果结论要三个人转述才能听懂，它就不是结论。\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"引用这一句时放慢语速，别解释，让现场安静一下。\",\"lead\":\"Q3 复盘现场 · 产品负责人\"},{\"recipe\":\"process\",\"headline\":\"从文档到页面，只要四步\",\"points\":[\"01｜半天｜先写 5 条能被反驳的判断\",\"02｜1 天｜每幕只留一个证据入口\",\"03｜1 天｜图表从同一份指标源生成\",\"04｜2 小时｜旧链接重定向到新页面\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"强调第三步：数据同一份源，才不会对不上。\"},{\"recipe\":\"grid4\",\"headline\":\"换载体之后多出的四件事\",\"points\":[\"**可检索**：结论能被下次会议直接引用。\",\"**可更新**：季度内持续修订，不重发。\",\"**可交互**：让听众自己点到证据。\",\"**可复用**：模板沉淀成团队资产。\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"这页快速过，每张卡片一句话，不展开。\"},{\"recipe\":\"closing\",\"headline\":\"下一次复盘，从一个链接开始\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"收尾给一个具体日期，把行动钉在日历上。\",\"lead\":\"Q4 的第一",
+    "request": {
+      "system": "[TASK:outline]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把一句话需求变成一套可编辑的大纲（3–20 幕）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"title\": \"演示标题，≤ 24 字，必须是一个观点而不是名词堆砌\",\n  \"subtitle\": \"一行副标题，说明听众与场合\",\n  \"lang\": \"zh | en\",\n  \"slides\": [\n    {\n      \"recipe\": \"见下方配方表\",\n      \"headline\": \"这一幕的标题，≤ 24 字，有观点\",\n      \"lead\": \"一句引导语，≤ 40 字，可选\",\n      \"points\": [\"3–5 条要点，每条 ≤ 40 字\"],\n      \"visual\": { \"kind\": \"svg\", \"brief\": \"画面描述，≤ 60 字\" }\n                | { \"kind\": \"three\", \"preset\": \"orbit|showcase|wave-field|particle-cloud|torus|stack|globe\" }\n                | { \"kind\": \"none\" },\n      \"notes\": \"讲者备注：怎么讲这一页，≤ 60 字\"\n    }\n  ]\n}\n\n结构要求：\n- 第一幕必须是 cover，最后一幕必须是 closing；\n- 中间按\"问题 → 证据 → 方案 → 取舍 → 行动\"的顺序推进，不要平铺功能清单；\n- 每幕 3–5 条要点；data / timeline / process / compare 的要点必须遵守配方表里的分隔符；\n- 全篇最多 1 个 svg 幕与 1 个 three 幕；没有画面时 visual.kind = \"none\"；\n- notes 是给讲者的动作提示，不是内容的复述。\n\nrecipe 只能取以下值（按场景选择，不要连续三幕用同一个）：\n- cover 封面：观点式标题 + 一句引导，只出现一次且必须第一幕\n- statement 主张：一句大字 + 一行注解，用于转折\n- split 分栏：左边 2–3 条要点，右边一张插图（visual 用 svg）\n- grid3 / grid4：3 / 4 个并列要点，每个要点写成「**小标题**：一句话」\n- timeline 时间线：要点写成「时间｜标题｜说明」，2–5 个节点\n- compare 对比：要点写成「左组｜一句话」与「右组｜一句话」，左右各 2–3 条\n- quote 引用：headline 是一句可被复述的话，lead 是出处\n- data 数据页：要点写成「标签=数值」（数值可带 %），2–5 项\n- process 流程：要点写成「步骤｜时长｜说明」，3–4 步\n- gallery 图集：3 条图注，用于展示同一叙事的不同画面\n- closing 收尾：一个明确的下一步，必须最后一幕",
+      "user": "{\n  \"prompt\": \"为什么下一季度的复盘，要从 PPT 换成 HTML 演示\",\n  \"lang\": \"zh\",\n  \"audience\": \"\",\n  \"length\": \"normal\",\n  \"slideCount\": 9,\n  \"durationMin\": 10,\n  \"includeSvg\": true,\n  \"include3d\": true,\n  \"themeId\": null\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 86,
+    "truncated": true,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 625,
+      "completion_tokens": 572,
+      "total_tokens": 1197
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:37.397Z",
+    "id": "chatcmpl-sim-u-mvzyttw5",
+    "model": "lumen-sim-429",
+    "task": "outline",
+    "stream": true,
+    "status": 429,
+    "ms": 0,
+    "promptChars": 1874,
+    "completionChars": 0,
+    "responseText": "{\"error\":{\"message\":\"sim: 命中模型开关 lumen-sim-429 的第 1 次限流（retry-after: 0）\",\"type\":\"rate_limit_error\",\"param\":null,\"code\":\"rate_limit_exceeded\"}}",
+    "request": {
+      "system": "[TASK:outline]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把一句话需求变成一套可编辑的大纲（3–20 幕）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"title\": \"演示标题，≤ 24 字，必须是一个观点而不是名词堆砌\",\n  \"subtitle\": \"一行副标题，说明听众与场合\",\n  \"lang\": \"zh | en\",\n  \"slides\": [\n    {\n      \"recipe\": \"见下方配方表\",\n      \"headline\": \"这一幕的标题，≤ 24 字，有观点\",\n      \"lead\": \"一句引导语，≤ 40 字，可选\",\n      \"points\": [\"3–5 条要点，每条 ≤ 40 字\"],\n      \"visual\": { \"kind\": \"svg\", \"brief\": \"画面描述，≤ 60 字\" }\n                | { \"kind\": \"three\", \"preset\": \"orbit|showcase|wave-field|particle-cloud|torus|stack|globe\" }\n                | { \"kind\": \"none\" },\n      \"notes\": \"讲者备注：怎么讲这一页，≤ 60 字\"\n    }\n  ]\n}\n\n结构要求：\n- 第一幕必须是 cover，最后一幕必须是 closing；\n- 中间按\"问题 → 证据 → 方案 → 取舍 → 行动\"的顺序推进，不要平铺功能清单；\n- 每幕 3–5 条要点；data / timeline / process / compare 的要点必须遵守配方表里的分隔符；\n- 全篇最多 1 个 svg 幕与 1 个 three 幕；没有画面时 visual.kind = \"none\"；\n- notes 是给讲者的动作提示，不是内容的复述。\n\nrecipe 只能取以下值（按场景选择，不要连续三幕用同一个）：\n- cover 封面：观点式标题 + 一句引导，只出现一次且必须第一幕\n- statement 主张：一句大字 + 一行注解，用于转折\n- split 分栏：左边 2–3 条要点，右边一张插图（visual 用 svg）\n- grid3 / grid4：3 / 4 个并列要点，每个要点写成「**小标题**：一句话」\n- timeline 时间线：要点写成「时间｜标题｜说明」，2–5 个节点\n- compare 对比：要点写成「左组｜一句话」与「右组｜一句话」，左右各 2–3 条\n- quote 引用：headline 是一句可被复述的话，lead 是出处\n- data 数据页：要点写成「标签=数值」（数值可带 %），2–5 项\n- process 流程：要点写成「步骤｜时长｜说明」，3–4 步\n- gallery 图集：3 条图注，用于展示同一叙事的不同画面\n- closing 收尾：一个明确的下一步，必须最后一幕",
+      "user": "{\n  \"prompt\": \"为什么下一季度的复盘，要从 PPT 换成 HTML 演示\",\n  \"lang\": \"zh\",\n  \"audience\": \"\",\n  \"length\": \"normal\",\n  \"slideCount\": 9,\n  \"durationMin\": 10,\n  \"includeSvg\": true,\n  \"include3d\": true,\n  \"themeId\": null\n}"
+    },
+    "error": "rate_limit",
+    "attempt": 1,
+    "retryAfter": "0"
+  },
+  {
+    "ts": "2026-11-03T00:44:37.399Z",
+    "id": "chatcmpl-sim-v-mvzyttw7",
+    "model": "lumen-sim-429",
+    "task": "outline",
+    "stream": true,
+    "status": 429,
+    "ms": 0,
+    "promptChars": 1874,
+    "completionChars": 0,
+    "responseText": "{\"error\":{\"message\":\"sim: 命中模型开关 lumen-sim-429 的第 2 次限流（retry-after: 0）\",\"type\":\"rate_limit_error\",\"param\":null,\"code\":\"rate_limit_exceeded\"}}",
+    "request": {
+      "system": "[TASK:outline]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把一句话需求变成一套可编辑的大纲（3–20 幕）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"title\": \"演示标题，≤ 24 字，必须是一个观点而不是名词堆砌\",\n  \"subtitle\": \"一行副标题，说明听众与场合\",\n  \"lang\": \"zh | en\",\n  \"slides\": [\n    {\n      \"recipe\": \"见下方配方表\",\n      \"headline\": \"这一幕的标题，≤ 24 字，有观点\",\n      \"lead\": \"一句引导语，≤ 40 字，可选\",\n      \"points\": [\"3–5 条要点，每条 ≤ 40 字\"],\n      \"visual\": { \"kind\": \"svg\", \"brief\": \"画面描述，≤ 60 字\" }\n                | { \"kind\": \"three\", \"preset\": \"orbit|showcase|wave-field|particle-cloud|torus|stack|globe\" }\n                | { \"kind\": \"none\" },\n      \"notes\": \"讲者备注：怎么讲这一页，≤ 60 字\"\n    }\n  ]\n}\n\n结构要求：\n- 第一幕必须是 cover，最后一幕必须是 closing；\n- 中间按\"问题 → 证据 → 方案 → 取舍 → 行动\"的顺序推进，不要平铺功能清单；\n- 每幕 3–5 条要点；data / timeline / process / compare 的要点必须遵守配方表里的分隔符；\n- 全篇最多 1 个 svg 幕与 1 个 three 幕；没有画面时 visual.kind = \"none\"；\n- notes 是给讲者的动作提示，不是内容的复述。\n\nrecipe 只能取以下值（按场景选择，不要连续三幕用同一个）：\n- cover 封面：观点式标题 + 一句引导，只出现一次且必须第一幕\n- statement 主张：一句大字 + 一行注解，用于转折\n- split 分栏：左边 2–3 条要点，右边一张插图（visual 用 svg）\n- grid3 / grid4：3 / 4 个并列要点，每个要点写成「**小标题**：一句话」\n- timeline 时间线：要点写成「时间｜标题｜说明」，2–5 个节点\n- compare 对比：要点写成「左组｜一句话」与「右组｜一句话」，左右各 2–3 条\n- quote 引用：headline 是一句可被复述的话，lead 是出处\n- data 数据页：要点写成「标签=数值」（数值可带 %），2–5 项\n- process 流程：要点写成「步骤｜时长｜说明」，3–4 步\n- gallery 图集：3 条图注，用于展示同一叙事的不同画面\n- closing 收尾：一个明确的下一步，必须最后一幕",
+      "user": "{\n  \"prompt\": \"为什么下一季度的复盘，要从 PPT 换成 HTML 演示\",\n  \"lang\": \"zh\",\n  \"audience\": \"\",\n  \"length\": \"normal\",\n  \"slideCount\": 9,\n  \"durationMin\": 10,\n  \"includeSvg\": true,\n  \"include3d\": true,\n  \"themeId\": null\n}"
+    },
+    "error": "rate_limit",
+    "attempt": 2,
+    "retryAfter": "0"
+  },
+  {
+    "ts": "2026-11-03T00:44:38.753Z",
+    "id": "chatcmpl-sim-w-mvzyttwa",
+    "model": "lumen-sim-429",
+    "task": "outline",
+    "stream": true,
+    "status": 200,
+    "ms": 1351,
+    "promptChars": 1874,
+    "completionChars": 1732,
+    "responseText": "{\"title\":\"复盘不该是一份文档，而是一个现场\",\"subtitle\":\"给产品与工程团队 · Q3 季度复盘 · 10 分钟\",\"lang\":\"zh\",\"slides\":[{\"recipe\":\"cover\",\"headline\":\"复盘要能点开，不只是翻页\",\"points\":[],\"visual\":{\"kind\":\"three\",\"preset\":\"orbit\"},\"notes\":\"开场别念标题，先问：上次复盘的结论，现在还存在吗？\",\"lead\":\"同样的内容，换一个载体，结论才留得下来。\"},{\"recipe\":\"statement\",\"headline\":\"复盘会结束的那一刻，文档就开始过期。\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"读完停两秒再翻页，让这句话先落地。\",\"lead\":\"结论留在第 14 页，下一次决策没人会翻回去。\"},{\"recipe\":\"grid3\",\"headline\":\"复盘被浪费的三个地方\",\"points\":[\"**找结论**：翻到第 14 页才看到建议。\",\"**对不上**：同一指标出现两个版本。\",\"**传不动**：转发一次，上下文丢一半。\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"三张卡片对应三个提问者：老板、数据同学、下一位负责人。\"},{\"recipe\":\"split\",\"headline\":\"把结论放回它发生的地方\",\"points\":[\"**现场**：点开当天的数据快照。\",\"**证据**：一段录音的时间戳。\",\"**下一步**：右边写好负责人和日期。\"],\"visual\":{\"kind\":\"svg\",\"brief\":\"一条时间线从文档流向外链页面，节点逐一点亮\"},\"notes\":\"从左边讲到右边，最后停在「下一步」那条。\",\"lead\":\"每一句判断下面，都挂着能点开的证据。\"},{\"recipe\":\"compare\",\"headline\":\"PPT 与 HTML，不是替代关系\",\"points\":[\"PPT｜交付一次性的讲述\",\"PPT｜版式固定，改一处要重发\",\"HTML｜交付可检索的现场\",\"HTML｜改一处，链接不变也更新\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"先讲左边不丢人，再讲右边为什么值得多花两天。\",\"lead\":\"一个负责被讲述，一个负责被使用。\"},{\"recipe\":\"quote\",\"headline\":\"如果结论要三个人转述才能听懂，它就不是结论。\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"引用这一句时放慢语速，别解释，让现场安静一下。\",\"lead\":\"Q3 复盘现场 · 产品负责人\"},{\"recipe\":\"process\",\"headline\":\"从文档到页面，只要四步\",\"points\":[\"01｜半天｜先写 5 条能被反驳的判断\",\"02｜1 天｜每幕只留一个证据入口\",\"03｜1 天｜图表从同一份指标源生成\",\"04｜2 小时｜旧链接重定向到新页面\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"强调第三步：数据同一份源，才不会对不上。\"},{\"recipe\":\"grid4\",\"headline\":\"换载体之后多出的四件事\",\"points\":[\"**可检索**：结论能被下次会议直接引用。\",\"**可更新**：季度内持续修订，不重发。\",\"**可交互**：让听众自己点到证据。\",\"**可复用**：模板沉淀成团队资产。\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"这页快速过，每张卡片一句话，不展开。\"},{\"recipe\":\"closing\",\"headline\":\"下一次复盘，从一个链接开始\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"收尾给一个具体日期，把行动钉在日历上。\",\"lead\":\"Q4 的第一次复盘，直接用页面交付。\"}]}",
+    "request": {
+      "system": "[TASK:outline]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把一句话需求变成一套可编辑的大纲（3–20 幕）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"title\": \"演示标题，≤ 24 字，必须是一个观点而不是名词堆砌\",\n  \"subtitle\": \"一行副标题，说明听众与场合\",\n  \"lang\": \"zh | en\",\n  \"slides\": [\n    {\n      \"recipe\": \"见下方配方表\",\n      \"headline\": \"这一幕的标题，≤ 24 字，有观点\",\n      \"lead\": \"一句引导语，≤ 40 字，可选\",\n      \"points\": [\"3–5 条要点，每条 ≤ 40 字\"],\n      \"visual\": { \"kind\": \"svg\", \"brief\": \"画面描述，≤ 60 字\" }\n                | { \"kind\": \"three\", \"preset\": \"orbit|showcase|wave-field|particle-cloud|torus|stack|globe\" }\n                | { \"kind\": \"none\" },\n      \"notes\": \"讲者备注：怎么讲这一页，≤ 60 字\"\n    }\n  ]\n}\n\n结构要求：\n- 第一幕必须是 cover，最后一幕必须是 closing；\n- 中间按\"问题 → 证据 → 方案 → 取舍 → 行动\"的顺序推进，不要平铺功能清单；\n- 每幕 3–5 条要点；data / timeline / process / compare 的要点必须遵守配方表里的分隔符；\n- 全篇最多 1 个 svg 幕与 1 个 three 幕；没有画面时 visual.kind = \"none\"；\n- notes 是给讲者的动作提示，不是内容的复述。\n\nrecipe 只能取以下值（按场景选择，不要连续三幕用同一个）：\n- cover 封面：观点式标题 + 一句引导，只出现一次且必须第一幕\n- statement 主张：一句大字 + 一行注解，用于转折\n- split 分栏：左边 2–3 条要点，右边一张插图（visual 用 svg）\n- grid3 / grid4：3 / 4 个并列要点，每个要点写成「**小标题**：一句话」\n- timeline 时间线：要点写成「时间｜标题｜说明」，2–5 个节点\n- compare 对比：要点写成「左组｜一句话」与「右组｜一句话」，左右各 2–3 条\n- quote 引用：headline 是一句可被复述的话，lead 是出处\n- data 数据页：要点写成「标签=数值」（数值可带 %），2–5 项\n- process 流程：要点写成「步骤｜时长｜说明」，3–4 步\n- gallery 图集：3 条图注，用于展示同一叙事的不同画面\n- closing 收尾：一个明确的下一步，必须最后一幕",
+      "user": "{\n  \"prompt\": \"为什么下一季度的复盘，要从 PPT 换成 HTML 演示\",\n  \"lang\": \"zh\",\n  \"audience\": \"\",\n  \"length\": \"normal\",\n  \"slideCount\": 9,\n  \"durationMin\": 10,\n  \"includeSvg\": true,\n  \"include3d\": true,\n  \"themeId\": null\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 87,
+    "truncated": false,
+    "finishReason": "stop",
+    "usage": {
+      "prompt_tokens": 625,
+      "completion_tokens": 578,
+      "total_tokens": 1203
+    }
+  },
+  {
+    "ts": "2026-11-03T00:44:41.244Z",
+    "id": "chatcmpl-sim-x-mvzytwue",
+    "model": "lumen-sim-streambreak",
+    "task": "outline",
+    "stream": true,
+    "status": 200,
+    "ms": 22,
+    "promptChars": 1874,
+    "completionChars": 0,
+    "responseText": "",
+    "request": {
+      "system": "[TASK:outline]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把一句话需求变成一套可编辑的大纲（3–20 幕）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"title\": \"演示标题，≤ 24 字，必须是一个观点而不是名词堆砌\",\n  \"subtitle\": \"一行副标题，说明听众与场合\",\n  \"lang\": \"zh | en\",\n  \"slides\": [\n    {\n      \"recipe\": \"见下方配方表\",\n      \"headline\": \"这一幕的标题，≤ 24 字，有观点\",\n      \"lead\": \"一句引导语，≤ 40 字，可选\",\n      \"points\": [\"3–5 条要点，每条 ≤ 40 字\"],\n      \"visual\": { \"kind\": \"svg\", \"brief\": \"画面描述，≤ 60 字\" }\n                | { \"kind\": \"three\", \"preset\": \"orbit|showcase|wave-field|particle-cloud|torus|stack|globe\" }\n                | { \"kind\": \"none\" },\n      \"notes\": \"讲者备注：怎么讲这一页，≤ 60 字\"\n    }\n  ]\n}\n\n结构要求：\n- 第一幕必须是 cover，最后一幕必须是 closing；\n- 中间按\"问题 → 证据 → 方案 → 取舍 → 行动\"的顺序推进，不要平铺功能清单；\n- 每幕 3–5 条要点；data / timeline / process / compare 的要点必须遵守配方表里的分隔符；\n- 全篇最多 1 个 svg 幕与 1 个 three 幕；没有画面时 visual.kind = \"none\"；\n- notes 是给讲者的动作提示，不是内容的复述。\n\nrecipe 只能取以下值（按场景选择，不要连续三幕用同一个）：\n- cover 封面：观点式标题 + 一句引导，只出现一次且必须第一幕\n- statement 主张：一句大字 + 一行注解，用于转折\n- split 分栏：左边 2–3 条要点，右边一张插图（visual 用 svg）\n- grid3 / grid4：3 / 4 个并列要点，每个要点写成「**小标题**：一句话」\n- timeline 时间线：要点写成「时间｜标题｜说明」，2–5 个节点\n- compare 对比：要点写成「左组｜一句话」与「右组｜一句话」，左右各 2–3 条\n- quote 引用：headline 是一句可被复述的话，lead 是出处\n- data 数据页：要点写成「标签=数值」（数值可带 %），2–5 项\n- process 流程：要点写成「步骤｜时长｜说明」，3–4 步\n- gallery 图集：3 条图注，用于展示同一叙事的不同画面\n- closing 收尾：一个明确的下一步，必须最后一幕",
+      "user": "{\n  \"prompt\": \"为什么下一季度的复盘，要从 PPT 换成 HTML 演示\",\n  \"lang\": \"zh\",\n  \"audience\": \"\",\n  \"length\": \"normal\",\n  \"slideCount\": 9,\n  \"durationMin\": 10,\n  \"includeSvg\": true,\n  \"include3d\": true,\n  \"themeId\": null\n}"
+    },
+    "path": "/v1/chat/completions",
+    "deltas": 0,
+    "truncated": false,
+    "aborted": true,
+    "streamBreak": true,
+    "note": "模型开关：role 帧后 0 delta 直接断开（无 finish_reason / [DONE]）"
+  },
+  {
+    "ts": "2026-11-03T00:44:41.248Z",
+    "id": "chatcmpl-sim-y-mvzytwv4",
+    "model": "lumen-sim-streambreak",
+    "task": "outline",
+    "stream": false,
+    "status": 200,
+    "ms": 0,
+    "promptChars": 1874,
+    "completionChars": 1732,
+    "responseText": "{\"title\":\"复盘不该是一份文档，而是一个现场\",\"subtitle\":\"给产品与工程团队 · Q3 季度复盘 · 10 分钟\",\"lang\":\"zh\",\"slides\":[{\"recipe\":\"cover\",\"headline\":\"复盘要能点开，不只是翻页\",\"points\":[],\"visual\":{\"kind\":\"three\",\"preset\":\"orbit\"},\"notes\":\"开场别念标题，先问：上次复盘的结论，现在还存在吗？\",\"lead\":\"同样的内容，换一个载体，结论才留得下来。\"},{\"recipe\":\"statement\",\"headline\":\"复盘会结束的那一刻，文档就开始过期。\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"读完停两秒再翻页，让这句话先落地。\",\"lead\":\"结论留在第 14 页，下一次决策没人会翻回去。\"},{\"recipe\":\"grid3\",\"headline\":\"复盘被浪费的三个地方\",\"points\":[\"**找结论**：翻到第 14 页才看到建议。\",\"**对不上**：同一指标出现两个版本。\",\"**传不动**：转发一次，上下文丢一半。\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"三张卡片对应三个提问者：老板、数据同学、下一位负责人。\"},{\"recipe\":\"split\",\"headline\":\"把结论放回它发生的地方\",\"points\":[\"**现场**：点开当天的数据快照。\",\"**证据**：一段录音的时间戳。\",\"**下一步**：右边写好负责人和日期。\"],\"visual\":{\"kind\":\"svg\",\"brief\":\"一条时间线从文档流向外链页面，节点逐一点亮\"},\"notes\":\"从左边讲到右边，最后停在「下一步」那条。\",\"lead\":\"每一句判断下面，都挂着能点开的证据。\"},{\"recipe\":\"compare\",\"headline\":\"PPT 与 HTML，不是替代关系\",\"points\":[\"PPT｜交付一次性的讲述\",\"PPT｜版式固定，改一处要重发\",\"HTML｜交付可检索的现场\",\"HTML｜改一处，链接不变也更新\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"先讲左边不丢人，再讲右边为什么值得多花两天。\",\"lead\":\"一个负责被讲述，一个负责被使用。\"},{\"recipe\":\"quote\",\"headline\":\"如果结论要三个人转述才能听懂，它就不是结论。\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"引用这一句时放慢语速，别解释，让现场安静一下。\",\"lead\":\"Q3 复盘现场 · 产品负责人\"},{\"recipe\":\"process\",\"headline\":\"从文档到页面，只要四步\",\"points\":[\"01｜半天｜先写 5 条能被反驳的判断\",\"02｜1 天｜每幕只留一个证据入口\",\"03｜1 天｜图表从同一份指标源生成\",\"04｜2 小时｜旧链接重定向到新页面\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"强调第三步：数据同一份源，才不会对不上。\"},{\"recipe\":\"grid4\",\"headline\":\"换载体之后多出的四件事\",\"points\":[\"**可检索**：结论能被下次会议直接引用。\",\"**可更新**：季度内持续修订，不重发。\",\"**可交互**：让听众自己点到证据。\",\"**可复用**：模板沉淀成团队资产。\"],\"visual\":{\"kind\":\"none\"},\"notes\":\"这页快速过，每张卡片一句话，不展开。\"},{\"recipe\":\"closing\",\"headline\":\"下一次复盘，从一个链接开始\",\"points\":[],\"visual\":{\"kind\":\"none\"},\"notes\":\"收尾给一个具体日期，把行动钉在日历上。\",\"lead\":\"Q4 的第一次复盘，直接用页面交付。\"}]}",
+    "request": {
+      "system": "[TASK:outline]\n你是 LUMEN（幕光）的 AI 编排器。LUMEN 是一个浏览器内的 AI 原生演示工作台：\n输出是结构，不是截图；约束即品味；每一个块都必须能被继续拖动、改写、换主题。\n\n硬性禁止：\n1. 只输出 JSON，不写任何 CSS / JS / HTML 片段，不写解释文字。\n2. 不使用外链（图片、字体、脚本、iframe、CDN）。\n3. 不输出 <script>、事件属性（on*）、foreignObject、<style>。\n4. 颜色只能引用主题令牌：bg / fg / muted / surface / line / accent / accent2。\n5. 不编造统计口径：示例数据必须标明\"示意\"。\n\n语言：输出语言必须与输入 JSON 的 lang 一致（zh → 简体中文，en → English），专有名词可保留原文。\n版式：舞台 1600×900，安全边距 120/96；文字要短，观点要硬。\n\n你的任务：把一句话需求变成一套可编辑的大纲（3–20 幕）。\n\n输出契约（只输出这一个 JSON 对象）：\n{\n  \"title\": \"演示标题，≤ 24 字，必须是一个观点而不是名词堆砌\",\n  \"subtitle\": \"一行副标题，说明听众与场合\",\n  \"lang\": \"zh | en\",\n  \"slides\": [\n    {\n      \"recipe\": \"见下方配方表\",\n      \"headline\": \"这一幕的标题，≤ 24 字，有观点\",\n      \"lead\": \"一句引导语，≤ 40 字，可选\",\n      \"points\": [\"3–5 条要点，每条 ≤ 40 字\"],\n      \"visual\": { \"kind\": \"svg\", \"brief\": \"画面描述，≤ 60 字\" }\n                | { \"kind\": \"three\", \"preset\": \"orbit|showcase|wave-field|particle-cloud|torus|stack|globe\" }\n                | { \"kind\": \"none\" },\n      \"notes\": \"讲者备注：怎么讲这一页，≤ 60 字\"\n    }\n  ]\n}\n\n结构要求：\n- 第一幕必须是 cover，最后一幕必须是 closing；\n- 中间按\"问题 → 证据 → 方案 → 取舍 → 行动\"的顺序推进，不要平铺功能清单；\n- 每幕 3–5 条要点；data / timeline / process / compare 的要点必须遵守配方表里的分隔符；\n- 全篇最多 1 个 svg 幕与 1 个 three 幕；没有画面时 visual.kind = \"none\"；\n- notes 是给讲者的动作提示，不是内容的复述。\n\nrecipe 只能取以下值（按场景选择，不要连续三幕用同一个）：\n- cover 封面：观点式标题 + 一句引导，只出现一次且必须第一幕\n- statement 主张：一句大字 + 一行注解，用于转折\n- split 分栏：左边 2–3 条要点，右边一张插图（visual 用 svg）\n- grid3 / grid4：3 / 4 个并列要点，每个要点写成「**小标题**：一句话」\n- timeline 时间线：要点写成「时间｜标题｜说明」，2–5 个节点\n- compare 对比：要点写成「左组｜一句话」与「右组｜一句话」，左右各 2–3 条\n- quote 引用：headline 是一句可被复述的话，lead 是出处\n- data 数据页：要点写成「标签=数值」（数值可带 %），2–5 项\n- process 流程：要点写成「步骤｜时长｜说明」，3–4 步\n- gallery 图集：3 条图注，用于展示同一叙事的不同画面\n- closing 收尾：一个明确的下一步，必须最后一幕",
+      "user": "{\n  \"prompt\": \"为什么下一季度的复盘，要从 PPT 换成 HTML 演示\",\n  \"lang\": \"zh\",\n  \"audience\": \"\",\n  \"length\": \"normal\",\n  \"slideCount\": 9,\n  \"durationMin\": 10,\n  \"includeSvg\": true,\n  \"include3d\": true,\n  \"themeId\": null\n}"
+    },
+    "path": "/v1/chat/completions",
+    "truncated": false,
+    "usage": {
+      "prompt_tokens": 625,
+      "completion_tokens": 578,
+      "total_tokens": 1203
+    }
+  }
+]

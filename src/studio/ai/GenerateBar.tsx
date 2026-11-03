@@ -86,7 +86,7 @@ export function GenerateBar({ kind, onGenerate, disabled }: GenerateBarProps) {
     : error ?? (ready ? t('studio.ai.previewOnly') : t('studio.ai.notReady'))
 
   return (
-    <div className="st-gen" data-busy={busy ? 'true' : undefined} data-error={error ? 'true' : undefined}>
+    <div className="st-gen" data-studio-ai={kind} data-busy={busy ? 'true' : undefined} data-error={error ? 'true' : undefined}>
       <span className="st-gen__badge">
         <Sparkles size={12} />
         {t('studio.ai.title')}
@@ -97,6 +97,7 @@ export function GenerateBar({ kind, onGenerate, disabled }: GenerateBarProps) {
         onValueChange={setPrompt}
         placeholder={t(kind === 'svg' ? 'studio.ai.placeholderSvg' : 'studio.ai.placeholderThree')}
         aria-label={t('studio.ai.title')}
+        data-studio-ai-input="1"
         disabled={disabled || busy}
         onKeyDown={(event) => {
           if (event.key === 'Enter') {
@@ -114,13 +115,14 @@ export function GenerateBar({ kind, onGenerate, disabled }: GenerateBarProps) {
           size="sm"
           variant="primary"
           icon={<Wand2 size={12} />}
+          data-studio-ai-run="1"
           disabled={disabled || !ready || prompt.trim() === ''}
           onClick={() => void run()}
         >
           {t(kind === 'svg' ? 'ai.panel.generateSvg' : 'ai.panel.generateThree')}
         </Button>
       )}
-      <span className="st-gen__status" aria-live="polite">
+      <span className="st-gen__status" data-studio-ai-status="1" aria-live="polite">
         {status}
       </span>
     </div>

@@ -1,0 +1,71 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>LUMEN v0.3.0 · 模拟 LLM 实战报告</title>
+<style>
+:root{color-scheme:dark;--bg:#0d0c0a;--panel:#171512;--line:#2b2620;--fg:#efe7d7;--muted:#9a9182;--gold:#d7b46a;--ok:#6fbf8f;--bad:#e07a6a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.6 "Segoe UI",system-ui,sans-serif;padding:48px 6vw}
+h1{font-size:30px;margin:0 0 6px;letter-spacing:.04em}h2{margin-top:40px;font-size:17px;color:var(--gold);letter-spacing:.08em}
+.lede{color:var(--muted);margin:0 0 28px}.stats{display:flex;gap:14px;flex-wrap:wrap;margin:24px 0}
+.stat{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:12px 18px;min-width:130px}
+.stat b{display:block;font-size:22px;color:var(--gold)}.stat span{color:var(--muted);font-size:11px;letter-spacing:.12em}
+ul.steps{list-style:none;padding:0;display:grid;gap:8px}ul.steps li{border:1px solid var(--line);border-left:3px solid var(--ok);background:var(--panel);border-radius:8px;padding:10px 14px}
+ul.steps li.bad{border-left-color:var(--bad)}ul.steps li b{font-size:10px;letter-spacing:.14em;color:var(--ok);margin-right:10px}ul.steps li.bad b{color:var(--bad)}
+ul.steps code{color:var(--gold)}ul.steps span{color:var(--muted);font-size:11px;margin-left:8px}ul.steps pre{margin:6px 0 0;color:var(--muted);font-size:11px;white-space:pre-wrap}
+.gallery{columns:2;column-gap:14px}.gallery figure{margin:0 0 14px;break-inside:avoid;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.gallery img{display:block;width:100%;height:auto}.gallery figcaption{padding:6px 10px;color:var(--muted);font-size:11px}
+.errors{color:var(--muted);font-size:12px}
+table{border-collapse:collapse;margin:10px 0 4px;font-family:var(--ui-font-mono,"Cascadia Code",monospace);font-size:12px}
+th,td{border:1px solid var(--line);padding:6px 14px;text-align:left}th{color:var(--gold);font-weight:600;letter-spacing:.08em}
+</style>
+<h1>LUMEN v0.3.0 · 模拟 LLM 全链路实战报告</h1>
+<p class="lede">一个真实的 OpenAI 兼容端点（本地模拟）驱动了造幕台、AI 编排、微调、SVG/3D 工作室与三条鲁棒性路径。</p>
+<div class="stats">
+  <div class="stat"><b>19/19</b><span>步骤通过</span></div>
+  <div class="stat"><b>34</b><span>LLM 请求</span></div>
+  <div class="stat"><b>5</b><span>任务类型</span></div>
+  <div class="stat"><b>45.5s</b><span>总耗时</span></div>
+  <div class="stat"><b>0</b><span>预期外 console</span></div>
+</div>
+<h2>任务分布</h2>
+<table class="errors"><tr><th>task</th><th>次数</th></tr><tr><td>outline</td><td>8</td></tr><tr><td>slide</td><td>18</td></tr><tr><td>three</td><td>4</td></tr><tr><td>svg</td><td>3</td></tr><tr><td>refine</td><td>1</td></tr></table>
+<h2>步骤</h2><ul class="steps"><li class="ok"><b>PASS</b> <code>connect</code> 设置：通道切到模拟端点并测试连通性 <span>2426ms</span><pre>{&quot;endpoint&quot;:&quot;http://127.0.0.1:5299/v1&quot;,&quot;model&quot;:&quot;lumen-sim-0.3&quot;}</pre></li>
+<li class="ok"><b>PASS</b> <code>forge.outline</code> 造幕台：一句话 → 9 幕可编辑大纲 <span>2066ms</span><pre>{&quot;cards&quot;:9}</pre></li>
+<li class="ok"><b>PASS</b> <code>forge.brief</code> 造幕台：逐幕「这一幕想讲什么」进入生成请求 <span>93ms</span><pre>{&quot;brief&quot;:&quot;用三个真实数字说明：一次改版要花多少小时&quot;}</pre></li>
+<li class="ok"><b>PASS</b> <code>forge.cast</code> 造幕台：九幕成稿（文案 + SVG + 3D + 过检） <span>3408ms</span><pre>{&quot;count&quot;:9}</pre></li>
+<li class="ok"><b>PASS</b> <code>forge.play</code> 造幕台：开演 → 全屏播放真实成稿 <span>3000ms</span><pre>{}</pre></li>
+<li class="ok"><b>PASS</b> <code>forge.persist</code> 造幕台：成稿落库、AI 溯源、SVG/3D 块齐全 <span>717ms</span><pre>{&quot;slides&quot;:9,&quot;types&quot;:[&quot;text&quot;,&quot;shape&quot;,&quot;three&quot;,&quot;svg&quot;],&quot;providers&quot;:[&quot;openai&quot;]}</pre></li>
+<li class="ok"><b>PASS</b> <code>composer.open</code> AI 编排：从顶栏打开精密模式，通道徽标为真端点 <span>188ms</span><pre>{&quot;channel&quot;:&quot;127.0.0.1:5299 · lumen-sim-0.3&quot;}</pre></li>
+<li class="ok"><b>PASS</b> <code>composer.outline</code> AI 编排：提示词 → 可编辑大纲 <span>1878ms</span><pre>{}</pre></li>
+<li class="ok"><b>PASS</b> <code>composer.build</code> AI 编排：逐幕成稿写回当前演示 <span>2330ms</span><pre>{&quot;slides&quot;:9,&quot;title&quot;:&quot;「演示载体的迁移」值得一个明确的结论&quot;}</pre></li>
+<li class="ok"><b>PASS</b> <code>refine.llm</code> 自然语言微调：规则未命中 → 模型改写 + diff 预览 <span>915ms</span><pre>{&quot;preview&quot;:&quot;将变更：新增 3 · 修改 0 · 删除 3&quot;}</pre></li>
+<li class="ok"><b>PASS</b> <code>refine.rules</code> 自然语言微调：规则通道（时间轴）离线重排 + 应用 <span>65ms</span><pre>{}</pre></li>
+<li class="ok"><b>PASS</b> <code>refine.art</code> 自然语言微调：加配图 / 加 3D 走单点生成 <span>4944ms</span><pre>{&quot;results&quot;:[&quot;将变更：新增 8 · 修改 0 · 删除 15&quot;,&quot;将变更：新增 8 · 修改 0 · 删除 8&quot;]}</pre></li>
+<li class="ok"><b>PASS</b> <code>studio.svg</code> SVG 工作室：一句话 → 可净化 SVG → 替换当前块 <span>6742ms</span><pre>{&quot;source&quot;:&quot;generateSvgArt&quot;}</pre></li>
+<li class="ok"><b>PASS</b> <code>studio.three</code> 3D 工作室：一句话 → 受限场景描述符 → 替换当前块 <span>3579ms</span><pre>{&quot;source&quot;:&quot;generateThreeScene&quot;}</pre></li>
+<li class="ok"><b>PASS</b> <code>robust.badjson</code> 鲁棒性：截断 JSON → 修复/重试后仍出大纲 <span>3833ms</span><pre>{&quot;cards&quot;:9}</pre></li>
+<li class="ok"><b>PASS</b> <code>robust.429</code> 鲁棒性：429 → Retry-After 退避重试后成功 <span>3848ms</span><pre>{&quot;cards&quot;:9}</pre></li>
+<li class="ok"><b>PASS</b> <code>robust.streambreak</code> 鲁棒性：SSE 断流 → 同 body 非流式回退 <span>2057ms</span><pre>{&quot;cards&quot;:9}</pre></li>
+<li class="ok"><b>PASS</b> <code>robust.restore</code> 收尾：把模型名恢复为模拟主模型 <span>1403ms</span><pre>{}</pre></li>
+<li class="ok"><b>PASS</b> <code>console.clean</code> 浏览器干净度：无预期外 console error / page error / 失败请求 <span>0ms</span><pre>{&quot;console&quot;:{&quot;raw&quot;:3,&quot;expected&quot;:2},&quot;requests&quot;:{&quot;raw&quot;:1,&quot;expected&quot;:1}}</pre></li></ul>
+<h2>页面错误</h2><ul class="errors"><li>Failed to load resource: the server responded with a status of 429 (Too Many Requests)</li>
+<li>Failed to load resource: net::ERR_INCOMPLETE_CHUNKED_ENCODING</li></ul>
+<h2>证据截图</h2><div class="gallery"><figure><img src="screenshots/01-settings-connected.png" alt="screenshots/01-settings-connected.png"><figcaption>screenshots/01-settings-connected.png</figcaption></figure>
+<figure><img src="screenshots/02-forge-seed.png" alt="screenshots/02-forge-seed.png"><figcaption>screenshots/02-forge-seed.png</figcaption></figure>
+<figure><img src="screenshots/03-forge-deal.png" alt="screenshots/03-forge-deal.png"><figcaption>screenshots/03-forge-deal.png</figcaption></figure>
+<figure><img src="screenshots/04-forge-deal-brief.png" alt="screenshots/04-forge-deal-brief.png"><figcaption>screenshots/04-forge-deal-brief.png</figcaption></figure>
+<figure><img src="screenshots/05-forge-cast-mid.png" alt="screenshots/05-forge-cast-mid.png"><figcaption>screenshots/05-forge-cast-mid.png</figcaption></figure>
+<figure><img src="screenshots/06-forge-premiere.png" alt="screenshots/06-forge-premiere.png"><figcaption>screenshots/06-forge-premiere.png</figcaption></figure>
+<figure><img src="screenshots/07-play-slide-01.png" alt="screenshots/07-play-slide-01.png"><figcaption>screenshots/07-play-slide-01.png</figcaption></figure>
+<figure><img src="screenshots/08-play-slide-02.png" alt="screenshots/08-play-slide-02.png"><figcaption>screenshots/08-play-slide-02.png</figcaption></figure>
+<figure><img src="screenshots/09-play-slide-03.png" alt="screenshots/09-play-slide-03.png"><figcaption>screenshots/09-play-slide-03.png</figcaption></figure>
+<figure><img src="screenshots/10-editor-generated.png" alt="screenshots/10-editor-generated.png"><figcaption>screenshots/10-editor-generated.png</figcaption></figure>
+<figure><img src="screenshots/11-ai-panel.png" alt="screenshots/11-ai-panel.png"><figcaption>screenshots/11-ai-panel.png</figcaption></figure>
+<figure><img src="screenshots/12-composer-outline.png" alt="screenshots/12-composer-outline.png"><figcaption>screenshots/12-composer-outline.png</figcaption></figure>
+<figure><img src="screenshots/13-composer-done.png" alt="screenshots/13-composer-done.png"><figcaption>screenshots/13-composer-done.png</figcaption></figure>
+<figure><img src="screenshots/14-refine-plan.png" alt="screenshots/14-refine-plan.png"><figcaption>screenshots/14-refine-plan.png</figcaption></figure>
+<figure><img src="screenshots/15-refine-applied.png" alt="screenshots/15-refine-applied.png"><figcaption>screenshots/15-refine-applied.png</figcaption></figure>
+<figure><img src="screenshots/16-refine-art.png" alt="screenshots/16-refine-art.png"><figcaption>screenshots/16-refine-art.png</figcaption></figure>
+<figure><img src="screenshots/17-studio-svg.png" alt="screenshots/17-studio-svg.png"><figcaption>screenshots/17-studio-svg.png</figcaption></figure>
+<figure><img src="screenshots/18-studio-three.png" alt="screenshots/18-studio-three.png"><figcaption>screenshots/18-studio-three.png</figcaption></figure>
+<figure><img src="screenshots/19-robust-badjson.png" alt="screenshots/19-robust-badjson.png"><figcaption>screenshots/19-robust-badjson.png</figcaption></figure>
+<figure><img src="screenshots/20-robust-429.png" alt="screenshots/20-robust-429.png"><figcaption>screenshots/20-robust-429.png</figcaption></figure>
+<figure><img src="screenshots/21-robust-streambreak.png" alt="screenshots/21-robust-streambreak.png"><figcaption>screenshots/21-robust-streambreak.png</figcaption></figure></div>
+</html>

@@ -153,7 +153,7 @@
 }
 
 .forge-hud__title {
-  flex: 1;
+  flex: 0 1 240px;
   min-width: 0;
   font-family: var(--ui-font-mono);
   font-size: 11px;
@@ -162,6 +162,77 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* v0.3.0：五段流程线 —— HUD 的视觉中心。
+ * 已走过 = 实心点 + 降一档字色；当前 = 金点 + 金线；未到 = 空心点。
+ * 只读，不设 pointer / hover，避免被误认为可点的步骤条。 */
+.forge-hud__steps {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  user-select: none;
+}
+
+.forge-hud__step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: color-mix(in srgb, var(--ui-fg-mute) 56%, transparent);
+  font-family: var(--ui-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+  transition: color var(--fx-t2) var(--fx-ease);
+}
+
+/* 节点之间的 18px 细线：一段走完才点亮 */
+.forge-hud__step + .forge-hud__step::before {
+  content: '';
+  width: 18px;
+  height: 1px;
+  margin: 0 9px;
+  background: color-mix(in srgb, var(--ui-line-strong) 58%, transparent);
+  transition: background var(--fx-t2) var(--fx-ease);
+}
+
+.forge-hud__step-mark {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--ui-line-strong) 82%, transparent);
+  background: transparent;
+  transition: background var(--fx-t2) var(--fx-ease), border-color var(--fx-t2) var(--fx-ease),
+    box-shadow var(--fx-t2) var(--fx-ease);
+}
+
+.forge-hud__step[data-state='done'] {
+  color: color-mix(in srgb, var(--ui-fg) 62%, transparent);
+}
+
+.forge-hud__step[data-state='done'] .forge-hud__step-mark {
+  border-color: color-mix(in srgb, var(--ui-fg) 46%, transparent);
+  background: color-mix(in srgb, var(--ui-fg) 46%, transparent);
+}
+
+.forge-hud__step[data-state='done'] + .forge-hud__step::before,
+.forge-hud__step[data-state='on']::before {
+  background: color-mix(in srgb, var(--ui-accent-line) 88%, transparent);
+}
+
+.forge-hud__step[data-state='on'] {
+  color: var(--ui-accent);
+}
+
+.forge-hud__step[data-state='on'] .forge-hud__step-mark {
+  border-color: var(--ui-accent);
+  background: var(--ui-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ui-accent) 14%, transparent);
 }
 
 .forge-hud__meta {
@@ -233,6 +304,23 @@
   padding: 8px 40px 4px;
 }
 
+/* v0.3.0：段与段之间用同一条 10px 上浮 + 淡入换场。
+ * 五段共用一个动画，换场不再各演各的；L0 / still / 减少动效由文件末尾的统一兜底关掉。 */
+@keyframes forge-screen-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.forge__stage > [data-forge-screen] {
+  animation: forge-screen-in 300ms var(--fx-ease-settle) both;
+}
+
 /* ------------------------------- 输入 ------------------------------- */
 
 .forge-seed {
@@ -249,7 +337,7 @@
 .forge-seed__core {
   display: grid;
   justify-items: center;
-  gap: 42px;
+  gap: 30px;
   width: 100%;
 }.forge-seed__line {
   display: flex;
@@ -274,6 +362,7 @@
   line-height: 1.2;
   letter-spacing: 0.01em;
   text-align: center;
+  text-overflow: ellipsis;
   outline: none;
   caret-color: var(--ui-accent);
   transition: border-color var(--fx-t3) var(--fx-ease), color var(--fx-t3) var(--fx-ease);
@@ -304,16 +393,17 @@
   opacity: 0.62;
 }
 
-/* 焦点态才显示占位，且只作耳语：空屏的正文只有那条呼吸的金线（02 §5.1） */
+/* 占位是一句耳语，不再是「只有聚焦才存在」：空屏永远看得见要输入什么。
+ * 焦距提高一点点亮度，让「还没开始 / 正在输入」有一个温度差。 */
 .forge-seed__input::placeholder {
-  color: transparent;
+  color: color-mix(in srgb, var(--ui-fg-mute) 30%, transparent);
   font-size: 24px;
   letter-spacing: 0.04em;
+  transition: color var(--fx-t2) var(--fx-ease);
 }
 
 .forge-seed__input:focus::placeholder {
-  color: color-mix(in srgb, var(--ui-fg-mute) 52%, transparent);
-  transition: color var(--fx-t2) var(--fx-ease);
+  color: color-mix(in srgb, var(--ui-fg-mute) 56%, transparent);
 }
 
 /* 输入为空且聚焦时，金线做一次慢呼吸：替代无法动效化的原生光标 */
@@ -374,11 +464,20 @@
   align-items: center;
 }
 
+/* v0.3.0：刻度不再漂在右下角，跟内容同一条中轴（输入 → 示例 → 材料/偏好 → 规格）。 */
 .forge-seed__dials {
-  position: absolute;
-  right: 0;
-  bottom: 6px;
-  gap: 16px;
+  position: static;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px 14px;
+  margin-top: 18px;
+  width: 100%;
+}
+
+.forge-seed__dials :where(.forge-seed__dial, .forge-seed__toggles) {
+  display: inline-flex;
+  align-items: center;
 }
 
 .forge-seed__dial {
@@ -458,18 +557,29 @@
   bottom: 4px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .forge-seed__badge {
-  padding: 2px 8px;
-  border: 1px solid color-mix(in srgb, var(--ui-accent-2) 26%, transparent);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 7px;
+  border: 1px solid color-mix(in srgb, var(--ui-line) 78%, transparent);
   border-radius: 999px;
-  color: color-mix(in srgb, var(--ui-accent-2) 76%, transparent);
+  color: color-mix(in srgb, var(--ui-fg-mute) 90%, transparent);
   font-family: var(--ui-font-mono);
   font-size: 9.5px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.12em;
   white-space: nowrap;
+}
+
+.forge-seed__badge::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ui-accent-2);
 }
 
 .forge-ghost {
@@ -926,7 +1036,7 @@
   overflow: hidden;
   font-size: 11.5px;
   line-height: 1.4;
-  color: color-mix(in srgb, var(--ui-fg) 50%, transparent);
+  color: color-mix(in srgb, var(--ui-fg) 68%, transparent);
   word-break: break-word;
 }
 
@@ -1567,6 +1677,17 @@
     box-shadow var(--fx-t1) linear;
 }
 
+/* v0.3.0：干净过检时，门线在幕所在的中段让开 —— 只保留上下两截门柱，
+ * 不再有两根金线穿过正在看的成稿；一旦有 error（data-bad=1）恢复整根红线。 */
+.forge-gate[data-bad='0'] .forge-gate__line {
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0 19%,
+    transparent 19% 81%,
+    #000 81% 100%
+  );
+}
+
 /* 幕右上方形「!」：方形不会被读成状态点（04 §5.3） */
 .forge-gate__bang {
   animation: forge-bang-in var(--fx-t2) var(--fx-ease-pop) both;
@@ -1669,6 +1790,52 @@
   height: 100%;
 }
 
+/* v0.3.0：开演席的「这一套是什么」——标题 + 幕数/过检状态，落在光锥上沿。
+ * 它解释画面，不增加操作；三个动作仍在下方原处。 */
+.forge-premiere__caption {
+  position: absolute;
+  top: clamp(26px, 6vh, 64px);
+  left: 50%;
+  z-index: 3;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  max-width: min(72vw, 720px);
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+  animation: forge-premiere-caption-in 520ms var(--fx-ease-settle) both;
+}
+
+@keyframes forge-premiere-caption-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.forge-premiere__caption-title {
+  font-family: var(--ui-font);
+  font-size: clamp(16px, 1.7vw, 22px);
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--ui-fg) 94%, transparent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.forge-premiere__caption-meta {
+  font-family: var(--ui-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  color: color-mix(in srgb, var(--ui-accent) 78%, transparent);
+}
+
 /* T3-a 的 ±602 是 1600 设计稿的坐标：1180 容器下两侧会各溢出约 90px，按 .84 收进来 */
 .forge-premiere[data-forge-mode='arc'] .forge-premiere__arc {
   position: absolute;
@@ -1681,8 +1848,8 @@
 
 .forge-premiere__card {
   position: relative;
-  width: 160px;
-  height: 90px;
+  width: 172px;
+  height: 97px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--ui-line) 78%, transparent);
   border-radius: 4px;
@@ -2047,6 +2214,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-left: auto;
 }
 
 .forge__cta {
@@ -2117,6 +2285,12 @@
   justify-items: end;
   gap: 6px;
   pointer-events: none;
+}
+
+/* v0.3.0：开演席的瞬时反馈挪到底部，别压住标题与流程线。 */
+.forge[data-forge='premiere'] .forge-fx {
+  top: auto;
+  bottom: 92px;
 }
 
 .forge-fx__item {
@@ -2330,5 +2504,31 @@
 
   .forge-seed__input {
     font-size: 42px !important;
+  }
+}
+
+/* v0.3.0：窄屏先收流程线的字，再收整条线；HUD 的返回 / 档位 / 语言始终保留。 */
+@media (max-width: 1280px) {
+  .forge-hud__step-label {
+    display: none;
+  }
+
+  .forge-hud__step + .forge-hud__step::before {
+    width: 12px;
+    margin: 0 7px;
+  }
+
+  .forge-hud__title {
+    flex-basis: 160px;
+  }
+}
+
+@media (max-width: 960px) {
+  .forge-hud__steps {
+    display: none;
+  }
+
+  .forge-hud__title {
+    flex: 1;
   }
 }

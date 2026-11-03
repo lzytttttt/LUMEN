@@ -881,7 +881,11 @@ export function ForgeApp({ onClose, initialPrompt }: ForgeAppProps) {
       </main>
 
       <footer className="forge__dock">
-        <Pulse prog={state.prog} stage={state.stage} bad={Boolean(stuck)} tier={tier} label={label} />
+        {/* v0.3.0：细颗粒七段脉冲只在「生成」这一段出现；
+         * 其余四段由 HUD 的五段流程线负责「我在哪」，dock 左侧不再重复第二套进度。 */}
+        {state.phase === 'casting' ? (
+          <Pulse prog={state.prog} stage={state.stage} bad={Boolean(stuck)} tier={tier} label={label} />
+        ) : null}
         <div className="forge__actions">
           {state.phase === 'casting' ? (
             <button type="button" className="forge__ghost" onClick={stop}>

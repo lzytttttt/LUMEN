@@ -6,7 +6,9 @@
  *   10–20 幕 → T3-b 5×4 网格（128×72，压平 rotateX(12°)，z 按 i%3 抖动 ±16）。
  * 内容一律 poster（`mode="thumb"`，不播块入场，04 §3.3 共同约束）。
  *
- * 这一屏只有三处文字：主按钮「播放」、下一步「继续编辑」/「再加几幕」、残影「再来一套」。不写进度、不写数字。
+ * 这一屏在 v0.3.0 只加一行「这一套是什么」的标题与状态：
+ * 主按钮「播放」、下一步「继续编辑」/「再加几幕」、残影「再来一套」不变。
+ * 文字仍走现有 i18n key（count / gate.pass / gate.still），不新增词表。
  * v0.2.5 起「回编辑器」并入「继续编辑」——两枚做的是同一件事（关台 + 定位到这一套），
  * 留着只是让用户在同一个动作前面多选一次；关台的唯一出口仍是 HUD 的返回键与 Esc。
  *
@@ -17,7 +19,7 @@ import { useT } from '@/i18n'
 import { SlideRenderer } from '@/render/SlideRenderer'
 import type { PremiereProps } from '../ui'
 
-const ARC_CARD = { w: 160, h: 90 }
+const ARC_CARD = { w: 172, h: 97 }
 const GRID_CARD = { w: 128, h: 72 }
 
 export function Premiere({ deck, slides, tier, accent, onPlay, onEdit, onMore, onAgain }: PremiereProps) {
@@ -45,6 +47,15 @@ export function Premiere({ deck, slides, tier, accent, onPlay, onEdit, onMore, o
       data-forge-blocked={blocked ? '1' : '0'}
       style={{ ['--forge-accent' as string]: accent, ['--forge-accent-2' as string]: 'var(--ui-accent-2)' }}
     >
+      {deck ? (
+        <div className="forge-premiere__caption" data-forge-premiere-caption>
+          <span className="forge-premiere__caption-title">{deck.title}</span>
+          <span className="forge-premiere__caption-meta">
+            {t('forge.deal.count', { count })} · {blocked ? t('forge.gate.still') : t('forge.gate.pass')}
+          </span>
+        </div>
+      ) : null}
+
       <div
         className={grid ? 'forge-premiere__grid' : 'forge-premiere__arc'}
         data-forge-premiere-track
@@ -115,7 +126,7 @@ export function Premiere({ deck, slides, tier, accent, onPlay, onEdit, onMore, o
           inset: 0,
           pointerEvents: 'none',
           background:
-            'radial-gradient(36% 29% at 50% 45%, transparent 0, rgba(0, 0, 0, 0.42) 62%, rgba(0, 0, 0, 0.86) 100%)',
+            'radial-gradient(42% 32% at 50% 48%, transparent 0, rgba(0, 0, 0, 0.34) 64%, rgba(0, 0, 0, 0.8) 100%)',
         }}
       />
 

@@ -89,7 +89,7 @@ export function Gate({ slides, active, tier, onRecast }: GateProps) {
   }, [bad, tier])
 
   const lineStyle = (side: 'left' | 'right') => ({
-    opacity: open ? (bad ? 1 : 0.5) : 0,
+    opacity: open ? (bad ? 1 : 0.32) : 0,
     background: bad ? 'var(--ui-danger)' : 'var(--ui-accent)',
     boxShadow: bad ? '0 0 20px color-mix(in srgb, var(--ui-danger) 55%, transparent)' : '0 0 16px rgba(200,161,90,.4)',
     transform: side === 'left' ? 'translateX(-80px)' : 'translateX(80px)',

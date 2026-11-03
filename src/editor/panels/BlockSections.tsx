@@ -370,6 +370,7 @@ export function SvgSection({ block }: { block: SvgBlock }) {
         variant="outline"
         block
         icon={<Sparkles size={13} />}
+        data-open-studio="svg"
         onClick={() => {
           const mounted = openStudio({ kind: 'svg', blockId: block.id })
           if (!mounted) pushToast({ kind: 'info', message: t('editor.toast.studioPending') })
@@ -534,6 +535,7 @@ export function ThreeSection({ block }: { block: ThreeBlock }) {
         variant="outline"
         block
         icon={<Sparkles size={13} />}
+        data-open-studio="three"
         onClick={() => {
           const mounted = openStudio({ kind: 'three', blockId: block.id })
           if (!mounted) pushToast({ kind: 'info', message: t('editor.toast.studioPending') })

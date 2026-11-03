@@ -4,7 +4,7 @@
 
 **An AI-native deck workbench in the browser.** Start at the Forge: prompt, outline, build, check, play — five stages on one stage. Keep editing on a real canvas, then ship a single self-contained HTML file that plays on double-click.
 
-**Version: [v0.2.5](https://github.com/lzytttttt/LUMEN/releases/tag/v0.2.5)** — Forge with materials and in-flight steering.
+**Version: [v0.3.0](https://github.com/lzytttttt/LUMEN/releases/tag/v0.3.0)** — five-stage flow line, a calmer interface, and a full simulated-LLM run.
 
 Author: **无极Ayaya** · Project: [github.com/lzytttttt/LUMEN](https://github.com/lzytttttt/LUMEN) · Contact: [lzytttttt@gmail.com](mailto:lzytttttt@gmail.com) · License: [Apache-2.0 + Commons Clause](LICENSE) · [licensing guide](LICENSING.md)
 

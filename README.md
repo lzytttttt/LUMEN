@@ -6,7 +6,7 @@
 
 **An AI-native deck workbench in the browser.** Start at the Forge: prompt, outline, build, check, play — five stages on one stage. Keep editing on a real canvas, then ship a single self-contained HTML file that plays on double-click.
 
-**版本 / Version: [v0.2.5](https://github.com/lzytttttt/LUMEN/releases/tag/v0.2.5)** — 造幕台 + 材料/纠偏迭代。
+**版本 / Version: [v0.3.0](https://github.com/lzytttttt/LUMEN/releases/tag/v0.3.0)** — 五段流程线 + 简约化打磨 + 模拟 LLM 全链路实战。
 
 作者 / Author：**无极Ayaya** · 项目：[github.com/lzytttttt/LUMEN](https://github.com/lzytttttt/LUMEN) · 联系：[lzytttttt@gmail.com](mailto:lzytttttt@gmail.com) · 许可：[Apache-2.0 + Commons Clause](LICENSE) · [许可导读](LICENSING.md)
 
@@ -59,6 +59,17 @@ http://127.0.0.1:5273/?still=1&channel=replay&speed=0   # 再叠一层 L0（截�
 `?speed=0` 同步灌帧、不做逐帧等待；回放数据在 `src/fixtures/ai/<setId>/*.json`（默认 `zh-normal`），由真实模型录制。
 `?strict=0` 关闭 `promptDigest` 严格匹配，按 task 顺序兜底（演示用）。
 
+### 模拟 LLM 实战 / Simulated LLM run
+
+`simulation/v0.3.0/` 里有一个零依赖的**模拟 OpenAI 兼容端点**，以及一套 Playwright 端到端驱动。它用真实浏览器、真实 HTTP/SSE、真实 IndexedDB，把全部接 LLM 的功能跑一遍：造幕台（大纲 → 九幕含 SVG/3D → 过检 → 开演）、AI 编排、自然语言微调、SVG/3D 工作室，外加截断 JSON / 429 退避 / SSE 断流回退三条鲁棒性路径。
+
+```powershell
+pnpm sim:llm:selftest   # 模拟服务自测：五类任务 + 流式 + 三条鲁棒性开关
+pnpm sim:llm            # 全套实战；报告写到 simulation/v0.3.0/results/report.html
+```
+
+报告含逐步断言、模型调用分布、全部截图与原始请求日志（`results/llm/requests.jsonl`）。模拟内容是确定性的样张，用于验证管线与视觉，不代表真实模型能力。
+
 ## 截图 / Screenshots
 
 > 截图取自 `node scripts/snapshot.mjs http://127.0.0.1:5273`（原始输出在 `harness/out/`，不入库），
@@ -72,7 +83,7 @@ http://127.0.0.1:5273/?still=1&channel=replay&speed=0   # 再叠一层 L0（截�
 |---|---|
 | ![composer](doc/screenshots/ui-composer.png) | ![studio](doc/screenshots/studio-3d.png) |
 
-造幕台 / Forge（v0.2.0 实机截图，`?still=1` 拍摄）：
+造幕台 / Forge（v0.3.0 实机截图，`?still=1` 拍摄；顶部是新增的五段流程线）：
 
 | 输入 | 大纲 |
 |---|---|
@@ -90,7 +101,7 @@ http://127.0.0.1:5273/?still=1&channel=replay&speed=0   # 再叠一层 L0（截�
 
 ## 能力 / Capabilities
 
-- **造幕台**：五段闭环；12 张幕卡配方、首末锁、加/删/换序/重试；进度与取消都是真值，取消不落库。
+- **造幕台**：五段闭环 + 顶部五段流程线；12 张幕卡配方、首末锁、加/删/换序/重试；进度与取消都是真值，取消不落库。
 - **生成**：提示 → 可编辑大纲 → 逐幕成稿；12 个版式配方 × 6 套主题；单幕重写、精简、时间轴化、加 SVG / 加 3D。
 - **通道**：Mock（离线确定性）/ OpenAI 兼容（流式 SSE、退避重试、响应缓存）/ Replay（离线回放）；预设档覆盖 DeepSeek、OpenAI、Ollama、自建网关。
 - **编辑**：1600×900 画布、多选/框选、八向缩放、旋转、智能参考线 + 网格吸附、对齐分布、图层、锁定隐藏、内联改字、200 步撤销。

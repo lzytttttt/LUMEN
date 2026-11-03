@@ -205,7 +205,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
       </Section>
 
       <Section title={t('editor.dialog.modelSection')} actions={<span className="insp-char">LLM</span>}>
-        <Field label={t('ai.panel.channel')} hint={t('ai.panel.mockHint')}>
+        <Field label={t('ai.panel.channel')}>
           <Select
             value={(llm.presetId ?? '') as PresetId | ''}
             onValueChange={(id) => {
@@ -222,7 +222,17 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
           />
         </Field>
 
-        <Field label={t('ai.panel.settingsTitle')} hint={t('ai.panel.mockHint')}>
+        <Field
+          label={t('ai.panel.settingsTitle')}
+          hint={
+            isLlmReady({ ...llm, provider: 'openai' })
+              ? t('ai.panel.channelEndpoint', {
+                  host: llm.baseURL.trim().replace(/^https?:\/\//i, '').replace(/\/+$/, ''),
+                  model: llm.model.trim(),
+                })
+              : t('ai.panel.mockHint')
+          }
+        >
           <Segmented
             value={llm.provider}
             block
@@ -253,6 +263,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
             <TextInput
               value={llm.baseURL}
               placeholder="https://api.openai.com/v1"
+              data-llm-field="baseURL"
               onValueChange={(baseURL) => patchLlm({ baseURL })}
             />
           </Field>
@@ -260,6 +271,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
             <TextInput
               value={llm.model}
               placeholder="gpt-4o-mini"
+              data-llm-field="model"
               onValueChange={(model) => patchLlm({ model })}
             />
           </Field>
@@ -274,6 +286,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
             type="password"
             placeholder="sk-…"
             autoComplete="off"
+            data-llm-field="apiKey"
             onValueChange={(apiKey) => patchLlm({ apiKey })}
           />
         </Field>
@@ -300,6 +313,7 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
         <div className="ldlg-actions">
           <Button
             variant="outline"
+            data-llm-test="1"
             onClick={runTest}
             disabled={testing || !isLlmReady({ ...llm, provider: 'openai' })}
           >

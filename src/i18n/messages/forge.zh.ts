@@ -8,6 +8,7 @@ export const forgeZh = {
   entry: '生成',
   a11y: {
     dialog: '造幕台',
+    steps: '五段流程',
     cards: '幕卡列表',
     stage: '台面',
     pulse: '进度',
@@ -22,6 +23,14 @@ export const forgeZh = {
     done: '{count} 幕完成',
     error: '第 {n} 幕需重铸',
     stage: '{stage}',
+  },
+  /* v0.3.0：HUD 五段流程线（只做读数，不导航） */
+  steps: {
+    seed: '输入',
+    deal: '大纲',
+    cast: '生成',
+    gate: '检查',
+    premiere: '播放',
   },
   seed: {
     placeholder: '你想讲什么？',
@@ -62,8 +71,8 @@ export const forgeZh = {
     add: '加一幕',
     remove: '删幕',
     /* v0.2.5 §5：逐幕编辑（标题 = 卡内联，要点 = brief 编辑区） */
-    brief: '要点',
-    briefHint: '讲什么',
+    brief: '这一幕',
+    briefHint: '想讲什么？',
     theme: '预设',
   },
   card: {

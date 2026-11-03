@@ -6,6 +6,7 @@ export const forgeEn = {
   entry: 'Generate',
   a11y: {
     dialog: 'Forge',
+    steps: 'Five-stage flow',
     cards: 'Slide cards',
     stage: 'Stage',
     pulse: 'Progress',
@@ -20,6 +21,14 @@ export const forgeEn = {
     done: '{count} slides done',
     error: 'Slide {n} needs retry',
     stage: '{stage}',
+  },
+  /* v0.3.0: HUD five-step flow line (read-out only, not navigation) */
+  steps: {
+    seed: 'Input',
+    deal: 'Outline',
+    cast: 'Build',
+    gate: 'Check',
+    premiere: 'Play',
   },
   seed: {
     placeholder: 'Your topic',
@@ -60,8 +69,8 @@ export const forgeEn = {
     add: 'Add',
     remove: 'Remove',
     /* v0.2.5 §5: per-slide editing */
-    brief: 'Brief',
-    briefHint: 'What it says',
+    brief: 'Note',
+    briefHint: 'What should it say?',
     theme: 'Theme',
   },
   card: {
