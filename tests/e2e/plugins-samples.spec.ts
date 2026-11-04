@@ -76,13 +76,19 @@ test('E-40-06 BrandGuard：应用品牌 kit → lint 品牌 issue → 导出预�
   await expect(brand.locator('[data-brand-panel]').first()).toBeVisible({ timeout: 20_000 })
   await expect(brand.locator('[data-brand-kit-state]').first()).toHaveAttribute('data-brand-kit-state', /ready|empty|corrupt/)
 
-  // 空态：先创建默认品牌 kit（04 §3.5 空态引导，samples 实现），再应用
+  // 空态：先创建默认品牌 kit（04 §3.5 空态引导，samples 实现），再应用。
+  // `create-kit` 是幂等的「写入默认 kit」；慢 runner 上偶发首次点击没被帧内 handler 吃到
+  // （2026-11-04 CI 首跑：state 20s 停在 empty，本机 3 连跑不复现），这里最多补点 3 次。
+  const brandState = brand.locator('[data-brand-kit-state]').first()
   const createKit = brand.locator('[data-brand-action="create-kit"]').first()
-  if (await createKit.count()) {
+  for (let attempt = 0; attempt < 3 && (await createKit.count()) > 0; attempt += 1) {
     await createKit.click()
-    await expect(brand.locator('[data-brand-kit-state]').first()).toHaveAttribute('data-brand-kit-state', /ready|saving/, {
-      timeout: 20_000,
-    })
+    try {
+      await expect(brandState).toHaveAttribute('data-brand-kit-state', /ready|saving/, { timeout: 5_000 })
+      break
+    } catch (err) {
+      if (attempt === 2) throw err
+    }
   }
 
   // 应用品牌 kit（默认 kit）→ 品牌主题/令牌生效
