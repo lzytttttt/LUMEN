@@ -7,7 +7,8 @@
  *
  * 基线文件：`scripts/baseline-v030.json`（v0.3.0 实测首屏基线，随仓库提交，
  *           CI 可用；plan/ 只在本地保留、不入库，故不再依赖 plan 内文件）。
- *           0.4.0 当前数据由脚本写到 plan/v0.4.0/assets/budget-current.json（本地证据）。
+ *           0.4.0 当前数据由脚本写到 plan/v0.4.0/assets/budget-current.json（本地证据；
+ *           父目录不存在时自动创建，CI 上同一路径落在工作区、不随仓库发布）。
  *
  * 判据（G3，Lead 2026-11-03 裁定）：
  *  a) 首屏 gzip 增量 ≤ 45 KB（十进制 45,000 B，硬上限 = 基线 + 45,000）；
@@ -23,7 +24,7 @@
  * 用法：node scripts/budget-check.mjs [--dist dist] [--baseline path] [--out path]
  */
 import { createHash } from 'node:crypto'
-import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import { fileURLToPath } from 'node:url'
@@ -274,6 +275,8 @@ const report = {
   gates: results,
   pass: results.every((row) => row.pass),
 }
+// 证据目录可能不存在（CI 上没有 plan/，--out 也可能指向新目录）：先建父目录再落盘。
+mkdirSync(dirname(OUT_PATH), { recursive: true })
 writeFileSync(OUT_PATH, `${JSON.stringify(report, null, 2)}\n`)
 
 /* ------------------------------ 5) 汇总输出 ------------------------------ */
