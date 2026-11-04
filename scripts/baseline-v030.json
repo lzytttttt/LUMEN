@@ -1,0 +1,61 @@
+{
+    "sampledAt":  "2026-11-03T08:01:54.482Z",
+    "scope":  "v0.3.0（07ed71e）实测首屏基线（G3 对拍用；plan/ 不入库，故在仓库内保留一份最小基线）",
+    "html":  {
+                 "file":  "index.html",
+                 "raw":  1563,
+                 "gzip":  771
+             },
+    "firstScreenGzip":  307963,
+    "firstScreenRaw":  1004327,
+    "firstScreenAssets":  [
+                              {
+                                  "kind":  "script",
+                                  "file":  "assets/main-BWFtdhDj.js",
+                                  "raw":  505960,
+                                  "gzip":  156078
+                              },
+                              {
+                                  "kind":  "modulepreload",
+                                  "file":  "assets/vendor-react-7pWsd406.js",
+                                  "raw":  192492,
+                                  "gzip":  60214
+                              },
+                              {
+                                  "kind":  "modulepreload",
+                                  "file":  "assets/vendor-state-gs8qk6n0.js",
+                                  "raw":  13561,
+                                  "gzip":  5423
+                              },
+                              {
+                                  "kind":  "modulepreload",
+                                  "file":  "assets/vendor-zod-D-jHu_Yy.js",
+                                  "raw":  55232,
+                                  "gzip":  12625
+                              },
+                              {
+                                  "kind":  "modulepreload",
+                                  "file":  "assets/base-BmvSv0f_.js",
+                                  "raw":  81414,
+                                  "gzip":  31586
+                              },
+                              {
+                                  "kind":  "modulepreload",
+                                  "file":  "assets/vendor-B2lj0We7.js",
+                                  "raw":  67057,
+                                  "gzip":  25499
+                              },
+                              {
+                                  "kind":  "stylesheet",
+                                  "file":  "assets/base-7OpWnSXl.css",
+                                  "raw":  3753,
+                                  "gzip":  1540
+                              },
+                              {
+                                  "kind":  "stylesheet",
+                                  "file":  "assets/main-CNvyFiNT.css",
+                                  "raw":  83295,
+                                  "gzip":  14227
+                              }
+                          ]
+}

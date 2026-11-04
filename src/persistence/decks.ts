@@ -67,5 +67,6 @@ export async function loadSettings(): Promise<SettingsSnapshot> {
     ...DEFAULT_SETTINGS,
     ...raw,
     llm: { ...DEFAULT_SETTINGS.llm, ...(raw.llm ?? {}) },
+    plugins: { ...DEFAULT_SETTINGS.plugins, ...(raw.plugins ?? {}) },
   }
 }

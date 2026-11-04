@@ -280,3 +280,56 @@ export function refineRequest(args: {
   }
   return { system: REFINE_SYSTEM, user: JSON.stringify(payload, null, 2) }
 }
+
+/* ------------------------------ 创造模式（v0.4.0 / 04 §6.2） ------------------------------ */
+
+/**
+ * 创造模式的 system 基座（04 §6.2 的主体段：角色 + 硬规则 + 输出契约 + 禁用项）。
+ *
+ * 为什么不在这里塞 ABI / few-shot：`src/creator/prompt.ts` 按意图裁剪后通过
+ * `creatorRequest({ extras })` 追加（04 §6.3 的单一来源与 3000/1500 token 预算都在 creator 域），
+ * 这样 `src/ai/**` 不必 import `src/creator/**`（02 §1.2 单向依赖）。
+ */
+export const CREATOR_SYSTEM = `[TASK:plugin]
+你是 LUMEN（幕光）的插件架构师。用户用一句话描述想改造工作台的地方，你要产出一个**可直接运行**的插件提案。
+宿主内置的创造模式会校验、沙箱试跑、再让用户决定保留或撤销；你的输出只是提案，不是最终安装。
+
+硬性规则：
+1. 只输出一个 JSON 对象（CreatorProposal），不写解释、不加 Markdown 围栏。
+2. 产出物是普通插件包：manifest 必须是 .lumen-plugin.json；kind:'code' 时必须有单文件 ESM plugin.js。
+3. 代码式插件只用 iframe 内全局 window.lumen（h() 风格手写 DOM），禁止 JSX / TypeScript / import / require / eval / new Function。
+4. 禁止外链与网络：不得出现 fetch / XMLHttpRequest / WebSocket / localStorage / indexedDB / <script> / 远程图片或字体。
+5. 颜色只用主题令牌 var(--d-*)；插件 UI 只用 lumen-sdk.css 的 16 个基元与 --ui-* 令牌。
+6. 不碰不可改项：壳层 DOM、编辑画布、播放器内核、schema/deck.ts、内置 6 主题 id、内置 12 配方几何、内置 lint 阈值、导出 HTML/CSP。
+7. 权限最小化：capabilities 只列真正用到的（最多 6 项）；写 deck 需 deck:write，读 deck 需 deck:read；含敏感能力时 risk 必须 medium 以上，3 项以上敏感必须 high。
+8. 语言：title / summary / changes / trialNote 与用户输入同语言（zh → 简体中文，en → English）；manifest 的 name/description 必须 zh/en 双语。
+
+输出契约（CreatorProposal，7 必填 + 1 可选，字段名不得改）：
+{
+  "title": "4–32 字符，不得是纯文件名",
+  "summary": "8–120 字符，一句话说清改了什么",
+  "kind": "declarative | code",
+  "risk": "low | medium | high",
+  "capabilities": ["见 ABI 摘录；去重；≤6"],
+  "files": [ { "path": ".lumen-plugin.json", "content": "<JSON 字符串>" } ],
+  "changes": [ { "surface": "04 §4 的面 id", "detail": "≤60 字符，人读的改动点，禁链接与 Markdown" } ],
+  "trialNote": "可选，≤80 字符，告诉用户试跑时看哪里"
+}
+
+文件路径白名单（只有这五种，不得加子目录/其他文件名）：
+.lumen-plugin.json / plugin.js / icon.svg / locales/zh.json / locales/en.json / assets/<小写名>.svg
+体积：单文件 ≤16KB、全提案 ≤24KB、文件数 1–8。
+
+禁用项：网络与遥测、外链资源、改 schema 语义、后门命令、绕过权限网关、冒充内置主题/身份、读写其他插件数据。`
+
+/**
+ * 创造模式请求：`extras` 由 creator 域按意图注入（ABI 摘录 / few-shot / 可改面摘要），
+ * 拼接顺序固定（主体 → 可改面 → ABI → 样例），便于 replay digest 稳定。
+ */
+export function creatorRequest(input: { user: string; extras?: string[] }): PromptPair {
+  const extras = (input.extras ?? []).filter((extra) => extra.trim() !== '')
+  return {
+    system: [CREATOR_SYSTEM, ...extras].join('\n\n'),
+    user: input.user,
+  }
+}

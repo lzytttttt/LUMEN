@@ -1,0 +1,207 @@
+{
+  "deckId": "deck-focusdesk-fixture",
+  "title": "2026 年度复盘 · Annual Review",
+  "lang": "zh",
+  "themeId": "noir",
+  "revision": 7,
+  "slides": [
+    {
+      "id": "s01",
+      "name": "开场1",
+      "recipe": "cover",
+      "blockCount": 3,
+      "textChars": 90,
+      "readingSeconds": 21.43
+    },
+    {
+      "id": "s02",
+      "name": "为什么2",
+      "recipe": "statement",
+      "blockCount": 4,
+      "textChars": 101,
+      "readingSeconds": 24.05
+    },
+    {
+      "id": "s03",
+      "name": "The plan 3",
+      "recipe": "split",
+      "blockCount": 5,
+      "textChars": 198,
+      "readingSeconds": 16.54
+    },
+    {
+      "id": "s04",
+      "name": "证据4",
+      "recipe": "data",
+      "blockCount": 6,
+      "textChars": 123,
+      "readingSeconds": 29.29
+    },
+    {
+      "id": "s05",
+      "name": "路线5",
+      "recipe": "cover",
+      "blockCount": 3,
+      "textChars": 134,
+      "readingSeconds": 31.9
+    },
+    {
+      "id": "s06",
+      "name": "Risks 6",
+      "recipe": "statement",
+      "blockCount": 4,
+      "textChars": 225,
+      "readingSeconds": 18.85
+    },
+    {
+      "id": "s07",
+      "name": "结论7",
+      "recipe": "split",
+      "blockCount": 5,
+      "textChars": 156,
+      "readingSeconds": 37.14
+    },
+    {
+      "id": "s08",
+      "name": "复盘8",
+      "recipe": "data",
+      "blockCount": 6,
+      "textChars": 167,
+      "readingSeconds": 39.76
+    },
+    {
+      "id": "s09",
+      "name": "Opening 9",
+      "recipe": "cover",
+      "blockCount": 3,
+      "textChars": 252,
+      "readingSeconds": 21.15
+    },
+    {
+      "id": "s10",
+      "name": "为什么10",
+      "recipe": "statement",
+      "blockCount": 4,
+      "textChars": 189,
+      "readingSeconds": 45
+    },
+    {
+      "id": "s11",
+      "name": "方案11",
+      "recipe": "split",
+      "blockCount": 5,
+      "textChars": 200,
+      "readingSeconds": 47.62
+    },
+    {
+      "id": "s12",
+      "name": "Evidence 12",
+      "recipe": "data",
+      "blockCount": 6,
+      "textChars": 279,
+      "readingSeconds": 23.46
+    },
+    {
+      "id": "s13",
+      "name": "路线13",
+      "recipe": "cover",
+      "blockCount": 3,
+      "textChars": 222,
+      "readingSeconds": 52.86
+    },
+    {
+      "id": "s14",
+      "name": "风险14",
+      "recipe": "statement",
+      "blockCount": 4,
+      "textChars": 233,
+      "readingSeconds": 55.48
+    },
+    {
+      "id": "s15",
+      "name": "Conclusion 15",
+      "recipe": "split",
+      "blockCount": 5,
+      "textChars": 306,
+      "readingSeconds": 25.77
+    },
+    {
+      "id": "s16",
+      "name": "复盘16",
+      "recipe": "data",
+      "blockCount": 6,
+      "textChars": 255,
+      "readingSeconds": 60.71
+    },
+    {
+      "id": "s17",
+      "name": "开场17",
+      "recipe": "cover",
+      "blockCount": 3,
+      "textChars": 266,
+      "readingSeconds": 63.33
+    },
+    {
+      "id": "s18",
+      "name": "Why now 18",
+      "recipe": "statement",
+      "blockCount": 4,
+      "textChars": 333,
+      "readingSeconds": 27.69
+    },
+    {
+      "id": "s19",
+      "name": "方案19",
+      "recipe": "split",
+      "blockCount": 5,
+      "textChars": 288,
+      "readingSeconds": 68.57
+    },
+    {
+      "id": "s20",
+      "name": "证据20",
+      "recipe": "data",
+      "blockCount": 6,
+      "textChars": 299,
+      "readingSeconds": 71.19
+    },
+    {
+      "id": "s21",
+      "name": "Roadmap 21",
+      "recipe": "cover",
+      "blockCount": 3,
+      "textChars": 360,
+      "readingSeconds": 30
+    },
+    {
+      "id": "s22",
+      "name": "风险22",
+      "recipe": "statement",
+      "blockCount": 4,
+      "textChars": 321,
+      "readingSeconds": 76.43
+    },
+    {
+      "id": "s23",
+      "name": "结论23",
+      "recipe": "split",
+      "blockCount": 5,
+      "textChars": 332,
+      "readingSeconds": 79.05
+    },
+    {
+      "id": "s24",
+      "name": "Retro 24",
+      "recipe": "data",
+      "blockCount": 6,
+      "textChars": 387,
+      "readingSeconds": 32.31
+    }
+  ],
+  "activeSlideId": "s04",
+  "lint": {
+    "error": 1,
+    "warn": 4,
+    "info": 2
+  }
+}

@@ -39,9 +39,15 @@ import {
   TextInput,
 } from '@/ui/primitives'
 import { Modal } from '@/ui/primitives/Modal'
+import { SettingsPluginsSection, useSafeMode, useStorageMode } from '@/plugins/public'
+import { openPluginManager } from './pluginUiStore'
+import './plugins.css'
+
+type SettingsSection = 'general' | 'plugins'
 
 export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const t = useT()
+  const [section, setSection] = useState<SettingsSection>('general')
   const lang = useSettingsStore((s) => s.lang)
   const setLang = useSettingsStore((s) => s.setLang)
   const uiTheme = useSettingsStore((s) => s.uiTheme)
@@ -136,6 +142,32 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
         </>
       }
     >
+      {/* 分组导航（02 §6.5：设置弹窗内新增「插件」分组，声明式设置页 + iframe 设置页都落这里） */}
+      <div className="ldlg-tabs" role="tablist" aria-label={t('common.label.settings')}>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={section === 'general'}
+          className={section === 'general' ? 'ldlg-tab ldlg-tab--active' : 'ldlg-tab'}
+          data-settings-section="general"
+          onClick={() => setSection('general')}
+        >
+          {t('plugin.settings.tabGeneral')}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={section === 'plugins'}
+          className={section === 'plugins' ? 'ldlg-tab ldlg-tab--active' : 'ldlg-tab'}
+          data-settings-section="plugins"
+          onClick={() => setSection('plugins')}
+        >
+          {t('plugin.settingsGroup')}
+        </button>
+      </div>
+
+      {section === 'general' ? (
+        <>
       <Section title={t('editor.dialog.appearance')}>
         <Field label={t('common.label.uiLanguage')}>
           <Segmented
@@ -423,6 +455,58 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
           {t('common.action.learnMore')}
         </Button>
       </div>
+        </>
+      ) : (
+        <PluginSettingsGroup />
+      )}
     </Modal>
+  )
+}
+
+/**
+ * 设置弹窗「插件」分组（settings.page 插槽的宿主 + 安全模式开关 + 管理入口）。
+ * 声明式设置页由 plugin-core 的 `SettingsPluginsSection` 原生渲染（02 §6.5）；
+ * 这里只补宿主级开关：安全模式（03 §5.3）、内存降级提示（02 §7.6）、管理入口。
+ */
+function PluginSettingsGroup() {
+  const t = useT()
+  const safeMode = useSafeMode()
+  const storageMode = useStorageMode()
+  const plugins = useSettingsStore((s) => s.plugins)
+  const patchPlugins = useSettingsStore((s) => s.patchPlugins)
+
+  return (
+    <>
+      <Section title={t('plugin.settingsGroup')} actions={<span className="insp-char">PLUG</span>}>
+        {storageMode === 'memory' ? (
+          <div className="plug-memory-banner" data-storage-mode="memory" role="status">
+            <span>{t('plugin.warn.memoryMode')}</span>
+          </div>
+        ) : null}
+        <Field label={t('plugin.settings.safeMode')} hint={t('plugin.settings.safeModeHint')}>
+          <Switch
+            checked={safeMode || plugins.safeMode}
+            label={t('plugin.settings.safeMode')}
+            onCheckedChange={(next) => patchPlugins({ safeMode: next })}
+          />
+        </Field>
+        <div className="ldlg-actions">
+          <Button
+            variant="outline"
+            data-plugin-settings-manage="1"
+            onClick={() => {
+              // 先关设置再开管理弹窗：避免两个 Modal 叠在同一层级抢 Esc（06 §6.1）。
+              useUiStore.getState().closeDialog()
+              openPluginManager()
+            }}
+          >
+            {t('plugin.settings.manage')}
+          </Button>
+        </div>
+      </Section>
+      <Section title={t('plugin.settings.entries')}>
+        <SettingsPluginsSection />
+      </Section>
+    </>
   )
 }

@@ -10,7 +10,7 @@
  * - 每个 AI 块都带 provenance 与 aiSnapshot（用于「还原 AI 版本」）。
  */
 import { z } from 'zod'
-import type { Deck, Outline, OutlineSlide, RecipeId, Slide, Theme } from '@/schema/deck'
+import type { BuiltinRecipeId, Deck, Outline, OutlineSlide, RecipeId, Slide, Theme } from '@/schema/deck'
 import { deckSchema, outlineSchema } from '@/schema/deck'
 import { makeSlide } from '@/schema/factory'
 import { newId, shortHash } from '@/schema/ids'
@@ -157,7 +157,7 @@ export async function composeOutline(
 
 /* ------------------------------- 逐幕成稿 ------------------------------- */
 
-const TRANSITIONS: Record<RecipeId, Slide['transition']['kind']> = {
+const TRANSITIONS: Record<BuiltinRecipeId, Slide['transition']['kind']> = {
   cover: 'fade',
   statement: 'fade',
   split: 'push',
@@ -218,7 +218,7 @@ function slideIssues(slide: Slide, outline: Outline, themeId: string): { errors:
 }
 
 /** 兜底配方：内容多就卡片，内容少就主张页——两种都极难溢出。 */
-function fallbackRecipeFor(content: RecipeContent): RecipeId {
+function fallbackRecipeFor(content: RecipeContent): BuiltinRecipeId {
   return (content.points ?? []).length >= 3 ? 'grid3' : 'statement'
 }
 
@@ -227,7 +227,7 @@ function makeSlideFor(seed: OutlineSlide, content: RecipeContent, blocks: Slide[
     name: seed.headline.replace(/\n/g, ' ').slice(0, 60),
     recipe: recipeId,
     notes: content.notes,
-    transition: { kind: TRANSITIONS[recipeId] ?? 'fade', ms: 420 },
+    transition: { kind: TRANSITIONS[recipeId as BuiltinRecipeId] ?? 'fade', ms: 420 },
     blocks,
   })
 }

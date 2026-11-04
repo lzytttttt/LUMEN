@@ -1,0 +1,9 @@
+{
+  "v": 1,
+  "primary": "not-a-colour",
+  "secondary": 42,
+  "tagline": { "oops": true },
+  "preferredTheme": "brand-nope",
+  "logoAssetId": ["bad"],
+  "updatedAt": "yesterday"
+}

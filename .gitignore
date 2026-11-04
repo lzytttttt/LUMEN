@@ -5,6 +5,7 @@ public/player/
 public/player.bak/
 harness/
 .tmp/
+.tmpbuild/
 *.tmpdir/
 
 # 测试与截图产物
@@ -13,6 +14,8 @@ playwright-report/
 *.log
 # 模拟 LLM 实战的运行日志是证据，随 simulation/ 一起入库
 !simulation/v0.3.0/results/run.log
+# v0.4.0 起的模拟报告只在本地留证，不入库（v0.3.0 的报告是已入库的例外）
+simulation/v0.4.0/results/
 
 # 本地环境与密钥：端点与密钥只存在浏览器里，但本地调试脚本可能落盘
 .env

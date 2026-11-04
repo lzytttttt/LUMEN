@@ -1,0 +1,87 @@
+{
+  "id": "com.lumen.samples.focusdesk",
+  "name": { "zh": "专注台", "en": "FocusDesk" },
+  "version": "0.1.0",
+  "apiVersion": "1.0",
+  "minAppVersion": "0.4.0",
+  "kind": "code",
+  "entry": "plugin.js",
+  "trust": "builtin",
+  "author": { "name": "LUMEN", "url": "https://github.com/lzytttttt/LUMEN" },
+  "description": {
+    "zh": "三个布局预设、一条写作看板、一个 Zen HUD；只读演示，不改一个字。",
+    "en": "Three layout presets, a writing board and a Zen HUD — read-only, never edits your deck."
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "icon": "icon.svg",
+  "capabilities": ["ui:slot", "ui:command", "ui:keymap", "ui:layout", "i18n:contribute", "storage", "deck:read"],
+  "contributes": {
+    "layoutPresets": [
+      {
+        "id": "focus",
+        "name": { "zh": "专注", "en": "Focus" },
+        "apply": { "hideRail": true, "hideInspector": true, "showGrid": false, "density": "compact" }
+      },
+      {
+        "id": "review",
+        "name": { "zh": "检查", "en": "Review" },
+        "apply": {
+          "railWidth": 216,
+          "panelWidth": 380,
+          "rightMode": "inspector",
+          "inspectorTab": "lint",
+          "dockHeight": 240,
+          "showGrid": false
+        }
+      },
+      {
+        "id": "default",
+        "name": { "zh": "默认", "en": "Default" },
+        "apply": {
+          "railWidth": 216,
+          "panelWidth": 340,
+          "leftTab": "slides",
+          "inspectorTab": "props",
+          "dockHeight": 240,
+          "hideRail": false,
+          "hideInspector": false,
+          "showGrid": false
+        }
+      }
+    ],
+    "keymap": [
+      { "combo": "alt+1", "commandId": "layout-focus" },
+      { "combo": "alt+2", "commandId": "layout-review" },
+      { "combo": "alt+3", "commandId": "layout-default" },
+      { "combo": "alt+z", "commandId": "zen-toggle" },
+      { "combo": "alt+d", "commandId": "dock-toggle" }
+    ],
+    "slots": [
+      {
+        "id": "rail-entry",
+        "slot": "workspace.rail.footer",
+        "title": { "zh": "写作看板", "en": "Writing board" },
+        "kind": "inline",
+        "order": 10,
+        "open": { "slot": "workspace.dock", "contributionId": "board" }
+      },
+      {
+        "id": "board",
+        "slot": "workspace.dock",
+        "title": { "zh": "写作看板", "en": "Writing board" },
+        "icon": "icon.svg",
+        "kind": "panel",
+        "size": { "h": 240 },
+        "order": 10
+      },
+      {
+        "id": "zen",
+        "slot": "workspace.overlay",
+        "title": { "zh": "Zen HUD", "en": "Zen HUD" },
+        "kind": "overlay",
+        "size": { "w": 280, "h": 120 },
+        "order": 10
+      }
+    ]
+  }
+}

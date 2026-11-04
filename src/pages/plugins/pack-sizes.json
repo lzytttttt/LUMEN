@@ -1,0 +1,24 @@
+{
+  "$comment": "由 scripts/pack-plugins.mjs 生成，勿手改；插件页据此显示体积与版本。",
+  "formatVersion": 1,
+  "samples": {
+    "brandguard": {
+      "version": "0.1.0",
+      "envelopeBytes": 74784,
+      "entryBytes": 49764,
+      "integrity": "sha256:a26dcbc5c0480e804a32853609a0341eb485bc63fbefe88f4ba819e94964ef1f"
+    },
+    "chartkit": {
+      "version": "0.1.0",
+      "envelopeBytes": 71350,
+      "entryBytes": 54846,
+      "integrity": "sha256:91830e431a903535613ba060888c3ffecc88b2b3e1e995c040cadf1f89f6cbeb"
+    },
+    "focusdesk": {
+      "version": "0.1.0",
+      "envelopeBytes": 40164,
+      "entryBytes": 28504,
+      "integrity": "sha256:a64f1b476c7586ff5a66bc9fc0fd78ef68fbf64630b8f049820005ca5b937d82"
+    }
+  }
+}

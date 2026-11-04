@@ -110,6 +110,36 @@ export const commonZh = {
     restore: '还原 AI 版本',
     dirty: '此块已被手工修改',
   },
+  plugin: {
+    source: {
+      builtin: '内置',
+      file: '本地文件',
+      url: '来自链接',
+      draft: '草稿',
+    },
+    action: {
+      install: '安装',
+      enable: '启用',
+      disable: '停用',
+      uninstall: '卸载',
+      retry: '重试',
+      keepData: '保留数据',
+      revoke: '撤销授权',
+      grant: '授权',
+    },
+    badge: {
+      sensitive: '敏感',
+      builtin: '内置',
+      plugin: '插件',
+    },
+    label: {
+      permission: '权限',
+      permissions: '权限',
+      version: '版本',
+      author: '作者',
+      source: '来源',
+    },
+  },
   hint: {
     commandPalette: '按 {shortcut} 打开命令面板',
     dragDrop: '把图片或 .svg 文件拖进画布即可插入',

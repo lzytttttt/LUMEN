@@ -23,6 +23,13 @@
 3. 在 README 顶部注明“This is a fork of LUMEN — https://github.com/lzytttttt/LUMEN”；
 4. 不要继续使用 `lumen-*` 作为包名/域名造成来源混淆（内部构建产物名不受此限）。
 
+## 插件与第三方扩展（v0.4.0）
+
+- 第三方插件的**显示名不得以 `LUMEN` / `幕光` 开头**（非 `trust:'builtin'` 的包由宿主校验直接拒绝，见 `plan/v0.4.0/02` §2.3 `E-MAN-01`），也不得使用 LUMEN 的 Logo 作为插件图标；
+- 允许事实性描述：「LUMEN 插件」「兼容 LUMEN 0.4 的 ABI」；
+- `com.lumen.*` 插件 id 与 `trust:'builtin'` 仅随本 App 发布的官方插件可用，第三方伪造会被剥离并记审计（`E-MAN-10`）；
+- 官方三款样板插件（BrandGuard / ChartKit / FocusDesk）的 `com.lumen.samples.*` id 与品牌文案归作者所有，可参考实现，但不得原样改名后作为自己的产品发布。
+
 ## 联系
 
 商标授权、联合品牌、商业合作：**lzytttttt@gmail.com**（标题注明 `LUMEN Trademark`）。

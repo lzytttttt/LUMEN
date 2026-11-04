@@ -1,0 +1,181 @@
+{
+  "format": "lumen-plugin",
+  "formatVersion": 1,
+  "createdAt": 1717200000000,
+  "manifest": {
+    "id": "com.qatools.fx08",
+    "name": {
+      "zh": "契约夹具",
+      "en": "Contract Fixture"
+    },
+    "version": "0.1.0",
+    "apiVersion": "1.0",
+    "minAppVersion": "0.4.0",
+    "kind": "declarative",
+    "author": {
+      "name": "QA Fixtures"
+    },
+    "description": {
+      "zh": "仅用于 LUMEN 插件契约测试的夹具包。",
+      "en": "Fixture package for LUMEN plugin contract tests."
+    },
+    "license": "MIT",
+    "capabilities": [
+      "ui:command",
+      "theme:contribute",
+      "ui:layout",
+      "deck:write",
+      "library:contribute",
+      "export:hook"
+    ],
+    "contributes": {
+      "themes": [
+        {
+          "id": "cmd",
+          "name": {
+            "zh": "主题cmd",
+            "en": "Theme cmd"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        }
+      ],
+      "library": [
+        {
+          "id": "cmdmark",
+          "name": {
+            "zh": "形",
+            "en": "G"
+          },
+          "category": "geometric",
+          "viewBox": [
+            0,
+            0,
+            24,
+            24
+          ],
+          "source": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"/>"
+        }
+      ],
+      "layoutPresets": [
+        {
+          "id": "cmdlayout",
+          "name": {
+            "zh": "命令布局",
+            "en": "Command layout"
+          },
+          "apply": {
+            "dockHeight": 260
+          }
+        }
+      ],
+      "commands": [
+        {
+          "id": "apply-theme",
+          "title": {
+            "zh": "应用主题",
+            "en": "Apply theme"
+          },
+          "category": "plugin",
+          "action": {
+            "kind": "setTheme",
+            "themeId": "cmd"
+          }
+        },
+        {
+          "id": "apply-layout",
+          "title": {
+            "zh": "应用布局",
+            "en": "Apply layout"
+          },
+          "category": "plugin",
+          "action": {
+            "kind": "applyLayoutPreset",
+            "presetId": "cmdlayout"
+          }
+        },
+        {
+          "id": "insert-mark",
+          "title": {
+            "zh": "插入素材",
+            "en": "Insert mark"
+          },
+          "category": "plugin",
+          "action": {
+            "kind": "insertLibrarySvg",
+            "libraryId": "cmdmark"
+          }
+        },
+        {
+          "id": "insert-text",
+          "title": {
+            "zh": "插入文本",
+            "en": "Insert text"
+          },
+          "category": "plugin",
+          "action": {
+            "kind": "insertTextBlocks",
+            "blocks": [
+              {
+                "text": "QA",
+                "variant": "h2",
+                "x": 80,
+                "y": 120,
+                "w": 400,
+                "h": 80
+              }
+            ]
+          }
+        },
+        {
+          "id": "open-prefs",
+          "title": {
+            "zh": "打开设置",
+            "en": "Open settings"
+          },
+          "category": "plugin",
+          "action": {
+            "kind": "openSettings"
+          }
+        },
+        {
+          "id": "preflight",
+          "title": {
+            "zh": "导出预检",
+            "en": "Preflight"
+          },
+          "category": "plugin",
+          "action": {
+            "kind": "runExportPreflight"
+          }
+        },
+        {
+          "id": "say-hi",
+          "title": {
+            "zh": "打个招呼",
+            "en": "Say hi"
+          },
+          "category": "plugin",
+          "action": {
+            "kind": "toast",
+            "message": {
+              "zh": "你好",
+              "en": "Hello"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "files": {
+    "readme.md": "# QA fixture\n\n仅用于 LUMEN 插件契约测试，无外部资源。\n"
+  },
+  "integrity": "sha256:45107cab505a79e2305ce24b0355cca687fa92c2bd5ff7ef0ba5442f03927431"
+}

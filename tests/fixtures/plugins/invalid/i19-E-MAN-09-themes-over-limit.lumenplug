@@ -1,0 +1,147 @@
+{
+  "format": "lumen-plugin",
+  "formatVersion": 1,
+  "createdAt": 1717200000000,
+  "manifest": {
+    "id": "com.qatools.fx19",
+    "name": {
+      "zh": "契约夹具",
+      "en": "Contract Fixture"
+    },
+    "version": "0.1.0",
+    "apiVersion": "1.0",
+    "minAppVersion": "0.4.0",
+    "kind": "declarative",
+    "author": {
+      "name": "QA Fixtures"
+    },
+    "description": {
+      "zh": "仅用于 LUMEN 插件契约测试的夹具包。",
+      "en": "Fixture package for LUMEN plugin contract tests."
+    },
+    "license": "MIT",
+    "capabilities": [
+      "theme:contribute"
+    ],
+    "contributes": {
+      "themes": [
+        {
+          "id": "over1",
+          "name": {
+            "zh": "主题over1",
+            "en": "Theme over1"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        },
+        {
+          "id": "over2",
+          "name": {
+            "zh": "主题over2",
+            "en": "Theme over2"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        },
+        {
+          "id": "over3",
+          "name": {
+            "zh": "主题over3",
+            "en": "Theme over3"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        },
+        {
+          "id": "over4",
+          "name": {
+            "zh": "主题over4",
+            "en": "Theme over4"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        },
+        {
+          "id": "over5",
+          "name": {
+            "zh": "主题over5",
+            "en": "Theme over5"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        },
+        {
+          "id": "over6",
+          "name": {
+            "zh": "主题over6",
+            "en": "Theme over6"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        },
+        {
+          "id": "over7",
+          "name": {
+            "zh": "主题over7",
+            "en": "Theme over7"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        }
+      ]
+    }
+  },
+  "files": {
+    "readme.md": "# QA fixture\n\n仅用于 LUMEN 插件契约测试，无外部资源。\n"
+  },
+  "integrity": "sha256:9d6154efccf11567a0ab5487ea6a06ca5274bdf2f3e183ee2eb7dbb11d0eafdb"
+}

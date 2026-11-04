@@ -1,0 +1,23 @@
+{
+  "id": "com.example.bad-crash",
+  "name": { "zh": "坏插件崩溃", "en": "Bad Crash" },
+  "version": "0.1.0",
+  "apiVersion": "1.0",
+  "minAppVersion": "0.4.0",
+  "kind": "code",
+  "entry": "plugin.js",
+  "author": { "name": "LUMEN Security" },
+  "description": { "zh": "红队夹具：启动即抛错，验证隔离（S-40-11 / E-40-10）", "en": "Red team fixture: throws on boot to test quarantine" },
+  "license": "MIT",
+  "capabilities": ["ui:slot"],
+  "contributes": {
+    "slots": [
+      {
+        "id": "crash",
+        "slot": "workspace.dock",
+        "title": { "zh": "崩溃", "en": "Crash" },
+        "kind": "panel"
+      }
+    ]
+  }
+}

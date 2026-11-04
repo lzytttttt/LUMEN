@@ -71,12 +71,66 @@ export const DEFAULT_FORGE: ForgeSettings = {
   gameplay: 'min',
 }
 
+/* ------------------------------ 插件设置段 ------------------------------ */
+
+/**
+ * 插件设置段（v0.4.0，plan 02 §7.4）。
+ * `layoutOverride` 的字段形状在 settings 侧先做结构定义（插件贡献类型引用它），
+ * 只允许 02 §6.8 封闭列出的 shell 维度。
+ */
+export interface PluginLayoutOverride {
+  railWidth?: number
+  panelWidth?: number
+  hideRail?: boolean
+  hideInspector?: boolean
+  leftTab?: 'slides' | 'outline'
+  rightMode?: 'inspector' | 'composer'
+  dockHeight?: number
+  inspectorTab?: 'props' | 'layers' | 'motion' | 'notes' | 'theme' | 'lint'
+  showGrid?: boolean
+  density?: 'comfortable' | 'compact'
+}
+
+export interface PluginCreatorSettings {
+  /** 创造模式默认不读 deck 正文（D-40-09 / D-40-04 隐私项）。 */
+  readDeck: boolean
+  lastDraftId: string | null
+  exportFormat: 'lumenplug'
+  /** 右侧创造面板宽度，夹紧 360–560（02 §9.7 #7）。 */
+  panelWidth: number
+}
+
+export interface PluginSettings {
+  /** pluginId → 是否启用（与 plugins store 记录双写，记录是真源）。 */
+  enabled: Record<string, boolean>
+  /** 设置项开关；与 ?safe=1 / 启动按住 Shift 取 OR。 */
+  safeMode: boolean
+  /** combo → `plugin.<id>.<cmd>`（用户确认后的覆盖）。 */
+  keymapOverrides: Record<string, string>
+  layoutOverride: PluginLayoutOverride | null
+  /** 声明式/代码式设置值，按 pluginId 分组（不进 pluginData）。 */
+  values: Record<string, Record<string, unknown>>
+  creator: PluginCreatorSettings
+  auditLimit: number
+}
+
+export const DEFAULT_PLUGINS: PluginSettings = {
+  enabled: {},
+  safeMode: false,
+  keymapOverrides: {},
+  layoutOverride: null,
+  values: {},
+  creator: { readDeck: false, lastDraftId: null, exportFormat: 'lumenplug', panelWidth: 420 },
+  auditLimit: 200,
+}
+
 export interface SettingsSnapshot {
   lang: Lang
   uiTheme: UiTheme
   reducedMotion: boolean
   llm: LlmSettings
   forge: ForgeSettings
+  plugins: PluginSettings
   autoPlayMs: number
   lastDeckId: string | null
   onboarded: boolean
@@ -88,6 +142,7 @@ export const DEFAULT_SETTINGS: SettingsSnapshot = {
   reducedMotion: false,
   llm: DEFAULT_LLM,
   forge: DEFAULT_FORGE,
+  plugins: DEFAULT_PLUGINS,
   autoPlayMs: 8000,
   lastDeckId: null,
   onboarded: false,
@@ -101,6 +156,7 @@ interface SettingsState extends SettingsSnapshot {
   setReducedMotion: (v: boolean) => void
   patchLlm: (patch: Partial<LlmSettings>) => void
   patchForge: (patch: Partial<ForgeSettings>) => void
+  patchPlugins: (patch: Partial<PluginSettings>) => void
   setAutoPlayMs: (ms: number) => void
   setLastDeckId: (id: string | null) => void
   setOnboarded: (v: boolean) => void
@@ -115,6 +171,11 @@ export const useSettingsStore = create<SettingsState>((set) => ({
       ...(snapshot ?? {}),
       llm: { ...DEFAULT_LLM, ...(snapshot?.llm ?? {}) },
       forge: { ...DEFAULT_FORGE, ...(snapshot?.forge ?? {}) },
+      plugins: {
+        ...DEFAULT_PLUGINS,
+        ...(snapshot?.plugins ?? {}),
+        creator: { ...DEFAULT_PLUGINS.creator, ...(snapshot?.plugins?.creator ?? {}) },
+      },
       hydrated: true,
     })),
   setLang: (lang) => set({ lang }),
@@ -122,6 +183,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   setReducedMotion: (reducedMotion) => set({ reducedMotion }),
   patchLlm: (patch) => set((s) => ({ llm: { ...s.llm, ...patch } })),
   patchForge: (patch) => set((s) => ({ forge: { ...s.forge, ...patch } })),
+  patchPlugins: (patch) => set((s) => ({ plugins: { ...s.plugins, ...patch } })),
   setAutoPlayMs: (autoPlayMs) => set({ autoPlayMs }),
   setLastDeckId: (lastDeckId) => set({ lastDeckId }),
   setOnboarded: (onboarded) => set({ onboarded }),
@@ -134,6 +196,7 @@ export function settingsSnapshot(state: SettingsState): SettingsSnapshot {
     reducedMotion: state.reducedMotion,
     llm: state.llm,
     forge: state.forge,
+    plugins: state.plugins,
     autoPlayMs: state.autoPlayMs,
     lastDeckId: state.lastDeckId,
     onboarded: state.onboarded,

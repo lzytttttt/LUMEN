@@ -23,6 +23,7 @@ import { composeOutline } from '@/ai/compose'
 import { requestDigestOf } from '@/ai/cache'
 import { createSseParser } from '@/ai/sse'
 import { ReplayProvider, deltaChunksOf, replaySets, type ReplayFixture } from '@/ai/replay'
+import { creatorProposalSchema } from '@/creator/proposal'
 
 const FIXTURE_DIR = join(process.cwd(), 'src/fixtures/ai')
 const SET_DIR = join(FIXTURE_DIR, 'zh-normal')
@@ -51,6 +52,9 @@ const SCHEMAS: Record<ReplayFixture['task'], z.ZodTypeAny> = {
   svg: svgPayloadSchema,
   three: threePayloadSchema,
   refine: slideContentSchema,
+  // v0.4.0：创造模式的 `plugin` 任务（02 §10.2 / 04 §6.5）；zh-normal 回放集不含该任务，
+  // 这里只补 schema 完整性，保证 `Record<AiTask, …>` 与契约同宽（旧 fixture 断言不变）。
+  plugin: creatorProposalSchema,
 }
 
 /* --------------------------------- 读盘 --------------------------------- */

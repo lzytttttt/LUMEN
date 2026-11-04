@@ -1,0 +1,51 @@
+{
+  "id": "com.example.hello-theme",
+  "name": { "zh": "你好主题", "en": "Hello Theme" },
+  "version": "0.1.0",
+  "apiVersion": "1.0",
+  "minAppVersion": "0.4.0",
+  "kind": "declarative",
+  "author": { "name": "LUMEN Samples", "url": "https://example.com" },
+  "description": { "zh": "声明式主题包：新增「霓虹」主题与一条应用命令", "en": "Declarative theme package: adds a Neon theme and an apply command" },
+  "license": "MIT",
+  "icon": "icon.svg",
+  "capabilities": ["theme:contribute", "ui:command", "i18n:contribute"],
+  "contributes": {
+    "themes": [
+      {
+        "id": "neon",
+        "name": { "zh": "霓虹", "en": "Neon" },
+        "vibe": { "zh": "深空黑 · 电光青 · 品红", "en": "Deep space, cyan and magenta" },
+        "colors": {
+          "bg": "#0a0a12",
+          "fg": "#eaf2ff",
+          "muted": "#8a93b8",
+          "surface": "#141428",
+          "line": "#2d2d55",
+          "accent": "#00e5ff",
+          "accent2": "#ff2ec4"
+        },
+        "font": { "body": "system-ui, sans-serif", "display": "system-ui, sans-serif", "mono": "ui-monospace, monospace" },
+        "typeScale": 1.02,
+        "radius": 12,
+        "motion": { "ease": "cubic-bezier(.22,.9,.24,1)", "ms": 420 },
+        "glow": 0.7,
+        "elevation": "layered"
+      }
+    ],
+    "commands": [
+      {
+        "id": "apply-neon",
+        "title": { "zh": "应用霓虹主题", "en": "Apply Neon theme" },
+        "category": "plugin",
+        "action": { "kind": "setTheme", "themeId": "neon" }
+      }
+    ],
+    "i18n": [
+      {
+        "zh": { "toast.applied": "已切换到霓虹主题" },
+        "en": { "toast.applied": "Switched to the Neon theme" }
+      }
+    ]
+  }
+}

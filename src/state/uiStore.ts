@@ -6,8 +6,8 @@ import { create } from 'zustand'
 import { newId } from '@/schema/ids'
 
 export type WorkbenchMode = 'edit' | 'preview' | 'play' | 'forge'
-export type InspectorTab = 'props' | 'layers' | 'motion' | 'notes' | 'theme' | 'lint'
-export type RightPanelMode = 'inspector' | 'composer'
+export type InspectorTab = 'props' | 'layers' | 'motion' | 'notes' | 'theme' | 'lint' | `plug:${string}`
+export type RightPanelMode = 'inspector' | 'composer' | 'creator'
 export type DialogId = 'settings' | 'export' | 'shortcuts' | 'about' | 'import' | 'library' | 'open'
 
 export interface ToastItem {
@@ -33,6 +33,11 @@ interface UiState {
   railWidth: number
   panelWidth: number
   leftTab: 'slides' | 'outline'
+  /** v0.4.0 布局预设可改维度（02 §6.8 封闭集；插件卸载/恢复默认时还原）。 */
+  hideRail: boolean
+  hideInspector: boolean
+  dockHeight: number
+  density: 'comfortable' | 'compact'
   dialog: DialogId | null
   commandOpen: boolean
   toasts: ToastItem[]
@@ -49,6 +54,10 @@ interface UiState {
   setRailWidth: (w: number) => void
   setPanelWidth: (w: number) => void
   setLeftTab: (tab: 'slides' | 'outline') => void
+  setHideRail: (v: boolean) => void
+  setHideInspector: (v: boolean) => void
+  setDockHeight: (h: number) => void
+  setDensity: (d: 'comfortable' | 'compact') => void
   openDialog: (id: DialogId) => void
   closeDialog: () => void
   setCommandOpen: (open: boolean) => void
@@ -69,6 +78,10 @@ export const useUiStore = create<UiState>((set, get) => ({
   railWidth: 216,
   panelWidth: 340,
   leftTab: 'slides',
+  hideRail: false,
+  hideInspector: false,
+  dockHeight: 300,
+  density: 'comfortable',
   dialog: null,
   commandOpen: false,
   toasts: [],
@@ -85,6 +98,10 @@ export const useUiStore = create<UiState>((set, get) => ({
   setRailWidth: (railWidth) => set({ railWidth }),
   setPanelWidth: (panelWidth) => set({ panelWidth }),
   setLeftTab: (leftTab) => set({ leftTab }),
+  setHideRail: (hideRail) => set({ hideRail }),
+  setHideInspector: (hideInspector) => set({ hideInspector }),
+  setDockHeight: (dockHeight) => set({ dockHeight: Math.min(400, Math.max(240, dockHeight)) }),
+  setDensity: (density) => set({ density }),
   openDialog: (dialog) => set({ dialog }),
   closeDialog: () => set({ dialog: null }),
   setCommandOpen: (commandOpen) => set({ commandOpen }),

@@ -1,0 +1,74 @@
+{
+  "format": "lumen-plugin",
+  "formatVersion": 1,
+  "createdAt": 1717200000000,
+  "manifest": {
+    "id": "com.qatools.fx02",
+    "name": {
+      "zh": "契约夹具",
+      "en": "Contract Fixture"
+    },
+    "version": "0.1.0",
+    "apiVersion": "1.0",
+    "minAppVersion": "0.4.0",
+    "kind": "declarative",
+    "author": {
+      "name": "QA Fixtures"
+    },
+    "description": {
+      "zh": "仅用于 LUMEN 插件契约测试的夹具包。",
+      "en": "Fixture package for LUMEN plugin contract tests."
+    },
+    "license": "MIT",
+    "capabilities": [
+      "theme:contribute"
+    ],
+    "contributes": {
+      "themes": [
+        {
+          "id": "aurora-qa",
+          "name": {
+            "zh": "主题aurora-qa",
+            "en": "Theme aurora-qa"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          },
+          "vibe": {
+            "zh": "冷静的极光",
+            "en": "Calm aurora"
+          },
+          "font": {
+            "body": "system-ui, sans-serif",
+            "display": "Georgia, serif",
+            "mono": "ui-monospace, monospace"
+          },
+          "typeScale": 1.05,
+          "radius": 12,
+          "motion": {
+            "ease": "cubic-bezier(.32,.72,0,1)",
+            "ms": 380
+          },
+          "texture": {
+            "kind": "grain",
+            "opacity": 0.12
+          },
+          "glow": 0.4,
+          "elevation": "raised"
+        }
+      ]
+    },
+    "icon": "icon.svg"
+  },
+  "files": {
+    "readme.md": "# QA fixture\n\n仅用于 LUMEN 插件契约测试，无外部资源。\n",
+    "icon.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect width=\"24\" height=\"24\" rx=\"6\" fill=\"var(--d-accent)\"/></svg>"
+  },
+  "integrity": "sha256:b91026ae787613064deb9ea182b7bcbe811d19cf6f72b78fb158f2cd8e4bc24c"
+}

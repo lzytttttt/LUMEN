@@ -28,7 +28,7 @@ function newestMtime(dir) {
   return newest
 }
 
-const watched = ['src/player', 'src/render', 'src/styles', 'src/schema', 'src/themes', 'src/play', 'src/export']
+const watched = ['src/player', 'src/render', 'src/styles', 'src/schema', 'src/themes', 'src/play', 'src/export', 'src/i18n']
 let srcMtime = existsSync(path.join(root, 'vite.player.config.ts'))
   ? statSync(path.join(root, 'vite.player.config.ts')).mtimeMs
   : 0

@@ -13,7 +13,13 @@ import { slugify } from '@/schema/ids'
 import { exportProjectFile, openFilePicker, readProjectFileText } from '@/export/projectFile'
 import type { MessageKey } from '@/i18n'
 import { useT } from '@/i18n'
+import { useSettingsStore } from '@/state/settingsStore'
 import { Button, Field, Modal, Segmented, Switch } from '@/ui/primitives'
+import {
+  runPluginExportPreflight,
+  usePluginCommands,
+  type ExportPreflightOutcome,
+} from '@/plugins/public'
 import { exporterAvailable, runExporter, type ExportKind } from './exporterBridge'
 import './dialogs.css'
 
@@ -62,8 +68,10 @@ function pageList(failures: PngFailureInfo[]): string {
 
 export function ExportDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const t = useT()
+  const lang = useSettingsStore((s) => s.lang)
   const deck = useDeckStore((s) => s.deck)
   const pushToast = useUiStore((s) => s.pushToast)
+  const pluginCommands = usePluginCommands()
   const [tab, setTab] = useState<Tab>('standalone')
   const [busy, setBusy] = useState<Tab | null>(null)
   const [status, setStatus] = useState<Status | null>(null)
@@ -79,6 +87,26 @@ export function ExportDialog({ open, onClose }: { open: boolean; onClose: () => 
     setStatus(null)
     setBusy(null)
     setPngFailures([])
+  }, [open, tab])
+
+  /** 插件预检（export:hook，02 §5.3 / 06 §3.1）：只展示，不阻断导出。 */
+  const [preflight, setPreflight] = useState<ExportPreflightOutcome | null>(null)
+  const [preflightBusy, setPreflightBusy] = useState(false)
+
+  const refreshPreflight = async () => {
+    setPreflightBusy(true)
+    try {
+      setPreflight(await runPluginExportPreflight())
+    } finally {
+      setPreflightBusy(false)
+    }
+  }
+
+  useEffect(() => {
+    if (!open) return
+    if (tab === 'file') return
+    void refreshPreflight()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, tab])
 
   const fileStem = deck ? slugify(deck.title || 'lumen-deck') : 'lumen-deck'
@@ -217,6 +245,79 @@ export function ExportDialog({ open, onClose }: { open: boolean; onClose: () => 
           </button>
         ))}
       </div>
+
+      {/* 插件预检（export:hook）：info/warn 逐条 + 可选「修复」；不阻断导出（D-40-11） */}
+      {tab !== 'file' ? (
+        <div
+          className="ldlg-preflight"
+          data-plugin-preflight="1"
+          data-plugin-preflight-count={preflight?.results.length ?? 0}
+        >
+          <div className="ldlg-preflight__head">
+            <span className="ldlg-preflight__title">{t('plugin.preflight.title')}</span>
+            {preflight?.timedOut ? (
+              <span className="ldlg-status ldlg-status--warn" data-plugin-preflight-timeout="1">
+                {t('plugin.warn.exportTimeout')}
+              </span>
+            ) : null}
+            <span className="plugm__bar-spacer" />
+            <Button
+              size="sm"
+              variant="ghost"
+              data-plugin-preflight-refresh="1"
+              disabled={preflightBusy}
+              onClick={() => void refreshPreflight()}
+            >
+              {preflightBusy ? t('plugin.preflight.checking') : t('plugin.preflight.rerun')}
+            </Button>
+          </div>
+          {!preflight || preflight.results.length === 0 ? (
+            <p className="ldlg-hint">{t('plugin.preflight.empty')}</p>
+          ) : (
+            <ul className="ldlg-preflight__list">
+              {preflight.results.map((item, index) => {
+                const fixCommand = item.fix
+                  ? pluginCommands.find((command) => command.id === item.fix?.commandId)
+                  : undefined
+                const slideIndex =
+                  item.slideId && deck ? deck.slides.findIndex((slide) => slide.id === item.slideId) : -1
+                return (
+                  <li
+                    key={`${item.slideId ?? 'deck'}-${index}-${item.level}`}
+                    className={`ldlg-preflight__item ldlg-preflight__item--${item.level}`}
+                    data-plugin-preflight-item={index}
+                    data-plugin-preflight-level={item.level}
+                  >
+                    <span className="ldlg-preflight__level">
+                      {t(item.level === 'warn' ? 'plugin.preflight.warn' : 'plugin.preflight.info')}
+                    </span>
+                    <span className="ldlg-preflight__text">
+                      {item.message[lang]}
+                      {slideIndex >= 0 ? (
+                        <span className="insp-lint-where">
+                          {t('plugin.preflight.slide', { index: slideIndex + 1 })}
+                        </span>
+                      ) : null}
+                    </span>
+                    {fixCommand ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        data-plugin-preflight-fix={item.fix?.commandId}
+                        onClick={() => {
+                          void Promise.resolve(fixCommand.run()).finally(() => void refreshPreflight())
+                        }}
+                      >
+                        {t('plugin.preflight.fix')}
+                      </Button>
+                    ) : null}
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
+      ) : null}
 
       {tab === 'standalone' ? (
         <div className="ldlg-pane">

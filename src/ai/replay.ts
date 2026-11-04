@@ -1,4 +1,4 @@
-/**
+﻿/**
  * replay.ts —— `replay` 通道（`05` §12）：离线演示与 e2e 的**唯一真相**（D9）。
  *
  * 它把「网络」也变成确定性产物：产物、token 边界、帧节奏全部来自 fixture。
@@ -65,6 +65,7 @@ const EMPTY_BY_TASK: Record<ReplayTask, ReplayFixture[]> = {
   svg: [],
   three: [],
   refine: [],
+  plugin: [],
 }
 
 /** 静态打包全部 fixture（Vite/vitest 都会把 JSON 变成模块）。 */
@@ -82,7 +83,14 @@ function isReplayFixture(value: unknown): value is ReplayFixture {
   if (!Array.isArray(record.chunks) || !Array.isArray(record.delays)) return false
   if (record.chunks.length !== record.delays.length) return false
   const task = record.task
-  return task === 'outline' || task === 'slide' || task === 'svg' || task === 'three' || task === 'refine'
+  return (
+    task === 'outline' ||
+    task === 'slide' ||
+    task === 'svg' ||
+    task === 'three' ||
+    task === 'refine' ||
+    task === 'plugin'
+  )
 }
 
 let cache: Map<string, ReplaySet> | null = null
@@ -101,7 +109,7 @@ export function replaySets(): Map<string, ReplaySet> {
     const setId = segments[segments.length - 2] ?? DEFAULT_REPLAY_SET
     let set = sets.get(setId)
     if (!set) {
-      set = { id: setId, fixtures: [], byTask: { ...EMPTY_BY_TASK, outline: [], slide: [], svg: [], three: [], refine: [] } }
+      set = { id: setId, fixtures: [], byTask: { ...EMPTY_BY_TASK, outline: [], slide: [], svg: [], three: [], refine: [], plugin: [] } }
       sets.set(setId, set)
     }
     set.fixtures.push(raw)

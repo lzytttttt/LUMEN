@@ -97,19 +97,26 @@ describe('ai/streamJson', () => {
    * 预算分档：这条守的是「单遍线性扫描」的量级（1e6 字符 O(n)，不是 O(n²)），
    * 不是某一台机器的绝对毫秒数。本机（Windows，单核独占）实测 12–18ms；
    * 共享 vCPU 的 GitHub runner 首跑实测 37.8ms，按 20ms 卡会在 CI 上假红。
+   *
+   * v0.4.0 起跑 3 次取最小值：全量套件并行（单测 1000+ 例）时单次测量会被调度噪声顶高，
+   * 但 O(n²) 退化在任何一次里都会露出来——取最小值不放松判据，只去掉噪声。
    */
   const SCAN_BUDGET_MS = process.env.CI ? 120 : 20
+  const SCAN_RUNS = 3
 
-  it(`1e6 字符单遍扫描 < ${SCAN_BUDGET_MS}ms（CI 分档）`, () => {
+  it(`1e6 字符单遍扫描 < ${SCAN_BUDGET_MS}ms（CI 分档，${SCAN_RUNS} 次取最小）`, () => {
     const payload = `{"headline":"${'慢'.repeat(999_980)}"}`
     expect(payload.length).toBeGreaterThan(999_000)
-    const { streamer } = collect(['headline'])
-    const started = performance.now()
-    // 切片长度故意取质数，避免按 key 边界对齐。
-    for (let i = 0; i < payload.length; i += 997) streamer.push(payload.slice(i, i + 997))
-    streamer.end()
-    const elapsed = performance.now() - started
-    expect(elapsed).toBeLessThan(SCAN_BUDGET_MS)
+    let best = Number.POSITIVE_INFINITY
+    for (let run = 0; run < SCAN_RUNS; run += 1) {
+      const { streamer } = collect(['headline'])
+      const started = performance.now()
+      // 切片长度故意取质数，避免按 key 边界对齐。
+      for (let i = 0; i < payload.length; i += 997) streamer.push(payload.slice(i, i + 997))
+      streamer.end()
+      best = Math.min(best, performance.now() - started)
+    }
+    expect(best).toBeLessThan(SCAN_BUDGET_MS)
   })
 
   it('snapshot() 含未完成字段的最新前缀', () => {

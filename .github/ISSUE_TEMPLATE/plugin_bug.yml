@@ -1,0 +1,114 @@
+name: 插件 Bug（宿主或内置样例）
+description: 插件安装/启停/权限卡/插槽/审计/安全模式，或三款内置样例（BrandGuard / ChartKit / FocusDesk）出现异常时使用
+title: "[Plugin] "
+labels:
+  - bug
+  - plugin
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **插件是本地包，不是云端服务**：`.lumenplug` 在浏览器里安装、校验与运行，插件代码跑在 `sandbox="allow-scripts"` 的 iframe 内（无同源、无网络）。
+        先看 [README](https://github.com/lzytttttt/LUMEN/blob/main/README.md) 的「插件 / Plugins」一节与插件管理页的「权限」说明；排障第一步是 `?safe=1` 启动（禁用全部第三方插件与内置样例）。
+
+        **安全漏洞（沙箱逃逸 / 权限绕过 / RPC 伪造 / 导出注入）请勿开公开 issue**，按 [SECURITY.md](https://github.com/lzytttttt/LUMEN/blob/main/SECURITY.md) 私下报告。
+
+        **隐私提醒**：不要粘贴 API Key、模型端点账号或 `.lumenplug` 里的私有内容；诊断 JSON（设置 → 导出诊断 JSON）里只有版本/启用/错误计数，可附。
+
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: 设置 → 关于里的版本号（v0.4.0 起才有插件系统）
+      placeholder: "0.4.0"
+    validations:
+      required: true
+
+  - type: input
+    id: plugin
+    attributes:
+      label: 出问题的插件
+      description: manifest id（格式 `com.example.foo`）+ 名称；内置样例写英文名即可
+      placeholder: "com.lumen.samples.chartkit（数据画报）"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: source
+    attributes:
+      label: 插件来源
+      options:
+        - 内置样例（com.lumen.samples.*，从插件页安装）
+        - 本地 .lumenplug 文件（拖拽 / 文件选择）
+        - URL 安装
+        - 创造模式生成并保存的草稿/插件
+    validations:
+      required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: 出问题的环节
+      options:
+        - 安装（包解析 / 完整性 / 清单校验）
+        - 权限卡与授权（能力勾选 / 二次确认 / 撤销）
+        - 启用 / 停用 / 卸载
+        - 插槽渲染（顶栏 / 幕栏 / 页签 / 底部托盘 / 画布浮层 / 弹窗 / 播放浮层）
+        - 插件面板或对话框内部
+        - 命令面板 / 键位冲突
+        - 审计日志 / 诊断 JSON / 隔离（quarantined）
+        - 安全模式 (`?safe=1`) / 恢复默认工作台
+        - 样例具体功能（品牌 kit / CSV 图表 / 专注布局）
+        - 其它
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 从 `pnpm dev` 打开 http://127.0.0.1:5273 开始，写清安装入口、点了哪些按钮、URL 参数
+      placeholder: |
+        1. 打开 http://127.0.0.1:5273/?still=1
+        2. 顶栏「插件」→「安装样例」→ ChartKit
+        3. 在插件卡上点「启用」
+        4. ……
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果
+      description: 按插件页权限说明与 README 描述，这里应该发生什么
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际结果
+      description: 真实发生了什么；有错误码就贴（形如 E-PKG-05 / E-MAN-09 / E-CAP-01 / E-RUN-02），错误卡上的「看日志」也会给关键词
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: 控制台错误与诊断 JSON
+      description: 浏览器控制台 error / pageerror 原文；可附「设置 → 导出诊断 JSON」的 `plugins` 段（不含插件数据与 deck 内容）
+      render: text
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我已试过 `?safe=1`，确认问题在安全模式下不存在或在安全模式下也出现
+          required: true
+        - label: 我已在最新 main 分支或最新构建产物上复现
+          required: true
+        - label: 这不是安全漏洞（沙箱逃逸/权限绕过等按 SECURITY.md 私下报告）
+          required: true

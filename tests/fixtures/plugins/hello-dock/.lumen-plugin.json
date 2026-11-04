@@ -1,0 +1,25 @@
+{
+  "id": "com.example.hello-dock",
+  "name": { "zh": "你好看板", "en": "Hello Dock" },
+  "version": "0.1.0",
+  "apiVersion": "1.0",
+  "minAppVersion": "0.4.0",
+  "kind": "code",
+  "entry": "plugin.js",
+  "author": { "name": "LUMEN Samples" },
+  "description": { "zh": "代码式插件：在底部托盘渲染一行最小看板", "en": "Code plugin: renders a minimal board in the dock" },
+  "license": "MIT",
+  "capabilities": ["ui:slot"],
+  "contributes": {
+    "slots": [
+      {
+        "id": "dock",
+        "slot": "workspace.dock",
+        "title": { "zh": "你好看板", "en": "Hello Dock" },
+        "kind": "panel",
+        "order": 10,
+        "size": { "h": 260 }
+      }
+    ]
+  }
+}

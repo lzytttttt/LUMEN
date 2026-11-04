@@ -351,3 +351,88 @@
   font-family: var(--ui-font-mono);
   font-size: 10.5px;
 }
+
+/* v0.4.0：命令面板的插件分组标题与来源徽标（shell-ui，02 §6.10 command.palette） */
+.lcp__group {
+  padding: 8px 12px 4px;
+  color: var(--ui-fg-mute);
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* v0.4.0：快捷键表里的插件分组行（shell-ui，02 §6.7） */
+.ldlg-keys__row--group {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--ui-line);
+  color: var(--ui-fg-mute);
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.ldlg-keys__label .plug-badge {
+  margin-left: 6px;
+}
+
+/* v0.4.0：导出弹窗的插件预检区块（shell-ui，02 §5.3 / 06 §3.1） */
+.ldlg-preflight {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-bg-2);
+  margin: 8px 0 2px;
+}
+.ldlg-preflight__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ldlg-preflight__title {
+  color: var(--ui-fg-dim);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.ldlg-preflight__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ldlg-preflight__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 5px 6px;
+  border-radius: var(--ui-radius-xs);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+.ldlg-preflight__item--warn {
+  background: color-mix(in srgb, var(--ui-warn) 9%, transparent);
+}
+.ldlg-preflight__item--info {
+  background: color-mix(in srgb, var(--ui-info) 8%, transparent);
+}
+.ldlg-preflight__level {
+  flex: 0 0 auto;
+  font-size: 10.5px;
+  color: var(--ui-fg-mute);
+}
+.ldlg-preflight__item--warn .ldlg-preflight__level {
+  color: var(--ui-warn);
+}
+.ldlg-preflight__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--ui-fg-dim);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}

@@ -17,6 +17,7 @@ import { activeSlideIdOf } from '@/state/selectors'
 import { useT } from '@/i18n'
 import { openForge } from '@/forge/ForgeHost'
 import { SlideRenderer } from '@/render/SlideRenderer'
+import { RailFooterSlot } from '@/plugins/public'
 import { ContextMenu, type MenuItem } from './ContextMenu'
 import { inVisibleRange, moveTargetIndex, visibleRange } from './virtual'
 import './panels.css'
@@ -369,6 +370,8 @@ export function SlideRail() {
       </div>
 
       <div className="rail__foot">
+        {/* workspace.rail.footer（02 §6.10：rail__foot 内、rail__add 之前；inline 单行 ≤40） */}
+        <RailFooterSlot />
         <button
           type="button"
           className="rail__add"

@@ -1,4 +1,4 @@
-# 模拟 LLM 实战 / Simulated LLM runs
+﻿# 模拟 LLM 实战 / Simulated LLM runs
 
 这里放「用自建的模拟 OpenAI 兼容端点，把 LUMEN 所有接 LLM 的功能真实跑一遍」的脚本与证据。
 它不是单测的替代品：单测用 jsdom 假 fetch，这里走真实浏览器、真实 HTTP、真实 SSE、真实 IndexedDB 落库。
@@ -11,6 +11,9 @@
 | `v0.3.0/scenarios.mjs` | 五类任务（outline / slide / svg / three / refine）的高质量中文内容 |
 | `v0.3.0/run-simulation.mjs` | Playwright 端到端驱动：造幕台、AI 编排、微调、SVG/3D 工作室、三条鲁棒性路径 |
 | `v0.3.0/results/` | 运行产物：`report.html` / `report.md` / `report.json`、截图、LLM 请求 JSONL、console 与失败请求 |
+| `v0.4.0/mock-creator-server.mjs` | 创造模式模拟端点：OpenAI 兼容 + SSE，只服务 `[TASK:plugin]`，按 payload `intent` 从 `src/fixtures/ai/creator-mock/` 返回确定性 `CreatorProposal`；`--selftest` 9 项契约自测 |
+| `v0.4.0/run-simulation.mjs` | Playwright 驱动：安装内置样例 → 创造模式一句话提案 → 试跑（默认只读）→ 撤销 → 再试跑 → 保留 → 刷新恢复，产出报告与截图 |
+| `v0.4.0/results/` | 运行产物：`report.html` / `report.md` / `report.json`、截图、创造模式请求 JSONL |
 
 ## 运行
 
@@ -23,6 +26,11 @@ pnpm sim:llm
 
 # 指定页面地址 / 端口 / 有头模式
 node simulation/v0.3.0/run-simulation.mjs --base http://127.0.0.1:5273 --port 5299 --headed
+
+# 3) 创造模式模拟全链路（v0.4.0）：先跑端点契约自测，再跑真实浏览器
+node simulation/v0.4.0/mock-creator-server.mjs --selftest
+node simulation/v0.4.0/run-simulation.mjs --preview   # 推荐：先 build 再 vite preview，零 HMR
+node simulation/v0.4.0/run-simulation.mjs --base http://127.0.0.1:5273   # 或复用 dev server
 ```
 
 ## 覆盖的功能

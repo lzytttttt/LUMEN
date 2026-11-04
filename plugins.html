@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN" data-lumen-plugins-page="1">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="description" content="LUMEN 幕光 · 插件 —— 本地插件包与三款内置样例；0.4.0 没有插件市场。" />
+    <title>LUMEN · 插件</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b0c10'/%3E%3Cpath d='M10 23V9h3.2v11.2H23V23H10z' fill='%23c8a15a'/%3E%3Ccircle cx='22' cy='11' r='2.4' fill='%2357e3c2'/%3E%3C/svg%3E"
+    />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta name="theme-color" content="#0a0b0e" />
+    <script>
+      // ?still=1：首帧前关动画（06 §3.4；与 mount.tsx 的 data-still 双保险，避免闪一下过渡）
+      try {
+        if (new URLSearchParams(location.search).get('still') === '1') {
+          document.documentElement.dataset.still = '1'
+        }
+      } catch (err) {
+        /* 老浏览器忽略 */
+      }
+    </script>
+  </head>
+  <body>
+    <div id="plugins-root"></div>
+    <script type="module" src="/src/pages/plugins/main.tsx"></script>
+  </body>
+</html>

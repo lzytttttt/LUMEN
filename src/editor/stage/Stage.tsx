@@ -32,6 +32,7 @@ import { useT } from '@/i18n'
 import { getTheme, themeCssVars } from '@/themes'
 import { blocksFromFiles, blocksFromPlainText, hasAnyDrag } from '@/editor/dnd/blocksFromData'
 import { openForge } from '@/forge/ForgeHost'
+import { StageOverlaySlot, usePluginsEnabled } from '@/plugins/public'
 import {
   alignSelection,
   commitTextEdit,
@@ -78,6 +79,7 @@ export function Stage() {
   const clearSelection = useSelectionStore((s) => s.clearSelection)
 
   const [viewportRef, size] = useElementSize<HTMLDivElement>()
+  const pluginsEnabled = usePluginsEnabled()
   const frameRef = useRef<HTMLDivElement | null>(null)
   const [pan, setPan] = useState<Point>({ x: 0, y: 0 })
   const panRef = useRef(pan)
@@ -405,6 +407,17 @@ export function Stage() {
           {t('editor.stage.guides')}
         </button>
       </div>
+
+      {/* workspace.overlay（02 §6.10：.app-stage 内、stage-hud 之后；安全区 = 画布减 120/96，不抢焦点） */}
+      {pluginsEnabled && mode === 'edit' ? (
+        <div
+          className="plug-stage-overlay"
+          data-slot-host="workspace.overlay"
+          aria-hidden={undefined}
+        >
+          <StageOverlaySlot />
+        </div>
+      ) : null}
 
       {menu && menuBlock ? (
         <BlockContextMenu

@@ -1,0 +1,77 @@
+{
+  "id": "com.lumen.samples.chartkit",
+  "name": { "zh": "数据画报", "en": "ChartKit" },
+  "version": "0.1.0",
+  "apiVersion": "1.0",
+  "minAppVersion": "0.4.0",
+  "kind": "code",
+  "entry": "plugin.js",
+  "trust": "builtin",
+  "author": { "name": "LUMEN", "url": "https://github.com/lzytttttt/LUMEN" },
+  "description": {
+    "zh": "粘贴表格，生成随主题换色的原生 SVG 图表；删了插件，图表还是图表。",
+    "en": "Paste a table, get a native SVG chart that follows the theme — and survives uninstall."
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "icon": "icon.svg",
+  "capabilities": [
+    "ui:slot",
+    "ui:command",
+    "i18n:contribute",
+    "lint:rule",
+    "ai:recipe",
+    "storage",
+    "deck:read",
+    "deck:write"
+  ],
+  "contributes": {
+    "slots": [
+      {
+        "id": "charts-panel",
+        "slot": "workspace.inspector.tab",
+        "title": { "zh": "图表", "en": "Charts" },
+        "icon": "icon.svg",
+        "kind": "panel",
+        "size": { "w": 340 },
+        "order": 20
+      }
+    ],
+    "lintRules": [
+      { "id": "series-overflow", "title": { "zh": "系列过多", "en": "Too many series" }, "severity": "warn" },
+      { "id": "axis-label-missing", "title": { "zh": "缺轴标签", "en": "Missing axis labels" }, "severity": "warn" },
+      { "id": "chart-contrast", "title": { "zh": "图表对比度", "en": "Chart contrast" }, "severity": "warn" }
+    ],
+    "recipes": [
+      {
+        "id": "bar",
+        "namespace": "chartkit",
+        "title": { "zh": "数据柱状", "en": "Data bars" },
+        "slots": [
+          { "key": "headline", "required": true },
+          { "key": "points", "max": 6 },
+          { "key": "caption" }
+        ]
+      },
+      {
+        "id": "line",
+        "namespace": "chartkit",
+        "title": { "zh": "数据折线", "en": "Data line" },
+        "slots": [
+          { "key": "headline", "required": true },
+          { "key": "points", "max": 12 },
+          { "key": "caption" }
+        ]
+      },
+      {
+        "id": "donut",
+        "namespace": "chartkit",
+        "title": { "zh": "数据环形", "en": "Data donut" },
+        "slots": [
+          { "key": "headline", "required": true },
+          { "key": "points", "max": 6 },
+          { "key": "caption" }
+        ]
+      }
+    ]
+  }
+}

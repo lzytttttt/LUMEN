@@ -1,0 +1,11 @@
+{
+  "v": 1,
+  "primary": "#1F6FEB",
+  "secondary": "#22B8CF",
+  "displayFont": "system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+  "bodyFont": "system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+  "tagline": "把复杂的事讲清楚",
+  "logoAssetId": null,
+  "preferredTheme": "auto",
+  "updatedAt": 0
+}

@@ -7,13 +7,14 @@
  * 因此这里自己开库：一次 upgrade 建齐全部 store，并把版本推到 3 以修复已损坏的 v1 库，
  * 同时为 v0.2.0 的造幕台（`forge`）与响应缓存（`aiCache`）新增两个 store。
  */
-export type StoreName = 'decks' | 'assets' | 'settings' | 'forge' | 'aiCache'
+export type StoreName = 'decks' | 'assets' | 'settings' | 'forge' | 'aiCache' | 'plugins' | 'pluginData' | 'creator'
 
 export type StorageMode = 'idb' | 'memory'
 
 const DB_NAME = 'lumen-deck'
-const DB_VERSION = 3
-const STORE_NAMES: StoreName[] = ['decks', 'assets', 'settings', 'forge', 'aiCache']
+/** v0.4.0：DB v3 → v4，只新增 3 个 store（plugins / pluginData / creator），旧 store 数据零迁移。 */
+const DB_VERSION = 4
+const STORE_NAMES: StoreName[] = ['decks', 'assets', 'settings', 'forge', 'aiCache', 'plugins', 'pluginData', 'creator']
 
 let storageMode: StorageMode = 'idb'
 let dbPromise: Promise<IDBDatabase> | null = null

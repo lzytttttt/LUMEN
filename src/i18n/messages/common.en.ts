@@ -110,6 +110,36 @@ export const commonEn = {
     restore: 'Restore AI version',
     dirty: 'Edited by hand',
   },
+  plugin: {
+    source: {
+      builtin: 'Built-in',
+      file: 'Local file',
+      url: 'From link',
+      draft: 'Draft',
+    },
+    action: {
+      install: 'Install',
+      enable: 'Enable',
+      disable: 'Disable',
+      uninstall: 'Uninstall',
+      retry: 'Retry',
+      keepData: 'Keep data',
+      revoke: 'Revoke',
+      grant: 'Grant',
+    },
+    badge: {
+      sensitive: 'Sensitive',
+      builtin: 'Built-in',
+      plugin: 'Plugin',
+    },
+    label: {
+      permission: 'Permission',
+      permissions: 'Permissions',
+      version: 'Version',
+      author: 'Author',
+      source: 'Source',
+    },
+  },
   hint: {
     commandPalette: 'Press {shortcut} for the command palette',
     dragDrop: 'Drop images or .svg files onto the canvas to insert',

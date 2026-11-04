@@ -325,8 +325,21 @@ export const THEMES: Record<string, Theme> = {
 
 export const THEME_IDS = Object.keys(THEMES) as (keyof typeof THEMES)[]
 
+/**
+ * 插件主题注入缝（v0.4.0，plan 02 §6.2 / §9.7 口径补充）：
+ * 内置 6 套主题是常量、永不被插件覆盖；插件主题只进「副本」并由插件运行时通过本函数解析。
+ * `installExternalThemeResolver(null)` 即卸载（卸载后 getTheme 回落 noir，deck 的 themeId 原样保留）。
+ */
+export type ExternalThemeResolver = (id: string) => Theme | undefined
+
+let externalThemeResolver: ExternalThemeResolver | null = null
+
+export function installExternalThemeResolver(resolver: ExternalThemeResolver | null): void {
+  externalThemeResolver = resolver
+}
+
 export function getTheme(id: string | undefined | null): Theme {
-  return (id && THEMES[id]) || THEMES.noir
+  return (id && (THEMES[id] ?? externalThemeResolver?.(id))) || THEMES.noir
 }
 
 /**

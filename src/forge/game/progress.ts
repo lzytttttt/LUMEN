@@ -8,7 +8,7 @@
  * 3. 迁移是白名单复制：未知字段丢弃、越界裁剪、`level` 由 `xp` 派生；`v > 1` / 解析异常时先备份到 `forge.bak` 再重建。
  */
 import { getStorageMode, kvDel, kvGet, kvSet } from '@/persistence/kv'
-import { recipeIdSchema, type RecipeId } from '@/schema/deck'
+import { BUILTIN_RECIPE_IDS, type RecipeId } from '@/schema/deck'
 import { ACHIEVEMENT_IDS, levelOf } from './score'
 
 export const PROGRESS_KEY = 'progress'
@@ -19,7 +19,7 @@ export const PROGRESS_MAX_BYTES = 6144
 /** 落盘尾随节流窗口（03 §7.2）。 */
 export const PROGRESS_WRITE_MS = 500
 
-const RECIPE_IDS = recipeIdSchema.options as readonly RecipeId[]
+const RECIPE_IDS = BUILTIN_RECIPE_IDS as readonly RecipeId[]
 const ACHIEVEMENT_SET = new Set<string>(ACHIEVEMENT_IDS)
 
 export interface ForgeGateEntry {

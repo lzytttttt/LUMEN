@@ -1,0 +1,118 @@
+{
+  "format": "lumen-plugin",
+  "formatVersion": 1,
+  "createdAt": 1717200000000,
+  "manifest": {
+    "id": "com.qatools.fx07",
+    "name": {
+      "zh": "契约夹具",
+      "en": "Contract Fixture"
+    },
+    "version": "0.1.0",
+    "apiVersion": "1.0",
+    "minAppVersion": "0.4.0",
+    "kind": "declarative",
+    "author": {
+      "name": "QA Fixtures"
+    },
+    "description": {
+      "zh": "仅用于 LUMEN 插件契约测试的夹具包。",
+      "en": "Fixture package for LUMEN plugin contract tests."
+    },
+    "license": "MIT",
+    "capabilities": [
+      "storage"
+    ],
+    "contributes": {
+      "settings": {
+        "id": "prefs",
+        "title": {
+          "zh": "偏好设置",
+          "en": "Preferences"
+        },
+        "fields": [
+          {
+            "key": "label",
+            "type": "text",
+            "label": {
+              "zh": "标签",
+              "en": "Label"
+            },
+            "placeholder": "A",
+            "maxLength": 40
+          },
+          {
+            "key": "note",
+            "type": "textarea",
+            "label": {
+              "zh": "备注",
+              "en": "Note"
+            },
+            "maxLength": 400
+          },
+          {
+            "key": "enabled",
+            "type": "switch",
+            "label": {
+              "zh": "启用",
+              "en": "Enabled"
+            },
+            "default": true
+          },
+          {
+            "key": "count",
+            "type": "number",
+            "label": {
+              "zh": "数量",
+              "en": "Count"
+            },
+            "min": 0,
+            "max": 99,
+            "step": 1,
+            "default": 3
+          },
+          {
+            "key": "level",
+            "type": "slider",
+            "label": {
+              "zh": "强度",
+              "en": "Level"
+            },
+            "min": 0,
+            "max": 100,
+            "step": 5,
+            "default": 50
+          },
+          {
+            "key": "mode",
+            "type": "select",
+            "label": {
+              "zh": "模式",
+              "en": "Mode"
+            },
+            "options": [
+              {
+                "value": "a",
+                "label": {
+                  "zh": "甲",
+                  "en": "A"
+                }
+              },
+              {
+                "value": "b",
+                "label": {
+                  "zh": "乙",
+                  "en": "B"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "files": {
+    "readme.md": "# QA fixture\n\n仅用于 LUMEN 插件契约测试，无外部资源。\n"
+  },
+  "integrity": "sha256:f673ff176d031929435f6d60601da6486e3812b2284149885d0b5c6d42b2872a"
+}

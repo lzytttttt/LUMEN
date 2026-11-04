@@ -1,0 +1,75 @@
+name: 插件开发求助 / 提案
+description: 想写 .lumenplug 插件、询问 ABI、报告文档缺口，或提出新的插槽/能力/配方建议
+title: "[Plugin Authoring] "
+labels:
+  - plugin
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **0.4.0 的插件 ABI 是 `1.0`，冻结、只增不改**：manifest 字段、15 项能力、9 个插槽、`window.lumen` 的 17 个命名空间都以契约为准。
+        作者必读（本地文档，向作者索取）：`doc/12-插件系统.md`；三款内置样例（BrandGuard / ChartKit / FocusDesk）就是参考实现。
+        0.4.0 **明确不做**：插件市场、网络能力、插件块类型、浏览器内 TS/JSX 编译、远程签名与静默更新。提需求前请先读 README 的「插件 / Plugins」与已知取舍。
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 这是哪一类
+      options:
+        - 我写插件遇到问题（报错 / 行为不符预期）
+        - 我想实现某个功能，问 ABI 是否支持
+        - 文档缺口 / 示例不清
+        - 建议新能力 / 新插槽 / 新配方（会进 0.4.1 或 0.5.0 评估）
+        - 我想把样例代码用作自己插件的起点
+    validations:
+      required: true
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: 你想让插件做什么
+      description: 一两句话，写给用户看的效果，而不是实现方案
+      placeholder: 例如：把 Notion 导出的 markdown 做成一幕时间轴，并允许用户在面板里改顺序。
+    validations:
+      required: true
+
+  - type: dropdown
+    id: form
+    attributes:
+      label: 你倾向的插件形态
+      options:
+        - 声明式（纯 JSON：主题/素材/文案/设置/命令/键位/布局）
+        - 代码式（单文件 ESM，用 window.lumen 的 17 个命名空间）
+        - 不确定，想让你建议
+    validations:
+      required: true
+
+  - type: textarea
+    id: attempted
+    attributes:
+      label: 已经试过什么 / 卡在哪
+      description: 贴最小 manifest 片段与相关 plugin.js 片段即可；不要贴私钥、私人文档或带版权的内容
+      render: json
+    validations:
+      required: false
+
+  - type: textarea
+    id: capabilities
+    attributes:
+      label: 打算申请哪些能力
+      description: 15 项能力见 README/文档；敏感能力（deck:write / ai:invoke / asset:write / export:hook）需要向用户解释后果，请写一句「它为什么需要」
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我读过了 0.4.0 的「明确不做」（无市场 / 无网络 / 无插件块类型 / 无浏览器内编译）
+          required: true
+        - label: 我理解插件代码运行在不透明源 iframe 里、所有能力都要在安装时由用户授权
+          required: true
+        - label: 我的插件会遵守单文件 ESM、无外链、双语、声明许可证这些硬规则
+          required: true

@@ -9,17 +9,20 @@ import type { Block } from '@/schema/deck'
 import { useDeckStore } from '@/state/deckStore'
 import { useActiveSlide } from '@/state/selectors'
 import { useUiStore, type InspectorTab } from '@/state/uiStore'
+import { useSettingsStore } from '@/state/settingsStore'
 import { useSelectionStore } from '@/state/selectionStore'
 import { getTheme, themeCssVars } from '@/themes'
 import type { MessageKey } from '@/i18n'
 import { useT } from '@/i18n'
 import ComposerPanel from '@/ai/ui/ComposerPanel'
+import { InspectorTabSlot, useInspectorTabs } from '@/plugins/public'
 import { PropsTab } from './tabs/PropsTab'
 import { LayersTab } from './tabs/LayersTab'
 import { MotionTab } from './tabs/MotionTab'
 import { NotesTab } from './tabs/NotesTab'
 import { ThemeTab } from './tabs/ThemeTab'
 import { LintTab } from './tabs/LintTab'
+import { PluginsTab } from './tabs/PluginsTab'
 import './panels.css'
 
 const TABS: InspectorTab[] = ['props', 'layers', 'motion', 'notes', 'theme', 'lint']
@@ -49,6 +52,10 @@ function InspectorPane() {
   const setTab = useUiStore((s) => s.setInspectorTab)
   const setCommandOpen = useUiStore((s) => s.setCommandOpen)
   const selectedIds = useSelectionStore((s) => s.selectedBlockIds)
+  const lang = useSettingsStore((s) => s.lang)
+  // workspace.inspector.tab 动态页签（02 §6.10：TABS 数组后追加；插件停用即摘除）。
+  const pluginTabs = useInspectorTabs()
+  const activePluginTab = tab.startsWith('plug:') ? pluginTabs.find((item) => item.id === tab) : undefined
 
   const selected = useMemo<Block[]>(
     () => (slide ? slide.blocks.filter((block) => selectedIds.includes(block.id)) : []),
@@ -78,6 +85,19 @@ function InspectorPane() {
             {t(`editor.inspector.tabs.${item}` as MessageKey)}
           </button>
         ))}
+        {pluginTabs.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === item.id}
+            data-plugin-tab={item.pluginId}
+            className={tab === item.id ? 'lm-tab lm-tab--active' : 'lm-tab'}
+            onClick={() => setTab(item.id)}
+          >
+            {item.titleOf(lang) || item.title}
+          </button>
+        ))}
       </div>
 
       <div className="panel__body lumen-scroll">
@@ -87,6 +107,18 @@ function InspectorPane() {
         {tab === 'notes' ? <NotesTab slide={slide} /> : null}
         {tab === 'theme' ? <ThemeTab /> : null}
         {tab === 'lint' ? <LintTab /> : null}
+        {tab.startsWith('plug:') ? (
+          activePluginTab ? (
+            <div className="plug-insp-tab">
+              <InspectorTabSlot
+                contributionId={activePluginTab.id.slice('plug:'.length)}
+                title={activePluginTab.title}
+              />
+            </div>
+          ) : (
+            <PluginsTab contributionId={tab.slice('plug:'.length)} />
+          )
+        ) : null}
       </div>
 
       <div className="insp-foot">

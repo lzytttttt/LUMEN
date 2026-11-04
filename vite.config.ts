@@ -39,6 +39,7 @@ export default defineConfig({
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
         portal: fileURLToPath(new URL('./portal.html', import.meta.url)),
+        plugins: fileURLToPath(new URL('./plugins.html', import.meta.url)),
       },
       output: {
         // 稳定拆包：three / CodeMirror 只在真正用到它们的界面按需加载，

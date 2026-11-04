@@ -4,7 +4,7 @@
  * 布局语言保持原样（.topbar__* 类名不变），新增的只有「插入」下拉与命令面板入口；
  * 窄屏时由 toolbar.css 的媒体查询逐级收起次要信息，保证永不溢出。
  */
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ChevronDown,
   Command,
@@ -13,6 +13,7 @@ import {
   Moon,
   Play,
   Plus,
+  Puzzle,
   Redo2,
   Settings,
   Sparkles,
@@ -26,9 +27,13 @@ import { deckOps } from '@/state/ops'
 import { useTheme } from '@/themes/useTheme'
 import { THEMES } from '@/themes'
 import type { Lang } from '@/i18n'
+import type { Theme } from '@/schema/deck'
 import { useT } from '@/i18n'
 import { IconButton, Popover, PopoverLabel, PopoverRow, PopoverSeparator } from '@/ui/primitives'
 import { openForge } from '@/forge/ForgeHost'
+import { usePluginThemes, useSafeMode, TopbarSlot } from '@/plugins/public'
+import { openPluginManager } from '@/ui/dialogs/pluginUiStore'
+import { toggleCreator, useCreatorOpen } from '@/creator/bridge'
 import { InsertMenu } from './InsertMenu'
 import './toolbar.css'
 
@@ -57,6 +62,18 @@ export function TopBar() {
   const uiTheme = useSettingsStore((s) => s.uiTheme)
   const setUiTheme = useSettingsStore((s) => s.setUiTheme)
   const theme = useTheme()
+  // 主题弹层 = 内置 6 套 + 已启用插件主题（02 §6.2 / 11.1：不改 THEMES 常量，只做合并视图）。
+  // `usePluginThemes()` 可能是「内置 + 插件」的合并列表，这里按 id 去重，避免重复 key（console error 门禁）。
+  const pluginThemes = usePluginThemes()
+  const themeOptions = useMemo(() => {
+    const merged = new Map<string, Theme>()
+    for (const item of Object.values(THEMES)) merged.set(item.id, item)
+    for (const item of pluginThemes) merged.set(item.id, item)
+    return [...merged.values()]
+  }, [pluginThemes])
+  const activeTheme = themeOptions.find((item) => item.id === deck?.themeId) ?? theme
+  const safeMode = useSafeMode()
+  const creatorOpen = useCreatorOpen()
 
   const [themeOpen, setThemeOpen] = useState(false)
   const [themeAnchor, setThemeAnchor] = useState<HTMLElement | null>(null)
@@ -162,11 +179,11 @@ export function TopBar() {
               width: 12,
               height: 12,
               borderRadius: 3,
-              background: theme.colors.accent,
+              background: activeTheme.colors.accent,
               display: 'inline-block',
             }}
           />
-          {theme.name[lang]}
+          {activeTheme.name[lang]}
           <ChevronDown size={12} />
         </button>
         <span className="tbar-lang">
@@ -193,10 +210,34 @@ export function TopBar() {
 
       <div className="topbar__spacer" />
 
+      {/* workspace.topbar（02 §6.10：spacer 之后、右侧 group 之前；inline，≤3 枚按钮，无帧） */}
+      <TopbarSlot />
+
       <div className="topbar__group">
         <span className="topbar__status">
           {t('common.label.slideCount', { count: deck.slides.length })}
         </span>
+        {safeMode ? (
+          <button
+            type="button"
+            className="plug-safe-pill"
+            data-lumen-safe-pill="1"
+            title={t('plugin.safe.title')}
+            onClick={() => openPluginManager()}
+          >
+            {t('plugin.safe.pill')}
+          </button>
+        ) : null}
+        <button
+          type="button"
+          className="lm-btn lm-btn--ghost"
+          data-plugin-entry="1"
+          title={t('plugin.title')}
+          onClick={() => openPluginManager()}
+        >
+          <Puzzle size={14} />
+          {t('plugin.title')}
+        </button>
         <button
           type="button"
           className="lm-btn lm-btn--ghost"
@@ -204,6 +245,18 @@ export function TopBar() {
           onClick={() => openForge('topbar')}
         >
           ✦ {t('forge.entry')}
+        </button>
+        {/* ✦ 创造（04 §2.1：与 ✦ 生成并列；行为走 creator/bridge，不自己开关面板） */}
+        <button
+          type="button"
+          className="lm-btn lm-btn--ghost tbar-creator"
+          data-creator-entry="topbar"
+          aria-expanded={creatorOpen}
+          aria-label={t('creator.a11y.entry')}
+          title={t('creator.entryTitle')}
+          onClick={() => toggleCreator('topbar')}
+        >
+          {t('creator.entry')}
         </button>
         {/* v0.3.0：把「精密模式」的 AI 编排从 ⌘K 里捞回顶栏 —— 右侧栏本来就是它的家。 */}
         <IconButton
@@ -226,30 +279,34 @@ export function TopBar() {
 
       <Popover open={themeOpen} onClose={() => setThemeOpen(false)} anchor={themeAnchor} width={230}>
         <PopoverLabel>{t('editor.inspector.themePick')}</PopoverLabel>
-        {Object.values(THEMES).map((item) => (
-          <PopoverRow
-            key={item.id}
-            active={item.id === deck.themeId}
-            onClick={() => {
-              deckOps.setTheme(item.id)
-              setThemeOpen(false)
-            }}
-            icon={
-              <span
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: 3,
-                  background: item.colors.accent,
-                  display: 'inline-block',
-                  boxShadow: `inset 0 0 0 1px ${item.colors.line}`,
-                }}
-              />
-            }
-          >
-            {item.name[lang]}
-          </PopoverRow>
-        ))}
+        {themeOptions.map((item) => {
+          const isPluginTheme = !(item.id in THEMES)
+          return (
+            <PopoverRow
+              key={item.id}
+              active={item.id === deck.themeId}
+              onClick={() => {
+                deckOps.setTheme(item.id)
+                setThemeOpen(false)
+              }}
+              icon={
+                <span
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: 3,
+                    background: item.colors.accent,
+                    display: 'inline-block',
+                    boxShadow: `inset 0 0 0 1px ${item.colors.line}`,
+                  }}
+                />
+              }
+            >
+              {item.name[lang]}
+              {isPluginTheme ? <span className="plug-badge">{t('common.plugin.badge.plugin')}</span> : null}
+            </PopoverRow>
+          )
+        })}
         <PopoverSeparator />
         <PopoverRow
           onClick={() => {

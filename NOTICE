@@ -38,5 +38,12 @@ No remote fonts, analytics, telemetry or third-party runtime assets are
 embedded in the product. Sample decks, screenshots and brand artwork are
 covered by LICENSE and LICENSING.md, not by the third-party licenses above.
 
+Plugin system (v0.4.0): the runtime (`src/plugins/**`), the plugin ABI
+documentation, and the three built-in sample plugins under `plugins/builtin/**`
+and their packaged `.lumenplug` files are distributed under the repository's
+source license (see LICENSING.md). Third-party `.lumenplug` packages are
+licensed by their authors; LUMEN only displays the license string declared in
+each package manifest and does not relicense plugin code.
+
 If you redistribute a build of LUMEN, keep this NOTICE file and the LICENSE
 files with it.

@@ -1,0 +1,29 @@
+{
+  "id": "com.example.bad-manifest",
+  "name": { "zh": "坏清单", "en": "Bad Manifest" },
+  "version": "1.0",
+  "apiVersion": "1.0",
+  "minAppVersion": "0.4.0",
+  "kind": "declarative",
+  "author": { "name": "LUMEN Security" },
+  "description": { "zh": "红队夹具：version 非 semver → E-MAN-03", "en": "Red team fixture: non-semver version" },
+  "license": "MIT",
+  "capabilities": ["theme:contribute"],
+  "contributes": {
+    "themes": [
+      {
+        "id": "bad",
+        "name": { "zh": "坏", "en": "Bad" },
+        "colors": {
+          "bg": "#000000",
+          "fg": "#ffffff",
+          "muted": "#888888",
+          "surface": "#111111",
+          "line": "#333333",
+          "accent": "#ff0000",
+          "accent2": "#00ff00"
+        }
+      }
+    ]
+  }
+}

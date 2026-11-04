@@ -1,0 +1,131 @@
+{
+  "format": "lumen-plugin",
+  "formatVersion": 1,
+  "createdAt": 1717200000000,
+  "manifest": {
+    "id": "com.qatools.fx03",
+    "name": {
+      "zh": "契约夹具",
+      "en": "Contract Fixture"
+    },
+    "version": "0.1.0",
+    "apiVersion": "1.0",
+    "minAppVersion": "0.4.0",
+    "kind": "declarative",
+    "author": {
+      "name": "QA Fixtures"
+    },
+    "description": {
+      "zh": "仅用于 LUMEN 插件契约测试的夹具包。",
+      "en": "Fixture package for LUMEN plugin contract tests."
+    },
+    "license": "MIT",
+    "capabilities": [
+      "theme:contribute"
+    ],
+    "contributes": {
+      "themes": [
+        {
+          "id": "mix1",
+          "name": {
+            "zh": "主题mix1",
+            "en": "Theme mix1"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        },
+        {
+          "id": "mix2",
+          "name": {
+            "zh": "主题mix2",
+            "en": "Theme mix2"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        },
+        {
+          "id": "mix3",
+          "name": {
+            "zh": "主题mix3",
+            "en": "Theme mix3"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        },
+        {
+          "id": "mix4",
+          "name": {
+            "zh": "主题mix4",
+            "en": "Theme mix4"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        },
+        {
+          "id": "mix5",
+          "name": {
+            "zh": "主题mix5",
+            "en": "Theme mix5"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        },
+        {
+          "id": "mix6",
+          "name": {
+            "zh": "主题mix6",
+            "en": "Theme mix6"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        }
+      ]
+    }
+  },
+  "files": {
+    "readme.md": "# QA fixture\n\n仅用于 LUMEN 插件契约测试，无外部资源。\n"
+  },
+  "integrity": "sha256:792b945f9d9f8550c9190f76d856a3737d7af8996e4107293e8556b3b992fd5f"
+}

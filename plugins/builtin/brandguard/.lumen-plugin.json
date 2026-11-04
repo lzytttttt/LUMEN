@@ -1,0 +1,175 @@
+{
+  "id": "com.lumen.samples.brandguard",
+  "name": { "zh": "品牌守护", "en": "BrandGuard" },
+  "version": "0.1.0",
+  "apiVersion": "1.0",
+  "minAppVersion": "0.4.0",
+  "kind": "code",
+  "entry": "plugin.js",
+  "trust": "builtin",
+  "author": { "name": "LUMEN", "url": "https://github.com/lzytttttt/LUMEN" },
+  "description": {
+    "zh": "把品牌色、字体与 logo 变成可应用、可检查、可预检的主题。",
+    "en": "Brand colours, fonts and logo as a theme you can apply, check and preflight."
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "icon": "icon.svg",
+  "capabilities": [
+    "ui:slot",
+    "ui:command",
+    "theme:contribute",
+    "library:contribute",
+    "i18n:contribute",
+    "lint:rule",
+    "storage",
+    "deck:read",
+    "deck:write",
+    "asset:write",
+    "export:hook"
+  ],
+  "contributes": {
+    "themes": [
+      {
+        "id": "brand-blue",
+        "name": { "zh": "品牌·蓝", "en": "Brand Blue" },
+        "vibe": { "zh": "深海蓝底 · 冷白字 · 一束电蓝", "en": "Deep blue, cool white, electric thread" },
+        "colors": {
+          "bg": "#0B1220",
+          "fg": "#E8EEF9",
+          "muted": "#9AA8C2",
+          "surface": "#121A2C",
+          "line": "#24304A",
+          "accent": "#1F6FEB",
+          "accent2": "#22B8CF"
+        },
+        "font": {
+          "body": "system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+          "display": "system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+          "mono": "ui-monospace, 'SF Mono', Consolas, monospace"
+        },
+        "texture": { "kind": "grid", "opacity": 0.04 },
+        "glow": 0.25,
+        "elevation": "raised",
+        "radius": 10
+      },
+      {
+        "id": "brand-teal",
+        "name": { "zh": "品牌·青", "en": "Brand Teal" },
+        "vibe": { "zh": "墨绿底 · 薄荷字 · 一点暖金", "en": "Ink green, mint type, warm gold drop" },
+        "colors": {
+          "bg": "#0A1514",
+          "fg": "#E6F7F2",
+          "muted": "#8FB3A9",
+          "surface": "#102220",
+          "line": "#22443D",
+          "accent": "#0E9F9F",
+          "accent2": "#F2C14E"
+        },
+        "font": {
+          "body": "system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+          "display": "system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+          "mono": "ui-monospace, 'SF Mono', Consolas, monospace"
+        },
+        "texture": { "kind": "none", "opacity": 0 },
+        "radius": 10
+      },
+      {
+        "id": "brand-graphite",
+        "name": { "zh": "品牌·石墨", "en": "Brand Graphite" },
+        "vibe": { "zh": "石墨灰底 · 中性字 · 冷紫强调", "en": "Graphite grey, neutral, violet accent" },
+        "colors": {
+          "bg": "#14161A",
+          "fg": "#F2F3F5",
+          "muted": "#A5AAB3",
+          "surface": "#1D2026",
+          "line": "#2E333B",
+          "accent": "#6E8BFF",
+          "accent2": "#9AA4B2"
+        },
+        "font": {
+          "body": "system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+          "display": "system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+          "mono": "ui-monospace, 'SF Mono', Consolas, monospace"
+        },
+        "texture": { "kind": "grain", "opacity": 0.05 },
+        "elevation": "flat",
+        "radius": 8
+      }
+    ],
+    "library": [
+      {
+        "id": "lockup",
+        "name": { "zh": "品牌横排", "en": "Brand lockup" },
+        "category": "brand",
+        "viewBox": [0, 0, 320, 64],
+        "source": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 64' fill='none'><rect x='4' y='8' width='48' height='48' rx='12' fill='var(--d-accent)'/><path d='M21 21h10.5c6 0 9.4 3.1 9.4 7.7 0 3.1-1.7 5.5-4.7 6.5 4 .9 6.4 3.8 6.4 7.6 0 5-3.8 8.2-10.2 8.2H21V21Z' fill='var(--d-bg)'/><text x='66' y='31' font-size='19' font-weight='600' fill='var(--d-fg)'>BRAND</text><text x='66' y='50' font-size='11' fill='var(--d-accent2)'>DESIGN SYSTEM</text></svg>"
+      },
+      {
+        "id": "mark",
+        "name": { "zh": "品牌标记", "en": "Brand mark" },
+        "category": "brand",
+        "viewBox": [0, 0, 64, 64],
+        "source": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none'><rect x='6' y='6' width='52' height='52' rx='14' fill='var(--d-accent)'/><path d='M22 22h9.4c5.4 0 8.4 2.8 8.4 6.9 0 2.8-1.5 4.9-4.2 5.8 3.6.8 5.7 3.4 5.7 6.8 0 4.5-3.4 7.3-9.1 7.3H22V22Z' fill='var(--d-bg)'/><circle cx='46' cy='18' r='4' fill='var(--d-accent2)'/></svg>"
+      }
+    ],
+    "settings": {
+      "id": "kit-settings",
+      "title": { "zh": "品牌", "en": "Brand" },
+      "fields": [
+        {
+          "key": "strict",
+          "type": "switch",
+          "label": { "zh": "导出严格模式", "en": "Strict export" },
+          "default": false
+        },
+        {
+          "key": "preferredTheme",
+          "type": "select",
+          "label": { "zh": "偏好主题", "en": "Preferred theme" },
+          "options": [
+            { "value": "auto", "label": { "zh": "按主色自动", "en": "Auto by primary" } },
+            { "value": "brand-blue", "label": { "zh": "品牌·蓝", "en": "Brand Blue" } },
+            { "value": "brand-teal", "label": { "zh": "品牌·青", "en": "Brand Teal" } },
+            { "value": "brand-graphite", "label": { "zh": "品牌·石墨", "en": "Brand Graphite" } }
+          ]
+        }
+      ]
+    },
+    "slots": [
+      {
+        "id": "topbar-brand",
+        "slot": "workspace.topbar",
+        "title": { "zh": "品牌", "en": "Brand" },
+        "icon": "icon.svg",
+        "kind": "inline",
+        "order": 20,
+        "open": { "slot": "workspace.inspector.tab", "contributionId": "brand-panel" }
+      },
+      {
+        "id": "brand-panel",
+        "slot": "workspace.inspector.tab",
+        "title": { "zh": "品牌", "en": "Brand" },
+        "icon": "icon.svg",
+        "kind": "panel",
+        "size": { "w": 340 },
+        "order": 10
+      },
+      {
+        "id": "kit-dialog",
+        "slot": "dialog",
+        "title": { "zh": "品牌 kit", "en": "Brand kit" },
+        "kind": "modal",
+        "order": 10
+      }
+    ],
+    "lintRules": [
+      { "id": "logo-placement", "title": { "zh": "logo 位置", "en": "Logo placement" }, "severity": "warn" },
+      { "id": "palette-tolerance", "title": { "zh": "色板容差", "en": "Palette tolerance" }, "severity": "warn" },
+      { "id": "font-whitelist", "title": { "zh": "字体白名单", "en": "Font whitelist" }, "severity": "warn" },
+      { "id": "tagline-missing", "title": { "zh": "tagline 缺失", "en": "Missing tagline" }, "severity": "warn" }
+    ],
+    "exportHooks": [
+      { "id": "preflight", "title": { "zh": "品牌预检", "en": "Brand preflight" }, "kind": "preflight" }
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "format": "lumen-plugin",
+  "formatVersion": 1,
+  "createdAt": 1717200000000,
+  "manifest": {
+    "id": "com.qatools.fx06",
+    "name": {
+      "zh": "契约夹具",
+      "en": "Contract Fixture"
+    },
+    "version": "0.1.0",
+    "apiVersion": "1.0",
+    "minAppVersion": "0.4.0",
+    "kind": "declarative",
+    "author": {
+      "name": "QA Fixtures"
+    },
+    "description": {
+      "zh": "仅用于 LUMEN 插件契约测试的夹具包。",
+      "en": "Fixture package for LUMEN plugin contract tests."
+    },
+    "license": "MIT",
+    "capabilities": [
+      "i18n:contribute"
+    ],
+    "contributes": {
+      "i18n": [
+        {
+          "zh": {
+            "hello": "你好",
+            "title": "标题",
+            "hint": "提示"
+          },
+          "en": {
+            "hello": "Hello",
+            "title": "Title",
+            "hint": "Hint"
+          }
+        }
+      ]
+    }
+  },
+  "files": {
+    "readme.md": "# QA fixture\n\n仅用于 LUMEN 插件契约测试，无外部资源。\n"
+  },
+  "integrity": "sha256:d384d1df831b8e068fce8e99598c4e658cd57b2ce5244f5f581f1ebf29191c72"
+}

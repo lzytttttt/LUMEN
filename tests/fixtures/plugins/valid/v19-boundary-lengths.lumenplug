@@ -1,0 +1,43 @@
+{
+  "format": "lumen-plugin",
+  "formatVersion": 1,
+  "createdAt": 1717200000000,
+  "manifest": {
+    "id": "abcdefghijklmnopqrst.abcdefghijklmnopqr.abcdefghijklmnopqr.abcdefghijklmnopqr.abcdefghijklmnopqr",
+    "name": {
+      "zh": "nnnnnnnnnnnnnnnnnnnnnnnn",
+      "en": "nnnnnnnnnnnnnnnnnnnnnnnn"
+    },
+    "version": "12345.12345.12345-abcdefghijklmnopqrstuvwxyz012345",
+    "apiVersion": "1.0",
+    "minAppVersion": "0.4.0",
+    "kind": "declarative",
+    "author": {
+      "name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "description": {
+      "zh": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "en": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "license": "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL",
+    "capabilities": [
+      "i18n:contribute"
+    ],
+    "contributes": {
+      "i18n": [
+        {
+          "zh": {
+            "k": "值"
+          },
+          "en": {
+            "k": "Value"
+          }
+        }
+      ]
+    }
+  },
+  "files": {
+    "readme.md": "# QA fixture\n\n仅用于 LUMEN 插件契约测试，无外部资源。\n"
+  },
+  "integrity": "sha256:f94fc023552619e17871f731637b0679cb510d8796a3859698f984acae330ec6"
+}

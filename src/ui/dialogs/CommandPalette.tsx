@@ -19,13 +19,32 @@ import type { MessageKey } from '@/i18n'
 import { useT } from '@/i18n'
 import {
   buildCommands,
+  fuzzyScore,
   searchCommands,
   type CommandContext,
 } from '@/editor/toolbar/commandRegistry'
 import { insertBlankSvg, insertText, insertThree } from '@/editor/toolbar/insertActions'
 import { sendIntent } from '@/editor/panels/studioBridge'
 import { openForge } from '@/forge/ForgeHost'
+import { usePluginCommands } from '@/plugins/public'
+import { openCreator } from '@/creator/bridge'
+import { openPluginManager } from './pluginUiStore'
 import './dialogs.css'
+
+/** 命令面板里插件分组的条目（宿主渲染，无帧；02 §6.10 command.palette）。 */
+interface PluginRow {
+  id: string
+  title: string
+  source?: string
+  run: () => void
+}
+
+/** 宿主内置的创造模式入口行（04 §2.1：⌘K → 搜「创造」/ `creator.open`）。 */
+interface CreatorRow {
+  id: 'creator.open'
+  title: string
+  run: () => void
+}
 
 export function CommandPalette() {
   const t = useT()
@@ -100,8 +119,44 @@ export function CommandPalette() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [query, deck, slide, selectedIds, lang, t],
   )
+  // 插件命令分组（02 §6.10 / 02 §5.3）：命令面板尾部，按来源徽标标注；宿主治理入口不可被插件 invoke。
+  const pluginCommands = usePluginCommands()
+  const pluginRows = useMemo<PluginRow[]>(() => {
+    const hostRows: PluginRow[] = [
+      { id: 'plugin.open', title: t('plugin.managerTitle'), run: () => openPluginManager() },
+      { id: 'plugin.safeMode', title: t('plugin.safe.pill'), run: () => openPluginManager() },
+    ]
+    const contributed: PluginRow[] = pluginCommands.map((command) => ({
+      id: command.id,
+      title: command.title,
+      source: command.pluginName,
+      run: () => {
+        void command.run()
+      },
+    }))
+    const rows = [...hostRows, ...contributed]
+    const needle = query.trim().toLowerCase()
+    if (needle === '') return rows
+    return rows
+      .map((row) => ({ row, score: Math.max(fuzzyScore(row.title, needle), fuzzyScore(row.id, needle)) }))
+      .filter((item) => item.score > 0)
+      .sort((left, right) => right.score - left.score)
+      .map((item) => item.row)
+  }, [pluginCommands, query, t])
   const showRewrite = query.trim() !== ''
-  const total = hits.length + (showRewrite ? 1 : 0)
+  const creatorRows = useMemo<CreatorRow[]>(() => {
+    const rows: CreatorRow[] = [
+      { id: 'creator.open', title: t('creator.command.open'), run: () => openCreator('palette') },
+    ]
+    const needle = query.trim().toLowerCase()
+    if (needle === '') return rows
+    return rows
+      .map((row) => ({ row, score: Math.max(fuzzyScore(row.title, needle), fuzzyScore(row.id, needle)) }))
+      .filter((item) => item.score > 0)
+      .sort((left, right) => right.score - left.score)
+      .map((item) => item.row)
+  }, [query, t])
+  const total = hits.length + pluginRows.length + creatorRows.length + (showRewrite ? 1 : 0)
 
   useEffect(() => {
     if (!open) return
@@ -126,6 +181,18 @@ export function CommandPalette() {
   const runAt = (index: number) => {
     if (index < hits.length) {
       hits[index].command.run()
+      close()
+      return
+    }
+    const pluginIndex = index - hits.length
+    if (pluginIndex >= 0 && pluginIndex < pluginRows.length) {
+      pluginRows[pluginIndex].run()
+      close()
+      return
+    }
+    const creatorIndex = index - hits.length - pluginRows.length
+    if (creatorIndex >= 0 && creatorIndex < creatorRows.length) {
+      creatorRows[creatorIndex].run()
       close()
       return
     }
@@ -206,6 +273,62 @@ export function CommandPalette() {
               {hit.command.shortcut ? <span className="lcp__shortcut">{hit.command.shortcut}</span> : null}
             </button>
           ))}
+
+          {/* 插件分组（分组标题「插件」；02 §6.10 / 06 §3.1 数据钩子 data-plugin-source） */}
+          {pluginRows.length > 0 ? (
+            <div className="lcp__group" role="presentation">
+              {t('plugin.title')}
+            </div>
+          ) : null}
+          {pluginRows.map((row, index) => {
+            const rowIndex = hits.length + index
+            return (
+              <button
+                key={row.id}
+                type="button"
+                role="option"
+                aria-selected={active === rowIndex}
+                data-command-index={rowIndex}
+                data-plugin-source={row.source ?? 'host'}
+                className={active === rowIndex ? 'lcp__row lcp__row--active' : 'lcp__row'}
+                onMouseEnter={() => setActive(rowIndex)}
+                onClick={() => runAt(rowIndex)}
+              >
+                <span className="lcp__title">{row.title}</span>
+                <span className="lcp__cat">
+                  {row.source ? t('plugin.keymap.sourcePlugin', { name: row.source }) : t('plugin.title')}
+                </span>
+              </button>
+            )
+          })}
+
+          {/* 创造模式入口（04 §2.1；命令 id `creator.open`，不抢 ⌘K） */}
+          {creatorRows.length > 0 ? (
+            <>
+              <div className="lcp__group" role="presentation">
+                {t('creator.panel.title')}
+              </div>
+              {creatorRows.map((row) => {
+                const rowIndex = hits.length + pluginRows.length
+                return (
+                  <button
+                    key={row.id}
+                    type="button"
+                    role="option"
+                    aria-selected={active === rowIndex}
+                    data-command-index={rowIndex}
+                    data-creator-command={row.id}
+                    className={active === rowIndex ? 'lcp__row lcp__row--active' : 'lcp__row'}
+                    onMouseEnter={() => setActive(rowIndex)}
+                    onClick={() => runAt(rowIndex)}
+                  >
+                    <span className="lcp__title">{row.title}</span>
+                    <span className="lcp__cat">{t('creator.entry')}</span>
+                  </button>
+                )
+              })}
+            </>
+          ) : null}
 
           {showRewrite ? (
             <button

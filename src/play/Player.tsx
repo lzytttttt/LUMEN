@@ -16,6 +16,7 @@ import { PlaySurface } from './PlaySurface'
 import { PlayerControls } from './PlayerControls'
 import { Overview } from './Overview'
 import { HelpOverlay } from './HelpOverlay'
+import { PlayOverlaySlot, usePluginsEnabled } from '@/plugins/public'
 import { usePlayback } from './usePlayback'
 import { usePresenterSync } from './usePresenterSync'
 import './play.css'
@@ -58,6 +59,7 @@ export function Player(): JSX.Element {
   const [fullscreen, setFullscreen] = useState(false)
 
   const rootRef = useRef<HTMLDivElement>(null)
+  const pluginsEnabled = usePluginsEnabled()
   const hideTimerRef = useRef<number | null>(null)
   const swipeRef = useRef<{ x: number; y: number; at: number } | null>(null)
   const lastSwipeAtRef = useRef(0)
@@ -425,6 +427,16 @@ export function Player(): JSX.Element {
         onToggleFullscreen={toggleFullscreen}
         onExit={exit}
       />
+      {/* play.overlay（02 §6.10：播放根节点内、PlayerControls 之后；跟随 chrome 自动隐藏） */}
+      {pluginsEnabled ? (
+        <div
+          className="plug-play-overlay"
+          data-slot-host="play.overlay"
+          data-chrome={controlsVisible ? 'visible' : 'hidden'}
+        >
+          <PlayOverlaySlot />
+        </div>
+      ) : null}
     </div>
   )
 }

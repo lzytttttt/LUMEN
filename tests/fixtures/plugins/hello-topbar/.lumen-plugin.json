@@ -1,0 +1,32 @@
+{
+  "id": "com.example.hello-topbar",
+  "name": { "zh": "你好顶栏", "en": "Hello Topbar" },
+  "version": "0.1.0",
+  "apiVersion": "1.0",
+  "minAppVersion": "0.4.0",
+  "kind": "code",
+  "entry": "plugin.js",
+  "author": { "name": "LUMEN Samples" },
+  "description": { "zh": "代码式插件：顶栏入口按钮 + 点击打开对话框", "en": "Code plugin: a topbar entry that opens a dialog" },
+  "license": "MIT",
+  "capabilities": ["ui:slot"],
+  "contributes": {
+    "slots": [
+      {
+        "id": "entry",
+        "slot": "workspace.topbar",
+        "title": { "zh": "你好", "en": "Hello" },
+        "kind": "inline",
+        "order": 10,
+        "open": { "slot": "dialog", "contributionId": "hello-dialog" }
+      },
+      {
+        "id": "hello-dialog",
+        "slot": "dialog",
+        "title": { "zh": "你好顶栏", "en": "Hello Topbar" },
+        "kind": "modal",
+        "size": { "w": 420, "h": 280 }
+      }
+    ]
+  }
+}

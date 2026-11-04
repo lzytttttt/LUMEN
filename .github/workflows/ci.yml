@@ -42,6 +42,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Packed plugin samples are in sync (v0.4.0)
+        run: node scripts/pack-plugins.mjs --check
+
       - name: Unit tests (includes i18n key parity)
         run: pnpm test
 
@@ -59,13 +62,20 @@ jobs:
           set -e
           test -f dist/index.html
           test -f dist/portal.html
+          test -f dist/plugins.html
           test -f dist/player/lumen-player.js
           test -f dist/player/lumen-player.css
           test -f dist/asset-manifest.json
           test -f dist/manifest.webmanifest
           test -f dist/sw.js
+          test -f dist/plugins/samples/brandguard-0.1.0.lumenplug
+          test -f dist/plugins/samples/chartkit-0.1.0.lumenplug
+          test -f dist/plugins/samples/focusdesk-0.1.0.lumenplug
           du -sh dist
           ls dist/assets | head -20
+
+      - name: Bundle budget + lazy-load gate (G3)
+        run: node scripts/budget-check.mjs
 
       - name: Upload dist
         uses: actions/upload-artifact@v4
@@ -114,3 +124,30 @@ jobs:
             test-results
           if-no-files-found: ignore
           retention-days: 7
+
+  security:
+    name: Security red-team (G5)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: verify
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # tests/security/** 覆盖 S-40-01…12 十二类红队（jsdom 假帧 + 浏览器侧由 e2e 兜）。
+      - name: Red-team suite
+        run: pnpm test:security

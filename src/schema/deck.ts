@@ -21,7 +21,13 @@ export type ColorToken = z.infer<typeof colorTokenSchema>
 export const textVariantSchema = z.enum(['display', 'h1', 'h2', 'lead', 'body', 'caption', 'mono'])
 export type TextVariant = z.infer<typeof textVariantSchema>
 
-export const recipeIdSchema = z.enum([
+/**
+ * v0.4.0 唯一 schema 加法（00 D-40-06 / plan 02 §9.1）：
+ * 内置 12 配方保持字面量枚举；插件配方用 `${namespace}/${slug}` 命名空间。
+ * `slide.recipe` 与 `outline.slides[i].recipe` 共用本 schema，放宽后两者同时生效；
+ * `migrate.ts` 零改动，旧 deck 的 12 个枚举值仍是合法值（超集）。
+ */
+export const BUILTIN_RECIPE_IDS = [
   'cover',
   'statement',
   'split',
@@ -34,8 +40,19 @@ export const recipeIdSchema = z.enum([
   'process',
   'gallery',
   'closing',
-])
-export type RecipeId = z.infer<typeof recipeIdSchema>
+] as const
+export type BuiltinRecipeId = (typeof BUILTIN_RECIPE_IDS)[number]
+/** 插件配方命名空间：`ns/slug`，两段各 ≤40，总长 ≤80。 */
+export const PLUGIN_RECIPE_ID_RE = /^[a-z][a-z0-9-]*\/[a-z][a-z0-9-]*$/
+export type PluginRecipeId = `${string}/${string}`
+export type RecipeId = BuiltinRecipeId | PluginRecipeId
+export const recipeIdSchema = z.union([
+  z.enum(BUILTIN_RECIPE_IDS),
+  z.string().regex(PLUGIN_RECIPE_ID_RE).max(80),
+]) as unknown as z.ZodType<RecipeId>
+export function isBuiltinRecipeId(id: string): id is BuiltinRecipeId {
+  return (BUILTIN_RECIPE_IDS as readonly string[]).includes(id)
+}
 
 export const transitionKindSchema = z.enum(['none', 'fade', 'push', 'wipe', 'flip3d'])
 export type TransitionKind = z.infer<typeof transitionKindSchema>

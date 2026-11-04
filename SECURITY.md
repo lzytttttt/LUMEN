@@ -7,8 +7,8 @@ LUMEN 是纯前端应用：没有后端、没有遥测、不加载外链字体�
 
 | 版本 | 是否接收安全修复 |
 |---|---|
-| 0.2.x（当前主线，`package.json` 为 0.2.5） | 是，随最新补丁版本发布 |
-| < 0.2 | 否，建议先升级到最新 0.2.x 再复测 |
+| 0.4.x（当前主线） | 是，随最新补丁版本发布 |
+| ≤ 0.3.x | 否，建议先升级到 0.4.x 再复测（0.4.0 起才有插件沙箱；IDB 升到 v4，降级前先导出全部数据） |
 
 只有最新发布版会被评估与修复；主线分支的改动请以最新一次构建产物为准复测。
 
@@ -53,6 +53,11 @@ LUMEN 是纯前端应用：没有后端、没有遥测、不加载外链字体�
 - **本地数据边界**：导入的第三方 deck 能读到不属于它的 IndexedDB 内容、能改写设置里的端点或密钥、能让导出物带上本机密钥。
 - **依赖供应链**：`package.json` / `pnpm-lock.yaml` 中被引入的依赖存在已知问题且在本项目里可达的路径（贴出 `pnpm why` 链路更有用）。
 - **构建产物一致性**：`public/player/lumen-player.js` 与源码渲染器不一致导致的安全回归。
+- **插件沙箱逃逸（v0.4.0）**：插件的 `sandbox="allow-scripts"` 不透明源 iframe 能拿到宿主 DOM / Cookie / IndexedDB、绕开帧内 `meta` CSP、通过 `postMessage` 冒充其他插件或宿主、或用 `window.parent` / `top` 跳出沙箱。
+- **插件能力绕过（v0.4.0）**：没授权 `deck:write` 却能写 deck；`grants` 被回收后仍可调用；跨插件读写数据；`asset:write` 读写他人素材；插件键位/命令覆盖宿主安全相关行为。
+- **插件 RPC / 帧协议伪造（v0.4.0）**：伪造 `pluginId` / `frameNonce` / `id` 的消息被宿主接受；超时/限流/帧配额被绕过；看门狗被绕过导致宿主假死。
+- **插件安装链（v0.4.0）**：`integrity` 校验绕过、`canonicalJson` 与校验口径不一致、路径穿越写文件、超体积/超文件数绕过、伪造 `trust:'builtin'`、篡改 IDB 记录后仍被启用。
+- **插件导出钩子注入（v0.4.0）**：`lumen.export.onPreflight` / `provideStaticAssets` 能改导出 HTML 结构、CSP、体积护栏，或注入外链/脚本。
 
 ## 按普通问题处理的情形
 
@@ -80,6 +85,11 @@ LUMEN 是纯前端应用：没有后端、没有遥测、不加载外链字体�
 | 导入 | `.lumen.json` 经 `readProjectFileText` → `migrate` → `deckSchema.safeParse`（zod）；播放器内核读取内联 deck 时同样过 `safeParse` |
 | 导出 | 单文件 HTML 的标题、文件名、deck JSON、素材 dataURL、打印样式统一走 `src/export/standalone.ts` 的转义与骨架；超过 12MB 提示、超过 24MB 中止产出 |
 | 响应头 | `vercel.json` 下发 `X-Content-Type-Options: nosniff`、`Referrer-Policy: strict-origin-when-cross-origin`、`Permissions-Policy`（相机 / 麦克风 / 定位全关） |
+| 插件沙箱（v0.4.0） | 代码式插件跑在 `sandbox="allow-scripts"` 的不透明源 iframe（**无** `allow-same-origin`、无 forms/popups/downloads/top-navigation），文档内 `meta` CSP：`connect-src 'none'`、`script-src 'unsafe-inline'`（无 `eval`/`new Function`）、`img-src data: blob:`；换主题/语言不重建帧 |
+| 插件能力（v0.4.0） | 宿主侧能力网关逐方法校验（15 项能力 → 方法映射），不缓存 grants；安装时逐项授权、敏感能力二次确认；撤销能力即自动停用；越权调用返回固定错误码并写审计 |
+| 插件安装（v0.4.0） | `.lumenplug` 信封校验 + `canonicalJson` + SHA-256 `integrity`（安装时、每次启用时、导出时三处重算）；路径/扩展名/体积白名单；URL 安装仅 https 或回环 http 且二次确认 |
+| 插件治理（v0.4.0） | 审计环 200 条、宿主单点写入（插件不可写）；连续 3 次启动失败自动隔离；`?safe=1` 本次会话禁用全部插件；「恢复默认工作台」清插件数据与覆盖项，deck 不动 |
+| 插件导出（v0.4.0） | 插件不得改导出 HTML 结构/CSP/体积护栏；导出物不含插件运行时，静态资产过白名单与体积上限 |
 | 依赖 | 版本由 `package.json` 钉住，`pnpm-lock.yaml` 入库；Vercel 用 `pnpm install --frozen-lockfile` 构建 |
 
 ## 使用者侧的三个习惯
@@ -87,6 +97,11 @@ LUMEN 是纯前端应用：没有后端、没有遥测、不加载外链字体�
 1. 只打开**自己导出**或**来源可信**的独立 HTML——它和编辑器同源同内核，等于在 `file://` 下跑一份完整的演示应用；
 2. 导入别人给的 `.lumen.json` 前，先在无害环境里打开一次，别在存着敏感演示的浏览器配置里直接导入；
 3. 升级依赖后跑一遍 `pnpm install --frozen-lockfile` 与 `pnpm test`，让 lockfile 与构建保持一致。
+4. **只安装来源可信的 `.lumenplug`**：本版没有插件市场、没有远程签名，`integrity` 只防传输/篡改，不代表作者可信；安装前逐项看权限卡（它能读什么、能改什么），不确定就用 `?safe=1` 排障或直接不装。
+
+## 插件作者的安全责任
+
+插件代码由作者提供、用户自行安装：作者必须在 manifest 里如实声明 `capabilities`（申请了却没用到、或用了却没申请都会被拒），不做网络请求、不加载外链资源、不试图获取宿主数据；样例实现见 `plugins/builtin/**` 与作者指南 `doc/12-插件系统.md`。宿主提供的沙箱与能力网关是**纵深防御**，不替代作者自律——绕过它们的尝试会被视为安全问题并按上文流程处理。
 
 ## 致谢
 

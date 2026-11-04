@@ -1,0 +1,24 @@
+{
+  "id": "com.example.hello-playoverlay",
+  "name": { "zh": "你好排练计时", "en": "Hello Rehearsal" },
+  "version": "0.1.0",
+  "apiVersion": "1.0",
+  "minAppVersion": "0.4.0",
+  "kind": "code",
+  "entry": "plugin.js",
+  "author": { "name": "LUMEN Samples" },
+  "description": { "zh": "代码式插件：播放态右上角排练计时（V-40-13 夹具）", "en": "Code plugin: a rehearsal timer overlay during playback" },
+  "license": "MIT",
+  "capabilities": ["ui:slot"],
+  "contributes": {
+    "slots": [
+      {
+        "id": "timer",
+        "slot": "play.overlay",
+        "title": { "zh": "排练计时", "en": "Rehearsal timer" },
+        "kind": "overlay",
+        "order": 10
+      }
+    ]
+  }
+}

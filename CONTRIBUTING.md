@@ -41,7 +41,10 @@ http://127.0.0.1:5273/?still=1&channel=replay&speed=0      # 再叠一层降级�
 | i18n 键对等 | `pnpm lint:i18n` | 等价于 `vitest run tests/unit/i18n.test.ts` |
 | 生产构建 | `pnpm build` | `prebuild` 先构建播放器内核，再 `tsc --noEmit && vite build` |
 | 播放器内核 | `pnpm build:player` | 改了 `src/render/**`、`src/play/**`、`src/player/**` 之后必须重跑，否则导出的 HTML 还是旧渲染器 |
-| 端到端 | `pnpm e2e` | Playwright，自动在 5274 拉起开发服；默认单 worker、Chrome + SwiftShader |
+| 端到端 | `pnpm e2e` | Playwright，自动在 5274 拉起开发服；默认单 worker、Chrome + SwiftShader；插件/创造模式组已并入默认全量（联调期守卫已移除） |
+| 安全红队 | `pnpm test:security` | S-40-01…12 十二类（jsdom 假帧；真实 iframe 行为由 e2e 兜） |
+| 打包样例 | `pnpm pack:plugins` | 从 `plugins/builtin/**` 生成 `public/plugins/samples/*.lumenplug` 与 `src/pages/plugins/pack-sizes.json`；`--check` 校验入库产物与源码一致（CI 用） |
+| 体积门禁 | `node scripts/budget-check.mjs` | 构建后跑：首屏 gzip 增量 ≤45KB、播放器不变量、插件懒加载 chunk（G3） |
 | 截图 harness | `pnpm snapshot` | 产出 `harness/out/*.png` 与 `console-errors.json`（后者必须是空数组），产物不入库 |
 
 本机 `pnpm` 不在 PATH 时，等价写法是直接调用 `node_modules` 里的入口（本仓库的验收就是这么跑的）：
@@ -69,14 +72,20 @@ src/
 ├─ play/          # 播放器、转场、讲者视图
 ├─ player/        # 播放器内核入口（IIFE 构建，产物在 public/player/）
 ├─ export/        # 独立 HTML、打印 / PDF、PNG、工程文件
+├─ plugins/       # v0.4.0 插件运行时：包/清单/注册表/沙箱帧 RPC/能力网关/9 插槽
+├─ creator/       # v0.4.0 创造模式：状态机/提案/试跑/发布（宿主内置功能，不是插件）
+├─ pages/plugins/ # plugins.html 插件页（样例安装卡 + 开发文档入口 + 无市场声明）
 ├─ themes/ styles/  # 6 套主题与 CSS 令牌
 ├─ i18n/          # 文案（zh 为类型源，en 同键）
 ├─ fixtures/ai/   # replay 的离线 fixture，静态打包
 ├─ onboarding/ portal/ sample/  # 首启三步 / 门户 / 9 幕示例
 └─ version.ts     # 版本号唯一来源
 tests/unit/       # 纯逻辑单测（jsdom）
+tests/security/   # 安全红队 12 类（S-40-01…12；pnpm test:security）
 tests/e2e/        # Playwright 端到端
-scripts/          # dev server、播放器构建、截图 harness、导出探针
+plugins/builtin/  # 三款样板插件源码（.lumen-plugin.json + plugin.js + locales）
+public/plugins/samples/  # 打包产物 *.lumenplug（由 pnpm pack:plugins 生成，入库）
+scripts/          # dev server、播放器构建、样例打包、体积门禁、截图 harness、导出探针
 doc/screenshots/  # 截图与品牌图（README 用图）
 ```
 
@@ -94,10 +103,22 @@ doc/screenshots/  # 截图与品牌图（README 用图）
 6. **净化入口唯一**：SVG 走 `src/render/svg/sanitize.ts`，HTML 块在 `sandbox="allow-scripts"` 的 iframe 里跑（无 `allow-same-origin`）。不要在别处再开一个注入点。
 7. **导出的独立 HTML 与编辑器同源**：改渲染器后记得 `pnpm build:player`，否则 `file://` 打开的是旧内核。
 
+### 插件与创造模式（v0.4.0 起）
+
+- **插件是本地包，不是云端服务**：`.lumenplug` = UTF-8 JSON 信封（manifest + files + integrity），没有市场、没有后端、没有遥测。
+- **双形态**：声明式插件（纯 JSON，宿主原生渲染，零代码执行）优先；代码式插件 = manifest + 单文件 ESM（**无 import / require / eval / JSX / 外链**），在 `sandbox="allow-scripts"` 的不透明源 iframe 里跑，CSP `connect-src 'none'`。
+- **能力模型是唯一闸门**：15 项能力、安装时逐项授权；敏感能力（`deck:write` / `ai:invoke` / `asset:write` / `export:hook`）二次确认。任何「为了方便」放宽沙箱、加白名单、复用宿主同源，都要先走 issue 对齐。
+- **插件代码不进主 bundle**：`.lumenplug` 的 `files` 以字符串存 IDB，宿主 `import()` 的只有 `src/plugins/**` 运行时；不要从插件目录静态 import 任何东西进主代码。
+- **插件数据不进 deck**（D-40-13）：数据走 `pluginData` store / `settings.plugins.values[pluginId]`；deck 只留标准块与 `provenance`。
+- **清单是唯一真相**：`contributes` 里声明了 `lintRules` / `recipes` / `exportHooks` 的 code 插件，必须在 `ready` 前用同一 id 运行期注册（缺 `E-MAN-13`）；清单里没声明的运行期注册会被拒（`E-CAP-01`）。
+- **创造模式是宿主内置功能**（`src/creator/**`），不是插件；它产出的插件走同一套公开 ABI 与同一沙箱，`window.lumen.creator` 不存在。
+- 样例打包：改 `plugins/builtin/**` 后跑 `pnpm pack:plugins` 并把 `public/plugins/samples/**`、`src/pages/plugins/pack-sizes.json` 一起提交；`--check` 不过 CI 会红。
+- 完整契约：`plan/v0.4.0/02-插件系统架构与契约.md`（本地文档）；作者指南 `doc/12-插件系统.md`。
+
 ## 5. i18n 规则
 
 - `t('ns.key', vars)` / `useT()` 取文案，zh 是类型源，**en 必须同键同结构**；`pnpm lint:i18n` 会做全量比对，缺键即红。
-- 命名空间（`src/i18n/messages/<ns>.{zh,en}.ts`）：`common`、`editor`、`ai`、`play`、`export`、`studio`、`forge`、`portal`、`onboard`。
+- 命名空间（`src/i18n/messages/<ns>.{zh,en}.ts`）：`common`、`editor`、`ai`、`play`、`export`、`studio`、`forge`、`portal`、`onboard`、`plugin`、`creator`、`pluginspage`（后三个 v0.4.0 新增；`plugin` 失败文案与错误码 key 见 `plan/v0.4.0/02` §5.5 表）。插件自己的文案走插件语言包（`contributes.i18n` / `lumen.i18n.register`），不进宿主词典。
 - 插值占位符两侧必须一致（`{count}` 不可只在一边出现）。
 - UI 里不硬编码中文；deck 内容（示例、AI 生成物、用户输入）不受这条约束。
 - 共享文件 `src/i18n/messages/editor.{zh,en}.ts` 只做局部插入，不要整文件覆盖。
@@ -110,6 +131,7 @@ doc/screenshots/  # 截图与品牌图（README 用图）
 | 界面文案 / i18n | `pnpm test`（含 `i18n.test.ts`）或 `pnpm lint:i18n` |
 | 渲染器、播放器、导出 | `pnpm build:player` + `pnpm test` + `pnpm e2e` |
 | 主链路交互（首屏、撤销、翻页、file:// 播放、打印、造幕台） | `pnpm e2e` |
+| 插件运行时 / 创造模式 / 样例 | `pnpm typecheck` + `pnpm test` + `pnpm test:security`；涉及界面与沙箱再跑 `LUMEN_PLUGIN_E2E=1 pnpm e2e` |
 | 视觉相关 | `pnpm snapshot`，确认 `harness/out/console-errors.json` 为 `[]` |
 
 - 新增用例放在 `tests/unit/<area>.test.ts`，**新文件**即可，不要改既有测试文件的期望值来迁就实现——先确认规则本身是否要变。
@@ -144,7 +166,7 @@ chore(release): v0.2.0 — 版本号与许可更新
 2. 改动控制在自己模块的写入域内；跨域需求（新 store action、新基元、新 i18n 命名空间、新依赖）先在 issue 里谈。
 3. 按 [PR 模板](.github/PULL_REQUEST_TEMPLATE.md) 填写：改动摘要、关联 issue、验证命令、i18n、导出兼容、截图。
 4. 推送前本地跑过 §6 的对应命令，并在 PR 描述里贴结果（哪些绿、哪些跳过、为什么）。
-5. GitHub Actions 的 [CI](.github/workflows/ci.yml) 会先跑 `pnpm install --frozen-lockfile` → `pnpm test` → `pnpm typecheck` → `pnpm build:player` → `pnpm build`，再单独一个 job 跑 `pnpm e2e`（Ubuntu + 品牌 Chrome）；两组都绿才进入评审。
+5. GitHub Actions 的 [CI](.github/workflows/ci.yml) 会先跑 `pnpm install --frozen-lockfile` → `pack-plugins --check` → `pnpm test` → `pnpm typecheck` → `pnpm build:player` → `pnpm build`（含插件样例打包）→ `budget-check`；再并行两个 job：`pnpm e2e`（Ubuntu + 品牌 Chrome，插件组默认全跑）与 `pnpm test:security`（G5）。三组都绿才进入评审。
 6. 维护者会看三件事：是否绕过了契约层、是否保持双语与导出兼容、是否带 DCO 签名。
 
 不要提交 `dist/`、`public/player/`、`harness/out/`、`test-results/` 与任何 `.env*`（密钥只应存在于使用者浏览器里）。

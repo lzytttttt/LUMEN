@@ -10,6 +10,7 @@
  */
 import type {
   Block,
+  BuiltinRecipeId,
   ColorToken,
   RecipeId,
   ShapeBlock,
@@ -329,7 +330,7 @@ function parseDataPoints(points: string[]): DataPoint[] {
 
 /* -------------------------------- 兜底文案 -------------------------------- */
 
-const FALLBACK: Record<RecipeId, Record<'zh' | 'en', { headline: string; lead?: string; points?: string[] }>> = {
+const FALLBACK: Record<BuiltinRecipeId, Record<'zh' | 'en', { headline: string; lead?: string; points?: string[] }>> = {
   cover: {
     zh: { headline: '未命名主题', lead: '一句话，一套演示。' },
     en: { headline: 'Untitled talk', lead: 'One sentence in, one deck out.' },
@@ -396,9 +397,12 @@ const FALLBACK: Record<RecipeId, Record<'zh' | 'en', { headline: string; lead?: 
   },
 }
 
-/** 兜底填充：内容缺项时用占位文案，永不抛错。 */
+/** 兜底填充：内容缺项时用占位文案，永不抛错。插件配方没有兜底表时用 statement。 */
 export function fillContent(id: RecipeId, content: RecipeContent): RecipeContent {
-  const fallback = FALLBACK[id][content.lang] ?? FALLBACK[id].zh
+  const table =
+    (FALLBACK as Record<string, Record<'zh' | 'en', { headline: string; lead?: string; points?: string[] }>>)[id] ??
+    FALLBACK.statement
+  const fallback = table[content.lang] ?? table.zh
   const points = (content.points ?? []).filter((point) => point.trim() !== '')
   return {
     ...content,
@@ -1207,7 +1211,7 @@ const closing: Recipe = {
 
 /* --------------------------------- 注册表 --------------------------------- */
 
-export const RECIPES: Record<RecipeId, Recipe> = {
+export const RECIPES: Record<BuiltinRecipeId, Recipe> = {
   cover,
   statement,
   split,
@@ -1222,9 +1226,38 @@ export const RECIPES: Record<RecipeId, Recipe> = {
   closing,
 }
 
+/* ---------------------- 插件配方命名空间与回落（02 §9.2） ---------------------- */
+
+/**
+ * 插件配方的唯一接入点：插件运行时（`src/plugins/api/ai.ts`）在 `lumen.ai.registerRecipe`
+ * 注册/反注册时调用 `installPluginRecipeResolver`，把 `ns/slug` 解析成宿主可用的 `Recipe`。
+ * 渲染/导出不认配方（只吃 Slide.blocks），因此插件卸载后旧 deck 仍能渲染。
+ */
+export type PluginRecipeResolver = (recipeId: string) => Recipe | undefined
+
+let pluginRecipeResolver: PluginRecipeResolver | null = null
+
+export function installPluginRecipeResolver(resolver: PluginRecipeResolver | null): void {
+  pluginRecipeResolver = resolver
+}
+
+function builtinRecipeOf(id: RecipeId | undefined): Recipe | undefined {
+  if (!id) return undefined
+  return (RECIPES as Record<string, Recipe>)[id]
+}
+
+/**
+ * 配方回落链（00 D-40-06 / 02 §9.2）：
+ * 插件配方（已启用且仍注册） → 内置 12 配方 → `statement`。
+ */
+export function resolveRecipeOf(recipeId: RecipeId | undefined): Recipe {
+  const plugin = recipeId ? pluginRecipeResolver?.(recipeId) : undefined
+  return plugin ?? builtinRecipeOf(recipeId) ?? RECIPES.statement
+}
+
 /** 用配方把内容排成块；任何缺项都走兜底，不抛错。 */
 export function buildRecipe(id: RecipeId, content: RecipeContent, theme: Theme): Block[] {
-  const recipe = RECIPES[id] ?? RECIPES.statement
+  const recipe = resolveRecipeOf(id)
   try {
     return recipe.build(fillContent(recipe.id, content), theme)
   } catch {
@@ -1234,5 +1267,5 @@ export function buildRecipe(id: RecipeId, content: RecipeContent, theme: Theme):
 
 /** 配方的槽位说明（UI 提示与测试用）。 */
 export function recipeSlots(id: RecipeId): RecipeSlotSpec[] {
-  return RECIPES[id]?.slots ?? []
+  return resolveRecipeOf(id).slots ?? []
 }

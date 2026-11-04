@@ -1,4 +1,4 @@
-/**
+﻿/**
  * provider.ts —— 模型通道的唯一抽象层（v0.2.0：三通道 + 流式 + 重试 + 缓存）。
  *
  * 契约（`plan/v0.2.0/05-LLM接入规格.md` §1.1 五条硬线）：
@@ -19,6 +19,7 @@ import { AI_CACHE_TTL_MS, cacheGet, cachePut, cacheableText, requestDigestOf } f
 import { isRetryableCode, parseRetryAfter, planRetry } from './backoff'
 import { readSseStream, type SseEvent } from './sse'
 import { ReplayProvider, hasReplaySet, replaySetFromLocation } from './replay'
+import { mockCreatorText } from './mockCreator'
 
 /* -------------------------------- 通道与格式 -------------------------------- */
 
@@ -29,7 +30,7 @@ export type AiChannelId = 'mock' | 'openai' | 'replay'
 export type AiFormat = 'auto' | 'json_object' | 'json_schema' | 'none'
 
 /** 任务标记：既用于 Mock 分派，也进 promptDigest 与缓存记录。 */
-export type AiTask = 'outline' | 'slide' | 'svg' | 'three' | 'refine'
+export type AiTask = 'outline' | 'slide' | 'svg' | 'three' | 'refine' | 'plugin'
 
 export interface AiUsage {
   prompt: number
@@ -205,7 +206,7 @@ export function taskOf(system: string): string {
   return match ? match[1].toLowerCase() : ''
 }
 
-const AI_TASKS: readonly AiTask[] = ['outline', 'slide', 'svg', 'three', 'refine']
+const AI_TASKS: readonly AiTask[] = ['outline', 'slide', 'svg', 'three', 'refine', 'plugin']
 
 /** `req.task` 缺省时回落到 system 里的 `[TASK:x]`（旧调用点不传 task）。 */
 export function resolveTask(req: CompleteRequest): AiTask | undefined {
@@ -247,6 +248,8 @@ export function mockText(req: CompleteRequest): string {
     }
     case 'three':
       return JSON.stringify({ descriptor: mockThreeScene(String(payload.prompt ?? '')) })
+    case 'plugin':
+      return mockCreatorText(payload)
     default:
       return JSON.stringify({ text: 'mock: no task marker' })
   }

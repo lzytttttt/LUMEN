@@ -1,0 +1,134 @@
+{
+  "format": "lumen-plugin",
+  "formatVersion": 1,
+  "createdAt": 1717200000000,
+  "manifest": {
+    "id": "com.qatools.fx11",
+    "name": {
+      "zh": "契约夹具",
+      "en": "Contract Fixture"
+    },
+    "version": "0.1.0",
+    "apiVersion": "1.0",
+    "minAppVersion": "0.4.0",
+    "kind": "declarative",
+    "author": {
+      "name": "QA Fixtures"
+    },
+    "description": {
+      "zh": "仅用于 LUMEN 插件契约测试的夹具包。",
+      "en": "Fixture package for LUMEN plugin contract tests."
+    },
+    "license": "MIT",
+    "capabilities": [
+      "theme:contribute",
+      "library:contribute",
+      "i18n:contribute",
+      "storage",
+      "ui:command",
+      "ui:keymap",
+      "ui:layout"
+    ],
+    "contributes": {
+      "themes": [
+        {
+          "id": "multi",
+          "name": {
+            "zh": "主题multi",
+            "en": "Theme multi"
+          },
+          "colors": {
+            "bg": "#0b0c10",
+            "fg": "#f2f4f8",
+            "muted": "#98a2b3",
+            "surface": "#141821",
+            "line": "#263041",
+            "accent": "#57e3c2",
+            "accent2": "#c8a15a"
+          }
+        }
+      ],
+      "library": [
+        {
+          "id": "multimark",
+          "name": {
+            "zh": "形",
+            "en": "G"
+          },
+          "category": "geometric",
+          "viewBox": [
+            0,
+            0,
+            24,
+            24
+          ],
+          "source": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"/>"
+        }
+      ],
+      "i18n": [
+        {
+          "zh": {
+            "hello": "你好"
+          },
+          "en": {
+            "hello": "Hello"
+          }
+        }
+      ],
+      "settings": {
+        "id": "prefs",
+        "title": {
+          "zh": "偏好",
+          "en": "Preferences"
+        },
+        "fields": [
+          {
+            "key": "enabled",
+            "type": "switch",
+            "label": {
+              "zh": "启用",
+              "en": "Enabled"
+            },
+            "default": true
+          }
+        ]
+      },
+      "commands": [
+        {
+          "id": "apply-theme",
+          "title": {
+            "zh": "应用主题",
+            "en": "Apply theme"
+          },
+          "category": "plugin",
+          "action": {
+            "kind": "setTheme",
+            "themeId": "multi"
+          }
+        }
+      ],
+      "keymap": [
+        {
+          "combo": "mod+alt+m",
+          "commandId": "apply-theme"
+        }
+      ],
+      "layoutPresets": [
+        {
+          "id": "multi-layout",
+          "name": {
+            "zh": "多贡献布局",
+            "en": "Multi layout"
+          },
+          "apply": {
+            "density": "compact"
+          }
+        }
+      ]
+    }
+  },
+  "files": {
+    "readme.md": "# QA fixture\n\n仅用于 LUMEN 插件契约测试，无外部资源。\n"
+  },
+  "integrity": "sha256:9368cdb2ece4ca6d516e5f89d73cf3ea77ea66e97cf769dcd613b2c31f3e0600"
+}

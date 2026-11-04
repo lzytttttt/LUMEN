@@ -34,6 +34,10 @@
 | `doc/screenshots/**`、`doc/*.png`、`public/icons/**` 中的品牌图 | **CC BY-NC 4.0** | 截图、品牌视觉、宣传图：可署名非商业分享，不可商业使用 |
 | `src/sample/sample-deck.ts`、`src/fixtures/**`、`src/ai/corpus.ts`、`src/ai/recipes.ts` 中的示例文案与模板内容 | **CC BY-NC 4.0** | 代码结构仍按源码许可；其中的示例文案/模板内容不可直接用于商业交付，商用请替换为你自己的内容 |
 | `LUMEN` / `幕光` 名称、Logo、品牌视觉 | **保留商标权** | 见 [`TRADEMARK.md`](TRADEMARK.md)；Apache-2.0 §6 不授予商标许可 |
+| `plugins/builtin/**`（三款样例的清单 / 插件源码 / 语言包） | **Apache-2.0 + Commons Clause**（或 FSL-1.1-MIT） | 官方样板插件源码，与 `src/**` 同许可：可学习、可改，但不得把「改名的 LUMEN 或等价物」当付费产品卖 |
+| `public/plugins/samples/**`、`tests/fixtures/plugins/**` 内的 `.lumenplug` | **同源码** | 打包产物，信封里是样例源码；解包/再打包不改变许可 |
+| `plugins/builtin/**/locales/**` 与样例中的示例文案、品牌图标 | **CC BY-NC 4.0** | 与 `src/sample/**` 同口径：代码结构走源码许可，文案与视觉资产不可直接商用 |
+| 第三方插件（你自己打包的 `.lumenplug`） | **由插件作者决定** | LUMEN 不改变第三方插件的许可；manifest 的 `license` 字段只是展示给用户的声明 |
 | `node_modules/**` 与打包进播放器的第三方库 | **各自原许可** | 见 [`NOTICE`](NOTICE)；我们不改变、也无法改变这些许可 |
 
 > 判断规则：**能编译、能运行、能改的 → 源码许可；看得见的设计资产与示例文案 → CC BY-NC；名字与 Logo → 商标。**
